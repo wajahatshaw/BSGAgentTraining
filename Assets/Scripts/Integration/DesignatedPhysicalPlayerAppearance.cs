@@ -12,7 +12,7 @@ public static class DesignatedPhysicalPlayerAppearance
     public static float GetScale()
     {
         MultiplayerRagZone0Anchor anchor = MultiplayerRagZone0Anchor.Instance;
-        return anchor != null ? anchor.designatedPhysicalPlayerScale : 10f;
+        return anchor != null ? anchor.designatedPhysicalPlayerScale : 1.55f;
     }
 
     public static void ApplyScale(Transform playerRoot)

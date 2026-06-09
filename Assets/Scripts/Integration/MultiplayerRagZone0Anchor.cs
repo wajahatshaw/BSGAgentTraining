@@ -122,8 +122,8 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
     public bool useZone0InteriorOverride;
 
     [Header("Designated zone 0 physical player (Photon blue worker)")]
-    [Tooltip("Uniform scale for the designated physical Photon player (1 = original prefab size).")]
-    [Range(1f, 12f)] public float designatedPhysicalPlayerScale = 10f;
+    [Tooltip("Uniform scale for the designated physical Photon player so they read clearly in zone 0.")]
+    [Range(1f, 2.5f)] public float designatedPhysicalPlayerScale = 1.55f;
 
     [Header("Multiplayer size overrides")]
     [Range(0.4f, 1.2f)] public float agentScaleMultiplier = 0.54f;
