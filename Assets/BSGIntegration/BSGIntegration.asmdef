@@ -1,0 +1,18 @@
+{
+    "name": "BSGIntegration",
+    "rootNamespace": "",
+    "references": [
+        "Unity.ML-Agents",
+        "Unity.InferenceEngine",
+        "Unity.RenderPipelines.Universal.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

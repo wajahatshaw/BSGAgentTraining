@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 611e1da9fc5e14aa9bb0bfc31a295118
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 325685
+  packageName: Easy Popup System
+  packageVersion: 1.0
+  assetPath: Assets/DevePolers/Easy Popup System/ScriptableObjects/ToastInfo.asset
+  uploadId: 776433

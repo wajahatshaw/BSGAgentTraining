@@ -1,0 +1,1273 @@
+{
+  "scene_id": "scene_warehouse_persona_001",
+  "plan": {
+    "planId": "maintenance_workflow_replica_001",
+    "planName": "Daily Equipment Maintenance Protocol - REPLICA",
+    "description": "Replica scene for testing and development - Comprehensive maintenance workflow for warehouse equipment including motor repair, toolbox management, and safety inspections",
+    "estimatedTotalDuration": 15.0,
+    "priority": "high",
+    "assignedTeam": [
+      "SIMPLE_Technician_01",
+      "SIMPLE_Technician_02",
+      "SIMPLE_Supervisor_01",
+      "SIMPLE_Supervisor_02"
+    ]
+  },
+  "initialStates": {
+    "tool_001": {
+      "objectId": "tool_001",
+      "name": "Industrial Motor Unit",
+      "type": "motor",
+      "shape": "cylinder",
+      "isAvailable": true,
+      "isActive": false,
+      "currentUser": null,
+      "position": {
+        "x": -4,
+        "y": 0.5,
+        "z": -5
+      },
+      "color": "#DC143C",
+      "materialColor": {
+        "r": 0.86,
+        "g": 0.08,
+        "b": 0.24,
+        "a": 1.0
+      },
+      "material": {
+        "shader": "Standard",
+        "metallic": 0.4,
+        "smoothness": 0.2,
+        "roughness": 0.8
+      },
+      "components": {
+        "housing": {
+          "shape": "cylinder",
+          "color": "#333333",
+          "metallic": 0.6,
+          "smoothness": 0.4
+        },
+        "coolingFins": {
+          "count": 8,
+          "shape": "cube",
+          "color": "#4D4D4D",
+          "metallic": 0.4,
+          "smoothness": 0.2
+        }
+      },
+      "properties": {
+        "temperature": "cold",
+        "power": "off",
+        "voltage": "220V",
+        "condition": "needs_repair"
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.3.a",
+          "skillName": "Repairing",
+          "category": "Repairing",
+          "requiredLevel": 5,
+          "isCritical": true,
+          "reward": 20
+        },
+        {
+          "onetSkillCode": "2.C.3.b",
+          "skillName": "Equipment Maintenance",
+          "category": "EquipmentMaintenance",
+          "requiredLevel": 20,
+          "isCritical": true,
+          "reward": 30
+        }
+      ]
+    },
+    "tool_002": {
+      "objectId": "tool_002",
+      "name": "Secure Toolbox Alpha",
+      "type": "storage",
+      "shape": "cube",
+      "isAvailable": true,
+      "isActive": false,
+      "currentUser": null,
+      "position": {
+        "x": 0,
+        "y": 0.5,
+        "z": -5
+      },
+      "color": "#FFD700",
+      "materialColor": {
+        "r": 1.0,
+        "g": 0.84,
+        "b": 0.0,
+        "a": 1.0
+      },
+      "material": {
+        "shader": "Standard",
+        "metallic": 0.4,
+        "smoothness": 0.2,
+        "roughness": 0.8
+      },
+      "components": {
+        "lid": {
+          "shape": "cube",
+          "color": "#CC9900",
+          "metallic": 0.7,
+          "smoothness": 0.8
+        },
+        "lock": {
+          "shape": "cylinder",
+          "color": "#1A1A1A",
+          "metallic": 0.9,
+          "smoothness": 0.95
+        }
+      },
+      "properties": {
+        "locked": true,
+        "contents": [
+          "wrench_set",
+          "screwdriver_kit",
+          "safety_gear"
+        ],
+        "security_level": "high"
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.3.c",
+          "skillName": "Assembly Operations2",
+          "category": "AssemblyOperations2",
+          "requiredLevel": 40,
+          "isCritical": true,
+          "reward": 20
+        },
+        {
+          "onetSkillCode": "2.C.1.d",
+          "skillName": "System Testing2",
+          "category": "SystemTesting2",
+          "requiredLevel": 10,
+          "isCritical": true,
+          "reward": 20
+        }
+      ]
+    },
+    "tool_003": {
+      "objectId": "tool_003",
+      "name": "Hydraulic Lift Station",
+      "type": "machinery",
+      "shape": "cube",
+      "isAvailable": true,
+      "isActive": false,
+      "currentUser": null,
+      "position": {
+        "x": 4,
+        "y": 0.5,
+        "z": -5
+      },
+      "color": "#1E90FF",
+      "materialColor": {
+        "r": 0.12,
+        "g": 0.56,
+        "b": 1.0,
+        "a": 1.0
+      },
+      "material": {
+        "shader": "Standard",
+        "metallic": 0.4,
+        "smoothness": 0.2,
+        "roughness": 0.8
+      },
+      "components": {
+        "cylinder": {
+          "shape": "cylinder",
+          "color": "#1A4D99",
+          "metallic": 0.8,
+          "smoothness": 0.6
+        },
+        "piston": {
+          "shape": "cylinder",
+          "color": "#333333",
+          "metallic": 0.9,
+          "smoothness": 0.8
+        },
+        "hoses": {
+          "count": 2,
+          "shape": "cylinder",
+          "color": "#1A1A1A",
+          "metallic": 0.1,
+          "smoothness": 0.1
+        }
+      },
+      "properties": {
+        "power": "on",
+        "hydraulic_pressure": "normal",
+        "load_capacity": "2000kg"
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.4.a",
+          "skillName": "Systems Analysis",
+          "category": "SystemsAnalysis",
+          "requiredLevel": 0,
+          "isCritical": true,
+          "reward": 30
+        },
+        {
+          "onetSkillCode": "2.C.1.a",
+          "skillName": "Quality Control Analysis",
+          "category": "QualityControl",
+          "requiredLevel": 30,
+          "isCritical": true,
+          "reward": 40
+        }
+      ]
+    },
+    "tool_004": {
+      "objectId": "tool_004",
+      "name": "Safety Inspection Station",
+      "type": "workstation",
+      "isAvailable": true,
+      "isActive": false,
+      "currentUser": null,
+      "position": {
+        "x": -2,
+        "y": 0.5,
+        "z": 3
+      },
+      "color": "#1E90FF",
+      "materialColor": {
+        "r": 0.2,
+        "g": 0.8,
+        "b": 0.2,
+        "a": 1.0
+      },
+      "properties": {
+        "power": "on",
+        "inspection_tools": [
+          "multimeter",
+          "pressure_gauge",
+          "safety_checklist"
+        ]
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.1.b",
+          "skillName": "Safety Inspection",
+          "category": "SafetyInspection",
+          "requiredLevel": 30,
+          "isCritical": true,
+          "reward": 30
+        },
+        {
+          "onetSkillCode": "2.C.2.a",
+          "skillName": "Compliance Monitoring",
+          "category": "ComplianceMonitoring",
+          "requiredLevel": 10,
+          "isCritical": true,
+          "reward": 10
+        }
+      ]
+    },
+    "workbench_001": {
+      "objectId": "workbench_001",
+      "name": "Main Assembly Workbench",
+      "type": "workstation",
+      "shape": "cube",
+      "isAvailable": true,
+      "isActive": false,
+      "currentUser": null,
+      "position": {
+        "x": 2,
+        "y": 0.8,
+        "z": 3
+      },
+      "color": "#FF8C00",
+      "materialColor": {
+        "r": 1.0,
+        "g": 0.55,
+        "b": 0.0,
+        "a": 1.0
+      },
+      "material": {
+        "shader": "Standard",
+        "metallic": 0.3,
+        "smoothness": 0.1,
+        "roughness": 0.9
+      },
+      "components": {
+        "legs": {
+          "count": 4,
+          "shape": "cube",
+          "color": "#4D4D4D",
+          "metallic": 0.2,
+          "smoothness": 0.1
+        },
+        "surface": {
+          "shape": "cube",
+          "color": "#666666",
+          "metallic": 0.1,
+          "smoothness": 0.3
+        },
+        "controlPanel": {
+          "shape": "cube",
+          "color": "#1A1A1A",
+          "metallic": 0.8,
+          "smoothness": 0.9
+        },
+        "buttons": {
+          "count": 3,
+          "shapes": [
+            "cylinder",
+            "cylinder",
+            "cylinder"
+          ],
+          "colors": [
+            "#FF0000",
+            "#FFFF00",
+            "#00FF00"
+          ],
+          "metallic": 0.9,
+          "smoothness": 0.95
+        }
+      },
+      "properties": {
+        "surface_material": "steel",
+        "tools_available": [
+          "drill",
+          "saw",
+          "measuring_tools"
+        ]
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.3.c",
+          "skillName": "Assembly Operations",
+          "category": "AssemblyOperations",
+          "requiredLevel": 0,
+          "isCritical": true,
+          "reward": 20
+        },
+        {
+          "onetSkillCode": "2.C.1.d",
+          "skillName": "System Testing",
+          "category": "SystemTesting",
+          "requiredLevel": 30,
+          "isCritical": true,
+          "reward": 40
+        }
+      ]
+    }
+  },
+  "actionPrepositions": {
+    "move": {
+      "to": "move to",
+      "towards": "move towards",
+      "away_from": "move away from",
+      "near": "move near"
+    },
+    "interact": {
+      "with": "interact with",
+      "on": "interact on",
+      "at": "interact at"
+    },
+    "learn": {
+      "from": "learn from",
+      "at": "learn at",
+      "using": "learn using"
+    },
+    "perform": {
+      "on": "perform on",
+      "at": "perform at",
+      "with": "perform with"
+    },
+    "inspect": {
+      "at": "inspect at",
+      "on": "inspect on",
+      "using": "inspect using"
+    }
+  },
+  "proximityDetection": {
+    "enabled": true,
+    "detectionRadius": 3.0,
+    "updateFrequency": 0.1
+  },
+  "metadata": {
+    "version": "2.0_replica",
+    "created_date": "2024-01-15",
+    "last_modified": "2024-01-15",
+    "author": "Replica Scene System",
+    "scene_complexity": "advanced",
+    "purpose": "Independent replica scene for testing and development"
+  },
+  "sequenceRewards": {
+    "correctSequence": {
+      "description": "Rewards for performing actions in the correct sequence",
+      "stepCompletion": {
+        "baseReward": 5.0,
+        "description": "Reward for completing each step in sequence"
+      },
+      "skillLearning": {
+        "baseReward": 20.0,
+        "description": "Reward for successfully learning a skill at a tool",
+        "multiplier": 1.0
+      },
+      "sequenceCompletion": {
+        "fullSequenceBonus": 50.0,
+        "description": "Bonus reward for completing entire sequence in correct order"
+      },
+      "preconditionSatisfaction": {
+        "reward": 10.0,
+        "description": "Reward for satisfying all preconditions before action"
+      }
+    },
+    "incorrectSequence": {
+      "description": "Penalties and neutral feedback for incorrect sequences",
+      "wrongOrder": {
+        "penalty": -15.0,
+        "description": "Penalty for performing actions out of sequence order"
+      },
+      "missingPrecondition": {
+        "penalty": -10.0,
+        "description": "Penalty for attempting action without required preconditions"
+      },
+      "wrongTool": {
+        "penalty": -20.0,
+        "description": "Penalty for interacting with wrong tool in sequence"
+      },
+      "skippedStep": {
+        "penalty": -25.0,
+        "description": "Penalty for skipping a required step in sequence"
+      },
+      "neutralFeedback": {
+        "reward": 0.0,
+        "description": "Neutral feedback (no reward/penalty) for actions that don't match sequence but aren't harmful"
+      }
+    },
+    "validationRules": {
+      "strictOrder": true,
+      "requirePreconditions": true,
+      "allowParallelActions": false,
+      "sequenceResetOnError": false
+    }
+  },
+  "ml_training_config": {
+    "enabled": true,
+    "observation_space_size": 25,
+    "action_space": {
+      "discrete_branches": [
+        3,
+        3,
+        3
+      ],
+      "branch_0": "Movement (0=stop, 1=forward, 2=backward)",
+      "branch_1": "Rotation (0=left, 1=straight, 2=right)",
+      "branch_2": "Tool Interaction (0=none, 1=positive, 2=negative/neutral)"
+    },
+    "reward_structure": {
+      "positive_action_correct": {
+        "description": "ML correctly chooses positive action when skill sufficient",
+        "base_reward_multiplier": 0.1,
+        "range": "2.0 to 4.0 (from JSON skill.reward / 10)"
+      },
+      "positive_action_incorrect": {
+        "description": "ML incorrectly chooses positive when insufficient skill",
+        "penalty": -5.0
+      },
+      "negative_action_correct": {
+        "description": "ML correctly identifies limitation",
+        "reward": 1.0
+      },
+      "neutral_action_correct": {
+        "description": "ML correctly identifies proficiency",
+        "reward": 1.5
+      },
+      "negative_action_incorrect": {
+        "description": "ML incorrectly chooses negative when could learn",
+        "penalty": -3.0
+      },
+      "efficiency_penalties": {
+        "per_step": -0.001,
+        "boundary_violation": -0.5
+      },
+      "pathfinding_rewards": {
+        "correct_direction_reward": {
+          "description": "Reward when ML-Agent moves toward current step's target (from actionSequence.targetObjectId)",
+          "reward_source": "correct_step_reward from JSON actionSequence steps",
+          "value": 2.0,
+          "note": "Dynamically read from actionSequence[stepOrder].correct_step_reward"
+        },
+        "wrong_direction_penalty": {
+          "description": "Penalty when ML-Agent moves away from current step's target",
+          "penalty": -1.0
+        },
+        "target_reached_reward": {
+          "description": "Bonus reward when agent reaches the target object position",
+          "reward": 4.0,
+          "proximity_threshold": 3.0
+        }
+      },
+      "sequence_rewards": {
+        "correct_step": 5.0,
+        "correct_skill_learning": 20.0,
+        "sequence_completion_bonus": 50.0,
+        "wrong_order_penalty": -15.0,
+        "missing_precondition_penalty": -10.0,
+        "wrong_tool_penalty": -20.0,
+        "skipped_step_penalty": -25.0
+      }
+    },
+    "logging": {
+      "enable_detailed_logs": true,
+      "log_interval_seconds": 5.0,
+      "log_actions": true,
+      "log_episodes": true,
+      "log_training_summary": true,
+      "log_sequence_validation": true
+    },
+    "success_criteria": {
+      "minimum_total_reward_per_episode": 10.0,
+      "target_skill_completion_percentage": 100.0,
+      "minimum_positive_action_rate": 0.6,
+      "sequence_completion_rate": 0.8
+    }
+  },
+  "personas": {
+    "persona_technician_01": {
+      "personaId": "persona_technician_01",
+      "agentId": "SIMPLE_Technician_01",
+      "name": "Alex Rodriguez - Senior Technician",
+      "goals": {
+        "primary": "Complete maintenance tasks efficiently",
+        "secondary": [
+          "Maximize skill learning",
+          "Minimize errors",
+          "Maintain equipment reliability"
+        ],
+        "completionCriteria": "Reach 100% skill level across all assigned tasks"
+      },
+      "abilities": {
+        "baseSkillLevel": 40.0,
+        "maxSkillLevel": 100.0,
+        "skillSpecializations": [],
+        "movementCapabilities": {
+          "speed": 2.0,
+          "rotationSpeed": 90.0,
+          "maxDistance": 15.0
+        }
+      },
+      "behaviorRules": {
+        "riskTolerance": 0.3,
+        "efficiencyPreference": 0.8,
+        "collaborationTendency": 0.7,
+        "safetyPrioritization": 0.9,
+        "explorationVsExploitation": 0.6
+      },
+      "decisionLogic": {
+        "actionSelectionBias": {
+          "preferPositive": 0.7,
+          "avoidNegative": 0.8,
+          "neutralAcceptance": 0.5
+        },
+        "toolSelectionStrategy": "skill_gap_priority",
+        "sequenceAdherence": 0.9
+      },
+      "mlTrainingConfig": {
+        "behaviorName": "PhysicalAgentZone0",
+        "rewardMultipliers": {
+          "positiveActionCorrect": 1.2,
+          "negativeActionCorrect": 0.8,
+          "neutralActionCorrect": 1.0,
+          "wrongActionPenalty": -1.5,
+          "sequenceStepReward": 1.1,
+          "skillLearningReward": 1.3,
+          "targetReachedReward": 1.0,
+          "wrongDirectionPenalty": -1.2
+        },
+        "observationBias": {
+          "skillLevelWeight": 1.0,
+          "toolProximityWeight": 1.0,
+          "sequenceProgressWeight": 1.0
+        }
+      },
+      "position": {
+        "x": -6,
+        "y": 1,
+        "z": 0
+      },
+      "color": "#33FF33",
+      "materialColor": {
+        "r": 0.1,
+        "g": 0.8,
+        "b": 0.1,
+        "a": 1.0
+      },
+      "shape": "capsule",
+      "experience_years": 8,
+      "certifications": [
+        "Industrial Maintenance",
+        "Electrical Systems",
+        "Safety Compliance"
+      ],
+      "isCompleted": false,
+      "actionSequence": [
+        {
+          "stepId": "tech01_step_001",
+          "stepOrder": 1,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "tool_001",
+          "targetObjectName": "Industrial Motor Unit",
+          "description": "move to tool_001",
+          "expectedDuration": 2.0,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "tech01_step_002",
+          "stepOrder": 2,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "tool_001",
+          "targetObjectName": "Industrial Motor Unit",
+          "description": "learn from tool_001",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.3.a",
+              "skillName": "Repairing",
+              "requiredLevel": 5,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "tech01_step_003",
+          "stepOrder": 3,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "tool_002",
+          "targetObjectName": "Secure Toolbox Alpha",
+          "description": "move to tool_002",
+          "expectedDuration": 2.5,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "tech01_step_004",
+          "stepOrder": 4,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "tool_002",
+          "targetObjectName": "Secure Toolbox Alpha",
+          "description": "learn from tool_002",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.3.c",
+              "skillName": "Assembly Operations2",
+              "requiredLevel": 40,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "tech01_step_005",
+          "stepOrder": 5,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "tool_003",
+          "targetObjectName": "Hydraulic Lift Station",
+          "description": "move to tool_003",
+          "expectedDuration": 2.5,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "tech01_step_006",
+          "stepOrder": 6,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "tool_003",
+          "targetObjectName": "Hydraulic Lift Station",
+          "description": "learn from tool_003",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.4.a",
+              "skillName": "Systems Analysis",
+              "requiredLevel": 0,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        }
+      ]
+    },
+    "persona_technician_02": {
+      "personaId": "persona_technician_02",
+      "agentId": "SIMPLE_Technician_02",
+      "name": "Sarah Johnson - Junior Technician",
+      "goals": {
+        "primary": "Learn maintenance skills and complete assigned tasks",
+        "secondary": [
+          "Build experience",
+          "Follow safety protocols",
+          "Collaborate with team"
+        ],
+        "completionCriteria": "Reach 80% skill level and complete all assigned tasks"
+      },
+      "abilities": {
+        "baseSkillLevel": 40.0,
+        "maxSkillLevel": 80.0,
+        "skillSpecializations": [],
+        "movementCapabilities": {
+          "speed": 2.0,
+          "rotationSpeed": 90.0,
+          "maxDistance": 15.0
+        }
+      },
+      "behaviorRules": {
+        "riskTolerance": 0.4,
+        "efficiencyPreference": 0.7,
+        "collaborationTendency": 0.8,
+        "safetyPrioritization": 0.85,
+        "explorationVsExploitation": 0.65
+      },
+      "decisionLogic": {
+        "actionSelectionBias": {
+          "preferPositive": 0.75,
+          "avoidNegative": 0.75,
+          "neutralAcceptance": 0.6
+        },
+        "toolSelectionStrategy": "sequence_order",
+        "sequenceAdherence": 0.95
+      },
+      "mlTrainingConfig": {
+        "behaviorName": "PhysicalAgentZone1",
+        "rewardMultipliers": {
+          "positiveActionCorrect": 1.1,
+          "negativeActionCorrect": 0.9,
+          "neutralActionCorrect": 1.0,
+          "wrongActionPenalty": -1.3,
+          "sequenceStepReward": 1.0,
+          "skillLearningReward": 1.2,
+          "targetReachedReward": 1.0,
+          "wrongDirectionPenalty": -1.1
+        },
+        "observationBias": {
+          "skillLevelWeight": 1.0,
+          "toolProximityWeight": 1.0,
+          "sequenceProgressWeight": 1.0
+        }
+      },
+      "position": {
+        "x": 6,
+        "y": 1,
+        "z": 0
+      },
+      "color": "#33FF33",
+      "materialColor": {
+        "r": 0.2,
+        "g": 1.0,
+        "b": 0.2,
+        "a": 1.0
+      },
+      "shape": "capsule",
+      "experience_years": 3,
+      "certifications": [
+        "Basic Maintenance",
+        "Tool Operation",
+        "Safety Protocols"
+      ],
+      "isCompleted": false,
+      "actionSequence": [
+        {
+          "stepId": "tech02_step_001",
+          "stepOrder": 1,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "tool_002",
+          "targetObjectName": "Secure Toolbox Alpha",
+          "description": "move to tool_002",
+          "expectedDuration": 2.0,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "tech02_step_002",
+          "stepOrder": 2,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "tool_002",
+          "targetObjectName": "Secure Toolbox Alpha",
+          "description": "learn from tool_002",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.1.d",
+              "skillName": "System Testing2",
+              "requiredLevel": 10,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "tech02_step_003",
+          "stepOrder": 3,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "workbench_001",
+          "targetObjectName": "Main Assembly Workbench",
+          "description": "move to workbench_001",
+          "expectedDuration": 2.5,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "tech02_step_004",
+          "stepOrder": 4,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "workbench_001",
+          "targetObjectName": "Main Assembly Workbench",
+          "description": "learn from workbench_001",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.3.c",
+              "skillName": "Assembly Operations",
+              "requiredLevel": 0,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "tech02_step_005",
+          "stepOrder": 5,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "tool_001",
+          "targetObjectName": "Industrial Motor Unit",
+          "description": "move to tool_001",
+          "expectedDuration": 2.5,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "tech02_step_006",
+          "stepOrder": 6,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "tool_001",
+          "targetObjectName": "Industrial Motor Unit",
+          "description": "learn from tool_001",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.3.b",
+              "skillName": "Equipment Maintenance",
+              "requiredLevel": 20,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        }
+      ]
+    },
+    "persona_supervisor_01": {
+      "personaId": "persona_supervisor_01",
+      "agentId": "SIMPLE_Supervisor_01",
+      "name": "Maria Santos - Operations Supervisor",
+      "goals": {
+        "primary": "Oversee operations and ensure quality",
+        "secondary": [
+          "Monitor team performance",
+          "Maintain safety standards",
+          "Optimize workflow"
+        ],
+        "completionCriteria": "Reach 90% skill level in operations management"
+      },
+      "abilities": {
+        "baseSkillLevel": 10.0,
+        "maxSkillLevel": 90.0,
+        "skillSpecializations": [],
+        "movementCapabilities": {
+          "speed": 2.0,
+          "rotationSpeed": 90.0,
+          "maxDistance": 15.0
+        }
+      },
+      "behaviorRules": {
+        "riskTolerance": 0.2,
+        "efficiencyPreference": 0.6,
+        "collaborationTendency": 0.9,
+        "safetyPrioritization": 0.95,
+        "explorationVsExploitation": 0.5
+      },
+      "decisionLogic": {
+        "actionSelectionBias": {
+          "preferPositive": 0.6,
+          "avoidNegative": 0.85,
+          "neutralAcceptance": 0.7
+        },
+        "toolSelectionStrategy": "sequence_order",
+        "sequenceAdherence": 0.95
+      },
+      "mlTrainingConfig": {
+        "behaviorName": "PhysicalAgentZone2",
+        "rewardMultipliers": {
+          "positiveActionCorrect": 1.0,
+          "negativeActionCorrect": 1.1,
+          "neutralActionCorrect": 1.2,
+          "wrongActionPenalty": -1.4,
+          "sequenceStepReward": 1.2,
+          "skillLearningReward": 1.1,
+          "targetReachedReward": 1.1,
+          "wrongDirectionPenalty": -1.3
+        },
+        "observationBias": {
+          "skillLevelWeight": 1.0,
+          "toolProximityWeight": 1.0,
+          "sequenceProgressWeight": 1.0
+        }
+      },
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 6
+      },
+      "color": "#33FF33",
+      "materialColor": {
+        "r": 0.1,
+        "g": 0.6,
+        "b": 0.1,
+        "a": 1.0
+      },
+      "shape": "capsule",
+      "experience_years": 12,
+      "certifications": [
+        "Operations Management",
+        "Quality Control",
+        "Team Leadership"
+      ],
+      "isCompleted": false,
+      "actionSequence": [
+        {
+          "stepId": "sup01_step_001",
+          "stepOrder": 1,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "tool_003",
+          "targetObjectName": "Hydraulic Lift Station",
+          "description": "move to tool_003",
+          "expectedDuration": 2.0,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "sup01_step_002",
+          "stepOrder": 2,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "tool_003",
+          "targetObjectName": "Hydraulic Lift Station",
+          "description": "learn from tool_003",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.4.a",
+              "skillName": "Systems Analysis",
+              "requiredLevel": 0,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "sup01_step_003",
+          "stepOrder": 3,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "workbench_001",
+          "targetObjectName": "Main Assembly Workbench",
+          "description": "move to workbench_001",
+          "expectedDuration": 2.5,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "sup01_step_004",
+          "stepOrder": 4,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "workbench_001",
+          "targetObjectName": "Main Assembly Workbench",
+          "description": "learn from workbench_001",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.3.c",
+              "skillName": "Assembly Operations",
+              "requiredLevel": 0,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "sup01_step_005",
+          "stepOrder": 5,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "tool_004",
+          "targetObjectName": "Safety Inspection Station",
+          "description": "move to tool_004",
+          "expectedDuration": 2.5,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "sup01_step_006",
+          "stepOrder": 6,
+          "actionType": "inspect",
+          "preposition": "at",
+          "targetObjectId": "tool_004",
+          "targetObjectName": "Safety Inspection Station",
+          "description": "inspect at tool_004",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.2.a",
+              "skillName": "Compliance Monitoring",
+              "requiredLevel": 10,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        }
+      ]
+    },
+    "persona_supervisor_02": {
+      "personaId": "persona_supervisor_02",
+      "agentId": "SIMPLE_Supervisor_02",
+      "name": "David Kim - Safety Inspector",
+      "goals": {
+        "primary": "Ensure safety compliance and risk assessment",
+        "secondary": [
+          "Conduct thorough inspections",
+          "Maintain compliance standards",
+          "Prevent safety incidents"
+        ],
+        "completionCriteria": "Reach 100% skill level in safety inspection"
+      },
+      "abilities": {
+        "baseSkillLevel": 30.0,
+        "maxSkillLevel": 100.0,
+        "skillSpecializations": [],
+        "movementCapabilities": {
+          "speed": 2.0,
+          "rotationSpeed": 90.0,
+          "maxDistance": 15.0
+        }
+      },
+      "behaviorRules": {
+        "riskTolerance": 0.15,
+        "efficiencyPreference": 0.65,
+        "collaborationTendency": 0.85,
+        "safetyPrioritization": 0.98,
+        "explorationVsExploitation": 0.45
+      },
+      "decisionLogic": {
+        "actionSelectionBias": {
+          "preferPositive": 0.65,
+          "avoidNegative": 0.9,
+          "neutralAcceptance": 0.65
+        },
+        "toolSelectionStrategy": "sequence_order",
+        "sequenceAdherence": 0.98
+      },
+      "mlTrainingConfig": {
+        "behaviorName": "PhysicalAgentZone3",
+        "rewardMultipliers": {
+          "positiveActionCorrect": 1.1,
+          "negativeActionCorrect": 1.0,
+          "neutralActionCorrect": 1.1,
+          "wrongActionPenalty": -1.5,
+          "sequenceStepReward": 1.15,
+          "skillLearningReward": 1.25,
+          "targetReachedReward": 1.05,
+          "wrongDirectionPenalty": -1.25
+        },
+        "observationBias": {
+          "skillLevelWeight": 1.0,
+          "toolProximityWeight": 1.0,
+          "sequenceProgressWeight": 1.0
+        }
+      },
+      "position": {
+        "x": 6,
+        "y": 1,
+        "z": 0
+      },
+      "color": "#4DCC4D",
+      "materialColor": {
+        "r": 0.3,
+        "g": 0.9,
+        "b": 0.3,
+        "a": 1.0
+      },
+      "shape": "capsule",
+      "experience_years": 10,
+      "certifications": [
+        "Safety Inspection",
+        "OSHA Compliance",
+        "Risk Assessment"
+      ],
+      "isCompleted": false,
+      "actionSequence": [
+        {
+          "stepId": "sup02_step_001",
+          "stepOrder": 1,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "tool_004",
+          "targetObjectName": "Safety Inspection Station",
+          "description": "move to tool_004",
+          "expectedDuration": 2.0,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "sup02_step_002",
+          "stepOrder": 2,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "tool_004",
+          "targetObjectName": "Safety Inspection Station",
+          "description": "learn from tool_004",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.1.b",
+              "skillName": "Safety Inspection",
+              "requiredLevel": 30,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "sup02_step_003",
+          "stepOrder": 3,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "tool_003",
+          "targetObjectName": "Hydraulic Lift Station",
+          "description": "move to tool_003",
+          "expectedDuration": 2.5,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "sup02_step_004",
+          "stepOrder": 4,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "tool_003",
+          "targetObjectName": "Hydraulic Lift Station",
+          "description": "learn from tool_003",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.1.a",
+              "skillName": "Quality Control Analysis",
+              "requiredLevel": 30,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "sup02_step_005",
+          "stepOrder": 5,
+          "actionType": "move",
+          "preposition": "to",
+          "targetObjectId": "workbench_001",
+          "targetObjectName": "Main Assembly Workbench",
+          "description": "move to workbench_001",
+          "expectedDuration": 2.5,
+          "requiredSkills": [],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        },
+        {
+          "stepId": "sup02_step_006",
+          "stepOrder": 6,
+          "actionType": "learn",
+          "preposition": "from",
+          "targetObjectId": "workbench_001",
+          "targetObjectName": "Main Assembly Workbench",
+          "description": "learn from workbench_001",
+          "expectedDuration": 3.0,
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.1.d",
+              "skillName": "System Testing",
+              "requiredLevel": 30,
+              "isCritical": true
+            }
+          ],
+          "learnSkills": [],
+          "correct_step_reward": 2.0,
+          "isStepCompleted": false
+        }
+      ]
+    }
+  }
+}

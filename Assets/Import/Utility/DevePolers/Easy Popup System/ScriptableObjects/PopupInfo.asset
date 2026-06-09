@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d54da3fc3077245d1b29bc6f0ce557e6, type: 3}
+  m_Name: PopupInfo
+  m_EditorClassIdentifier: Assembly-CSharp::EasyPopupScriptableObjectScript
+  title: Info
+  message: "\"Hello! This is an amazing popup system created by DevePolers. \\n\\nThis
+    system allows you to easily create beautiful, animated popups in Unity with a
+    simple API.\\n\\nFeatures:\\n\u2022 Easy-to-use API\\n\u2022 Beautiful animations"
+  color: {r: 0.27058825, g: 0.81960785, b: 0.99215686, a: 1}
+  icon: {fileID: -5947433861040873002, guid: c3cbf22406a87410da65521be371fba1, type: 3}
+  animatorController: {fileID: 9100000, guid: 43eed25ad7a8946b386f3104c1e9deb6, type: 2}
+  confirmButtonText: Confirm
+  cancelButtonText: Cancel
+  prefabName: Popup
+  disableBackground: 0
+  onConfirm:
+    m_PersistentCalls:
+      m_Calls: []
+  onCancel:
+    m_PersistentCalls:
+      m_Calls: []

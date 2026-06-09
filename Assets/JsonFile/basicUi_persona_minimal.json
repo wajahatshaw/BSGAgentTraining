@@ -1,0 +1,376 @@
+{
+  "scene_id": "scene_warehouse_persona_001",
+  "initialStates": {
+    "tool_001": {
+      "objectId": "tool_001",
+      "name": "Industrial Motor Unit",
+      "position": {
+        "x": -4,
+        "y": 0.5,
+        "z": -5
+      },
+      "materialColor": {
+        "r": 0.86,
+        "g": 0.08,
+        "b": 0.24,
+        "a": 1.0
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.3.a",
+          "skillName": "Repairing",
+          "requiredLevel": 5,
+          "isCritical": true,
+          "reward": 20
+        }
+      ]
+    },
+    "tool_002": {
+      "objectId": "tool_002",
+      "name": "Secure Toolbox Alpha",
+      "position": {
+        "x": 0,
+        "y": 0.5,
+        "z": -5
+      },
+      "materialColor": {
+        "r": 1.0,
+        "g": 0.84,
+        "b": 0.0,
+        "a": 1.0
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.3.c",
+          "skillName": "Assembly Operations2",
+          "requiredLevel": 40,
+          "isCritical": true,
+          "reward": 20
+        }
+      ]
+    },
+    "tool_003": {
+      "objectId": "tool_003",
+      "name": "Hydraulic Lift Station",
+      "position": {
+        "x": 4,
+        "y": 0.5,
+        "z": -5
+      },
+      "materialColor": {
+        "r": 0.12,
+        "g": 0.56,
+        "b": 1.0,
+        "a": 1.0
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.4.a",
+          "skillName": "Systems Analysis",
+          "requiredLevel": 0,
+          "isCritical": true,
+          "reward": 30
+        }
+      ]
+    },
+    "tool_004": {
+      "objectId": "tool_004",
+      "name": "Safety Inspection Station",
+      "position": {
+        "x": -2,
+        "y": 0.5,
+        "z": 3
+      },
+      "materialColor": {
+        "r": 0.2,
+        "g": 0.8,
+        "b": 0.2,
+        "a": 1.0
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.1.b",
+          "skillName": "Safety Inspection",
+          "requiredLevel": 30,
+          "isCritical": true,
+          "reward": 30
+        }
+      ]
+    },
+    "workbench_001": {
+      "objectId": "workbench_001",
+      "name": "Main Assembly Workbench",
+      "position": {
+        "x": 2,
+        "y": 0.8,
+        "z": 3
+      },
+      "materialColor": {
+        "r": 1.0,
+        "g": 0.55,
+        "b": 0.0,
+        "a": 1.0
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.3.c",
+          "skillName": "Assembly Operations",
+          "requiredLevel": 0,
+          "isCritical": true,
+          "reward": 20
+        }
+      ]
+    }
+  },
+  "personas": {
+    "persona_technician_01": {
+      "personaId": "persona_technician_01",
+      "agentId": "SIMPLE_Technician_01",
+      "name": "Alex Rodriguez - Senior Technician",
+      "position": {
+        "x": -6,
+        "y": 1,
+        "z": 0
+      },
+      "materialColor": {
+        "r": 0.1,
+        "g": 0.8,
+        "b": 0.1,
+        "a": 1.0
+      },
+      "abilities": {
+        "baseSkillLevel": 40.0,
+        "maxSkillLevel": 100.0,
+        "movementCapabilities": {
+          "speed": 2.0,
+          "rotationSpeed": 90.0,
+          "maxDistance": 15.0
+        }
+      },
+      "mlTrainingConfig": {
+        "behaviorName": "PhysicalAgentZone0",
+        "rewardMultipliers": {
+          "positiveActionCorrect": 1.2,
+          "negativeActionCorrect": 0.8,
+          "neutralActionCorrect": 1.0,
+          "wrongActionPenalty": -1.5,
+          "sequenceStepReward": 1.1,
+          "skillLearningReward": 1.3,
+          "targetReachedReward": 1.0,
+          "wrongDirectionPenalty": -1.2
+        }
+      },
+      "actionSequence": [
+        {
+          "stepId": "tech01_step_001",
+          "stepOrder": 1,
+          "actionType": "move",
+          "targetObjectId": "tool_001",
+          "correct_step_reward": 2.0
+        },
+        {
+          "stepId": "tech01_step_002",
+          "stepOrder": 2,
+          "actionType": "learn",
+          "targetObjectId": "tool_001",
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.3.a",
+              "skillName": "Repairing",
+              "requiredLevel": 5,
+              "isCritical": true
+            }
+          ],
+          "correct_step_reward": 2.0
+        }
+      ]
+    },
+    "persona_technician_02": {
+      "personaId": "persona_technician_02",
+      "agentId": "SIMPLE_Technician_02",
+      "name": "Sarah Johnson - Junior Technician",
+      "position": {
+        "x": 6,
+        "y": 1,
+        "z": 0
+      },
+      "materialColor": {
+        "r": 0.2,
+        "g": 1.0,
+        "b": 0.2,
+        "a": 1.0
+      },
+      "abilities": {
+        "baseSkillLevel": 40.0,
+        "maxSkillLevel": 80.0,
+        "movementCapabilities": {
+          "speed": 2.0,
+          "rotationSpeed": 90.0,
+          "maxDistance": 15.0
+        }
+      },
+      "mlTrainingConfig": {
+        "behaviorName": "PhysicalAgentZone1",
+        "rewardMultipliers": {
+          "positiveActionCorrect": 1.1,
+          "negativeActionCorrect": 0.9,
+          "neutralActionCorrect": 1.0,
+          "wrongActionPenalty": -1.3,
+          "sequenceStepReward": 1.0,
+          "skillLearningReward": 1.2,
+          "targetReachedReward": 1.0,
+          "wrongDirectionPenalty": -1.1
+        }
+      },
+      "actionSequence": [
+        {
+          "stepId": "tech02_step_001",
+          "stepOrder": 1,
+          "actionType": "move",
+          "targetObjectId": "tool_002",
+          "correct_step_reward": 2.0
+        },
+        {
+          "stepId": "tech02_step_002",
+          "stepOrder": 2,
+          "actionType": "learn",
+          "targetObjectId": "tool_002",
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.3.c",
+              "skillName": "Assembly Operations2",
+              "requiredLevel": 40,
+              "isCritical": true
+            }
+          ],
+          "correct_step_reward": 2.0
+        }
+      ]
+    },
+    "persona_supervisor_01": {
+      "personaId": "persona_supervisor_01",
+      "agentId": "SIMPLE_Supervisor_01",
+      "name": "Maria Santos - Operations Supervisor",
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 6
+      },
+      "materialColor": {
+        "r": 0.1,
+        "g": 0.6,
+        "b": 0.1,
+        "a": 1.0
+      },
+      "abilities": {
+        "baseSkillLevel": 10.0,
+        "maxSkillLevel": 90.0,
+        "movementCapabilities": {
+          "speed": 2.0,
+          "rotationSpeed": 90.0,
+          "maxDistance": 15.0
+        }
+      },
+      "mlTrainingConfig": {
+        "behaviorName": "PhysicalAgentZone2",
+        "rewardMultipliers": {
+          "positiveActionCorrect": 1.0,
+          "negativeActionCorrect": 1.1,
+          "neutralActionCorrect": 1.2,
+          "wrongActionPenalty": -1.4,
+          "sequenceStepReward": 1.2,
+          "skillLearningReward": 1.1,
+          "targetReachedReward": 1.1,
+          "wrongDirectionPenalty": -1.3
+        }
+      },
+      "actionSequence": [
+        {
+          "stepId": "sup01_step_001",
+          "stepOrder": 1,
+          "actionType": "move",
+          "targetObjectId": "tool_003",
+          "correct_step_reward": 2.0
+        },
+        {
+          "stepId": "sup01_step_002",
+          "stepOrder": 2,
+          "actionType": "learn",
+          "targetObjectId": "tool_003",
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.4.a",
+              "skillName": "Systems Analysis",
+              "requiredLevel": 0,
+              "isCritical": true
+            }
+          ],
+          "correct_step_reward": 2.0
+        }
+      ]
+    },
+    "persona_supervisor_02": {
+      "personaId": "persona_supervisor_02",
+      "agentId": "SIMPLE_Supervisor_02",
+      "name": "David Kim - Safety Inspector",
+      "position": {
+        "x": 6,
+        "y": 1,
+        "z": 0
+      },
+      "materialColor": {
+        "r": 0.3,
+        "g": 0.9,
+        "b": 0.3,
+        "a": 1.0
+      },
+      "abilities": {
+        "baseSkillLevel": 30.0,
+        "maxSkillLevel": 100.0,
+        "movementCapabilities": {
+          "speed": 2.0,
+          "rotationSpeed": 90.0,
+          "maxDistance": 15.0
+        }
+      },
+      "mlTrainingConfig": {
+        "behaviorName": "PhysicalAgentZone3",
+        "rewardMultipliers": {
+          "positiveActionCorrect": 1.1,
+          "negativeActionCorrect": 1.0,
+          "neutralActionCorrect": 1.1,
+          "wrongActionPenalty": -1.5,
+          "sequenceStepReward": 1.15,
+          "skillLearningReward": 1.25,
+          "targetReachedReward": 1.05,
+          "wrongDirectionPenalty": -1.25
+        }
+      },
+      "actionSequence": [
+        {
+          "stepId": "sup02_step_001",
+          "stepOrder": 1,
+          "actionType": "move",
+          "targetObjectId": "tool_004",
+          "correct_step_reward": 2.0
+        },
+        {
+          "stepId": "sup02_step_002",
+          "stepOrder": 2,
+          "actionType": "learn",
+          "targetObjectId": "tool_004",
+          "requiredSkills": [
+            {
+              "onetSkillCode": "2.C.1.b",
+              "skillName": "Safety Inspection",
+              "requiredLevel": 30,
+              "isCritical": true
+            }
+          ],
+          "correct_step_reward": 2.0
+        }
+      ]
+    }
+  }
+}
+

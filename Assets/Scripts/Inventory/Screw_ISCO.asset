@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44e0560a97beaa2459d7c1e957a39c2e, type: 3}
+  m_Name: Screw_ISCO
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySCO
+  itemName: Screw
+  itemDescription: Used for fastening two or more materials together by rotating
+    it into place.
+  icon: {fileID: 21300000, guid: 1139e8ec32960ff48a58a1586fc63362, type: 3}
+  isStackable: 1
+  stackUpto: 10
+  itemType: 0

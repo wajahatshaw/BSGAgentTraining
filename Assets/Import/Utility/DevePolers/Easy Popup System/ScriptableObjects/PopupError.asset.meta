@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d302d96321fbb44b3813a379da285d46
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 325685
+  packageName: Easy Popup System
+  packageVersion: 1.0
+  assetPath: Assets/DevePolers/Easy Popup System/ScriptableObjects/PopupError.asset
+  uploadId: 776433

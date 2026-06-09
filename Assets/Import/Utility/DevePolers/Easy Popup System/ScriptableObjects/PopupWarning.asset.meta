@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3fdd2a95e15644f41baf761d6d962663
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 325685
+  packageName: Easy Popup System
+  packageVersion: 1.0
+  assetPath: Assets/DevePolers/Easy Popup System/ScriptableObjects/PopupWarning.asset
+  uploadId: 776433

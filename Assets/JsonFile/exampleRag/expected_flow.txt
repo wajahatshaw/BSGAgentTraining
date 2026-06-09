@@ -1,0 +1,278 @@
+Intro:
+cognitive_001: Intentional Module
+cognitive_002: Declarative Module
+cognitive_003: Production Memory
+cognitive_004: Visual Module
+cognitive_005: Manual Module
+Cognitive_06:  Production Memory 
+Cognitive_06:  Aural Module
+cognitive_008: Goal Buffer
+cognitive_009: Imaginal Buffer
+cognitive_010: Retrieval Buffer
+cognitive_011: Visual Buffer
+cognitive_012: Visual Location Buffer
+cognitive_013: Manual Buffer
+cognitive_014: Temporal Buffer
+cognitive_015: Aural Buffer
+
+
+
+Each zone follows the same step IDs:
+
+Zone 0: M1 + P1
+Zone 1: M2 + P2
+Zone 2: M3 + P3
+Zone 3: M4 + P4
+Phase 1: Imagine First
+Only the M agent should move. P should not start yet.
+
+
+
+
+
+ ---------------------------  Phase 1: Imagine First  ---------------------------
+ Only the M agent should move. P should not start yet.
+
+ st_0 opening_sequence   
+
+
+M: t01_cog_s01
+M: t01_cog_s02
+M: t01_cog_s03
+M: t01_cog_s04
+M: t01_cog_s05
+M: t01_cog_s06  ← BARRIER, issues first visual_command
+P: none
+Expected after t01_cog_s06: phase changes to Execute, then first physical step starts.
+
+
+ ---------------------------  Phase 2: Execute + Validate Loop ---------------------------
+
+This is where M and P interleave.
+
+st_1 Listen to team feedback
+
+M: t01_cog_s07
+M: t01_cog_s08
+P: t01_phy_s09   ← first physical action after s06 barrier
+M: t01_cog_s10
+M: t01_cog_s11
+M: t01_cog_s12
+M: t01_cog_s13
+M: t01_cog_s14
+P: t01_phy_s15
+M: t01_cog_s16
+M: t01_cog_s17
+M: t01_cog_s18
+M: t01_cog_s19
+P: t01_phy_s20
+M: t01_cog_s21
+M: t01_cog_s22
+M: t01_cog_s23
+M: t01_cog_s24
+P: t01_phy_s25
+M: t01_cog_s26
+M: t01_cog_s27
+M: t01_cog_s28
+M: t01_cog_s29
+P: t01_phy_s30
+M: t01_cog_s31
+M: t01_cog_s32
+M: t01_cog_s33
+M: t01_cog_s34
+P: t01_phy_s35
+M: t01_cog_s36
+M: t01_cog_s37
+M: t01_cog_s38
+M: t01_cog_s39
+P: t01_phy_s40
+M: t01_cog_s41
+M: t01_cog_s42
+M: t01_cog_s43
+M: t01_cog_s44
+P: t01_phy_s45
+M: t01_cog_s46
+M: t01_cog_s47
+M: t01_cog_s48
+M: t01_cog_s49
+P: t01_phy_s50  ← subtask barrier
+
+
+ ---------------------------   Phase 3: Subtask Transition  ---------------------------
+After physical barrier, M closes/plans next subtask.
+
+M: t01_cog_s51
+M: t01_cog_s52
+M: t01_cog_s53
+Then Phase 2 repeats for the next subtask.
+
+Remaining Subtasks
+st_2:
+M: s54
+P: s55
+M: s56-s58
+P: s59
+M: s60-s62
+P: s63
+M: s64-s66
+P: s67
+M: s68-s70
+P: s71 ← barrier
+M: s72-s74 ← transition
+st_3:
+M: s75
+P: s76 ← barrier
+M: s77-s79 ← transition
+st_4:
+M: s80-s81
+P: s82
+M: s83-s85
+P: s86
+M: s87-s89
+P: s90 ← barrier
+M: s91-s93 ← transition
+st_5:
+M: s94
+P: s95
+M: s96-s98
+P: s99 ← barrier
+M: s100-s102 ← transition
+st_6:
+M: s103
+P: s104 ← barrier
+M: s105-s107 ← transition
+st_final:
+M: s108-s111
+P: none
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------  part-1
+
+1. Production Memory — Decision Criteria
+Production Memory works like an IF-THEN rule engine. It continuously monitors the state of other buffers and fires the matching rule. It is the central "Decision Engine" or brain of the agent. It acts as an orchestrator that continuously checks the current state of all other buffers (like Goal and Imaginal) to decide the next move. In the JSON, it issues the specific commands—like "look at screen" or "type value"—that trigger every animation and physical action in the Unity scene.
+
+a) What it reads (inputs):
+consumesPayload - the token that just arrived from the previous step. For example, when it receives validated_schedule_focus, it knows the Imaginal Buffer has confirmed the visual check, so it can now issue the next command.
+connections in productionMemoryContract - this is the most important field for your implementation. It tells you exactly which buffer/module Production Memory is commanding:
+connections: ["goal_buffer", "retrieval_buffer", "declarative_module"]
+  - Production Memory is querying the knowledge Declarative Module.
+connections: ["visual_buffer", "visual_location_buffer"]
+  - Production Memory is commanding the agent to look at a specific UI element
+connections: ["manual_buffer"]
+  -  Production Memory is commanding a keyboard/mouse action
+connections: ["manual_buffer", "visual_buffer", "visual_location_buffer"]
+  -  Parallel command - visual attention + motor action at the same time
+requiredSkills -  tells which cognitive skill drives this particular decision (e.g., "Active Listening", "Critical Thinking", "Time Management")
+
+
+b) How to connect your knowledge graph fields:
+The connections array is your bridge. When you see "retrieval_buffer" or "declarative_module" in the connections, that is the exact moment the agent queries its knowledge. In your implementation, this is where the Mental agent fetches knowledge from the Declarative Module.
+
+c) Additional data beyond object ID and duration:
+Looking at the JSON, each step already carries rich decision data you should leverage:
+
+description — human-readable explanation of what's happening
+producesPayload / consumesPayload — the data dependency chain
+requiredSkills — which skill the agent is using
+The contract objects (goalBufferContract, imaginalBufferContract, etc.) — each carries the state data for that specific buffer at that moment.
+
+------------------------  part-2
+
+2. Cognitive vs Physical Flow Sequencing
+The flow can't be all mental steps first, then all physical — because some mental steps depend on the result of a physical action that hasn't happened yet. Think of it like this — the agent's brain says "look at the schedule grid" (cognitive command). Now the agent physically looks at the grid (physical action). Only AFTER looking can the brain process what it saw and decide if it's correct (cognitive decode + validate). If you run all the brain steps first, the agent is trying to validate what it saw on the grid — but it hasn't looked at the grid yet, so there's nothing to validate.
+
+The loop I shared earlier (Production - Physical - Visual/Manual - Imaginal - Production) is the mid-task execution cycle. But the full picture has an important phase before that which I should expand on — the imagination/planning phase that runs at the start of each task and at subtask transitions. This is likely where the disconnect happened.
+
+The complete sequence per task is actually three phases:
+
+PHASE 1: IMAGINE FIRST (before any physical action)
+This runs once at the start (st_0 — opening sequence, steps s01 through s06):
+
+Step 1: Intentional Module
+       - Agent forms the desire/intent
+       - "to Oversee production process"
+       - Feeds into: Imaginal Buffer + Temporal Buffer
+Step 2: Goal Buffer
+       - Receives the intention, identifies WHAT to do
+       - Loads the 3-tier goal: bottom / middle / top
+       - Feeds into: Imaginal Buffer + Production Memory
+Step 3: Production Memory
+       - Reads the Goal state
+       - Retrieves the knowledge schema
+       - connections: ["goal_buffer", "retrieval_buffer", "declarative_module"]
+Step 4: Imaginal Buffer — PLANS the execution  ← THIS IS THE KEY STEP
+       - Receives the retrieved schema
+       - IMAGINES how to execute the task before anything physical happens
+       - state: schema_loaded - planned
+Step 5: Imaginal Buffer — FORMS IDENTITY
+       - Establishes WHO is doing WHAT in this scene
+       - state: planned - identity_template_formed
+Step 6: Production Memory — ISSUES FIRST COMMAND
+       - Only NOW does it issue the first physical command
+       - This is a BARRIER step — nothing physical can happen until this completes
+So the Imaginal Buffer always imagines the plan first before any physical execution begins. Your current implementation (all cognitive - then physical) is actually aligned with this phase.
+
+
+PHASE 2: EXECUTE + VALIDATE LOOP (interleaved)
+After Phase 1 completes, cognitive and physical steps do interleave dynamically. This is the repeating cycle within each subtask:
+
+Production Memory issues command
+       |
+Physical step fires (the actual action)
+       |
+Visual/Manual Module perceives the result
+       |
+Imaginal Buffer DECODES (state: received - decoded)
+       |
+Imaginal Buffer VALIDATES against the plan (state: decoded - validated)
+       |
+Production Memory reads validated state - issues next command
+       |
+... loop continues ...
+So yes — in this phase, cognitive and physical steps must interleave. The dependsOn field on every step enforces this order. A physical step can only fire after Production Memory issues its command, and Production Memory can only issue the next command after the Imaginal Buffer validates the previous result.
+
+You can verify this directly in the stepIds array of any subtask — for example st_1:
+
+PHASE 3: SUBTASK TRANSITION
+When all cycles in a subtask complete:
+
+Imaginal Buffer closes the subtask state (emits st1_complete, st2_complete, etc.)
+Imaginal Buffer writes a NEW plan for the next subtask (plan_2, plan_3, etc.)
+Production Memory issues the next subtask's first command
+Phase 2 loop begins for the new subtask
+
+
+
+
+
+-----------------  In summary:
+Phase 1 (imagination) - all cognitive, no physical
+Phase 2 (execution) - cognitive and physical interleave dynamically — use dependsOn as your execution gate
+Phase 3 (transition) - cognitive closes old subtask, plans next one, then Phase 2 repeats
+Let me know if you'd like me to map out a specific subtask step by step!

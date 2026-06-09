@@ -1,0 +1,130 @@
+BSG Unity :
+
+BSG Unity : 
+1. Introduction:
+- Fixed Unity cognitive infrastructure (16 cognitive stations) , fixed scene base (ground and walls), fully dynamic RAG-generated agents, cognition, and actions executed at runtime.
+
+-------------------------Introduction---------------------------
+
+BSG Implemenation:
+1. Fixed System :
+    - Scene Base
+    - Cognitive Station (16 stations and tasks)
+
+2. Dynamic System (RAG Driven Runtime)
+    - How physical and mental agents and environments create
+
+4. Standard Reward System (GLOBAL FIXED RULE)
+
+3. Runtime Flow (Execution Pipeline)
+    - Scene expected execution flow 
+
+
+-------------------------- Fixed System --------------------------
+
+FIXED SYSTEM (STATIC IN UNITY)
+
+1. Scene Base
+    - Single zone environment (ground + walls + playable area)
+    - Always present and reused across runs
+
+2. Cognitive Station (Fixed Cognitive Infrastructure)
+    - Total: 16 Units
+    - Cognitive Modules: 6
+    - Cognitive Buffers: 10
+    - Position in scene: fixed.
+    - Core responsibilities (fixed logic system):
+        - Memory handling.
+        - Goal processing.
+        - Reward propagation.
+        - Decision flow orchestration.
+
+---------------------------- Dynamic System------------------------
+
+DYNAMIC SYSTEM (RAG DRIVEN RUNTIME)
+
+1. Mental Agents
+
+    - Created at runtime from RAG
+    - Quantity varies per scenario
+    - Define:
+        - Goals
+        - Reasoning flow
+        - Cognitive behavior
+        - Interaction with cognitive station
+
+2. Physical Agents
+
+    - Created at runtime from RAG
+    - Quantity varies per scenario
+    - Define:
+        - Actions in Unity world
+        - Movement + interaction logic
+        - Task execution behavior
+
+3. Actions & Subtasks per Agents
+
+    - Fully defined by RAG
+    - Includes:
+        - Action types
+        - Execution order
+        - Conditions / triggers
+        - Sub-task breakdown per action
+
+4. Cognitive Process
+
+    - RAG defines cognitive pipeline variations
+    - Influences:
+        - Reasoning flow
+        - Goal prioritization
+        - Reward logic adjustments
+
+
+
+--------------------------------Runtime Flow (Execution Pipeline)--------------------------------
+
+1. Runtime Flow (Execution Pipeline)
+
+    - Step 1 — RAG Fetch
+        - Retrieve full structured response:
+            - Cognitive model
+            - Mental agents
+            - Physical agents
+            - Actions & subtasks
+
+    - Step 2 — Scene Construction (Loader Active)
+        - Build fixed scene base
+        - Initialize cognitive station (16 units)
+        - Dynamically spawn:
+            - Mental agents
+            - Physical agents
+            - Bind RAG data to runtime objects
+
+    - Step 3 — Scene Ready State
+        - Loader completes
+        - System transitions to active simulation
+
+    - Step 4 — Cognitive Execution Start
+        - M1 cognitive pipeline activates
+            - Mental agents begin reasoning process
+
+    - Step 5 — Physical Execution wait for cogntiiver process to end and then start
+        - Physical agents execute actions
+            - Follow RAG-defined tasks and subtasks
+
+    - Step 6 — Completion
+        - All cognitive + physical tasks finish
+        - Scene ends or resets based on flow
+
+
+-------------------------------- Standard Reward System (GLOBAL FIXED RULE)--------------------------------
+
+
+1. Standard Reward System (GLOBAL FIXED RULE)
+1. Unified reward system applied to ALL agents and actions
+        - Every cognitive or physical event produces a standardized reward signal
+        - Same reward logic used across:
+            - Mental agents
+            - Physical agents
+            - Cognitive station processing
+            

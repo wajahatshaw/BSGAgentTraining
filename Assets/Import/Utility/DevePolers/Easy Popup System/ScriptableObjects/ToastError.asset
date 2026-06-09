@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f59de3cf3a50e414dbcdbbcb32c1cb00, type: 3}
+  m_Name: ToastError
+  m_EditorClassIdentifier: Assembly-CSharp::EasyPopupSystem.EasyToastScriptableObjectScript
+  title: Error
+  message: Not quite. Before replacing or adjusting anything, always check if the
+    power supply is properly connected.
+  color: {r: 0.9647059, g: 0.3372549, b: 0.3372549, a: 1}
+  icon: {fileID: 21300000, guid: 38b775df8ca1f4ea3a1384e857b8eeb1, type: 3}
+  prefabName: Toast
+  autoHide: 1
+  autoHideDelay: 5
+  toastPosition: 2

@@ -1,0 +1,1380 @@
+{
+    "scene_id": "scene_warehouse_001",
+    "plan": {
+      "planId": "maintenance_workflow_001",
+      "planName": "Daily Equipment Maintenance Protocol",
+      "description": "Comprehensive maintenance workflow with ML reward system for warehouse equipment including motor repair, toolbox management, and safety inspections",
+      "estimatedTotalDuration": 15.0,
+      "priority": "high",
+      "assignedTeam": ["SIMPLE_Technician_01", "SIMPLE_Technician_02", "SIMPLE_Supervisor_01", "SIMPLE_Supervisor_02"]
+    },
+    
+    "ml_reward_system": {
+      "enabled": true,
+      "reward_calculation_frequency": 0.5,
+      "global_reward_multiplier": 1.0,
+      "skill_matching_algorithm": {
+        "exact_match_bonus": 2.0,
+        "partial_match_bonus": 1.0,
+        "level_threshold_tolerance": 0.5,
+        "critical_skill_multiplier": 1.5
+      },
+      "neural_network_config": {
+        "action_space_size": 15,
+        "observation_space": ["agent_skills", "tool_proximity", "task_requirements", "scene_state", "dependencies"],
+        "reward_range": {
+          "minimum": -6.0,
+          "maximum": 10.0
+        }
+      }
+    },
+    "initialStates": {
+      "tool_001": {
+        "objectId": "tool_001",
+        "name": "Industrial Motor Unit",
+        "type": "motor",
+        "shape": "cylinder",
+        "isAvailable": true,
+        "isActive": false,
+        "currentUser": null,
+        "position": {"x": -4, "y": 0.5, "z": -5},
+        "color": "#DC143C",
+        "materialColor": {"r": 0.86, "g": 0.08, "b": 0.24, "a": 1.0},
+        "material": {
+          "shader": "Standard",
+          "metallic": 0.4,
+          "smoothness": 0.2,
+          "roughness": 0.8
+        },
+        "components": {
+          "housing": {
+            "shape": "cylinder",
+            "color": "#333333",
+            "metallic": 0.6,
+            "smoothness": 0.4
+          },
+          "coolingFins": {
+            "count": 8,
+            "shape": "cube",
+            "color": "#4D4D4D",
+            "metallic": 0.4,
+            "smoothness": 0.2
+          }
+        },
+        "properties": {
+          "temperature": "cold",
+          "power": "off",
+          "voltage": "220V",
+          "condition": "needs_repair"
+        },
+        "ml_interaction_profile": {
+          "interaction_types": ["repair_motor", "diagnostic_check", "power_cycle"],
+          "skill_requirements": {
+            "2.C.3.a": {"minimum_level": 4.5, "is_critical": true},
+            "2.C.3.b": {"minimum_level": 4.0, "is_critical": true}
+          },
+          "reward_structure": {
+            "successful_interaction": 5.0,
+            "skill_match_bonus": 2.0,
+            "critical_skill_bonus": 1.5,
+            "failure_penalty": -2.0,
+            "safety_violation_penalty": -5.0
+          },
+          "neural_actions": {
+            "positive_actions": ["approach_motor", "start_repair", "complete_diagnostics"],
+            "negative_actions": ["force_power_on", "skip_diagnostics", "abandon_repair"],
+            "neutral_actions": ["wait_for_clearance", "assess_motor_condition", "check_safety_protocols"]
+          },
+          "contextual_timing": {
+            "right_action_right_time": {
+              "reward": 8.0,
+              "conditions": ["motor_available", "agent_skilled", "safety_cleared", "sequence_correct"]
+            },
+            "right_action_wrong_time": {
+              "reward": -1.5,
+              "conditions": ["motor_busy", "safety_not_cleared", "dependencies_incomplete"],
+              "examples": ["starting_repair_without_diagnostics", "powering_on_before_repairs"]
+            },
+            "wrong_action_right_time": {
+              "reward": -2.5,
+              "conditions": ["timing_correct", "but_action_inappropriate"],
+              "examples": ["using_wrong_repair_method", "skipping_safety_checks"]
+            },
+            "wrong_action_wrong_time": {
+              "reward": -5.0,
+              "conditions": ["both_timing_and_action_incorrect"],
+              "examples": ["dangerous_actions_when_motor_active", "repairs_without_power_isolation"]
+            },
+            "neutral_action_appropriate": {
+              "reward": 1.0,
+              "conditions": ["waiting_is_correct_choice", "assessment_needed"],
+              "examples": ["wait_for_power_isolation", "assess_motor_before_repair"]
+            }
+          }
+        }
+      },
+      "tool_002": {
+        "objectId": "tool_002",
+        "name": "Secure Toolbox Alpha",
+        "type": "storage",
+        "shape": "cube",
+        "isAvailable": true,
+        "isActive": false,
+        "currentUser": null,
+        "position": {"x": 0, "y": 0.5, "z": -5},
+        "color": "#FFD700",
+        "materialColor": {"r": 1.0, "g": 0.84, "b": 0.0, "a": 1.0},
+        "material": {
+          "shader": "Standard",
+          "metallic": 0.4,
+          "smoothness": 0.2,
+          "roughness": 0.8
+        },
+        "components": {
+          "lid": {
+            "shape": "cube",
+            "color": "#CC9900",
+            "metallic": 0.7,
+            "smoothness": 0.8
+          },
+          "lock": {
+            "shape": "cylinder",
+            "color": "#1A1A1A",
+            "metallic": 0.9,
+            "smoothness": 0.95
+          }
+        },
+        "properties": {
+          "locked": true,
+          "contents": ["wrench_set", "screwdriver_kit", "safety_gear"],
+          "security_level": "high"
+        },
+        "ml_interaction_profile": {
+          "interaction_types": ["unlock_toolbox", "retrieve_tools", "inventory_check"],
+          "skill_requirements": {
+            "2.C.1.c": {"minimum_level": 3.0, "is_critical": false}
+          },
+          "reward_structure": {
+            "successful_interaction": 3.0,
+            "skill_match_bonus": 1.0,
+            "efficiency_bonus": 0.5,
+            "failure_penalty": -1.0
+          },
+          "neural_actions": {
+            "positive_actions": ["unlock_correctly", "organize_tools", "secure_after_use"],
+            "negative_actions": ["force_lock", "misplace_tools", "leave_unsecured"],
+            "neutral_actions": ["check_contents_first", "verify_authorization", "assess_tool_needs"]
+          },
+          "contextual_timing": {
+            "right_action_right_time": {
+              "reward": 4.0,
+              "conditions": ["motor_repair_started", "tools_needed", "authorized_access"]
+            },
+            "right_action_wrong_time": {
+              "reward": -1.0,
+              "conditions": ["tools_not_needed_yet", "unauthorized_access_attempt"],
+              "examples": ["opening_toolbox_before_motor_diagnosis"]
+            },
+            "wrong_action_right_time": {
+              "reward": -1.5,
+              "conditions": ["timing_correct", "but_wrong_access_method"],
+              "examples": ["forcing_lock_when_authorized", "taking_wrong_tools"]
+            },
+            "wrong_action_wrong_time": {
+              "reward": -3.0,
+              "conditions": ["unauthorized_and_premature_access"],
+              "examples": ["breaking_security_protocols", "accessing_without_need"]
+            },
+            "neutral_action_appropriate": {
+              "reward": 0.5,
+              "conditions": ["checking_before_opening", "verifying_need"],
+              "examples": ["verify_authorization_first", "check_tool_requirements"]
+            }
+          }
+        }
+      },
+      "tool_003": {
+        "objectId": "tool_003",
+        "name": "Hydraulic Lift Station",
+        "type": "machinery",
+        "shape": "cube",
+        "isAvailable": true,
+        "isActive": false,
+        "currentUser": null,
+        "position": {"x": 4, "y": 0.5, "z": -5},
+        "color": "#1E90FF",
+        "materialColor": {"r": 0.12, "g": 0.56, "b": 1.0, "a": 1.0},
+        "material": {
+          "shader": "Standard",
+          "metallic": 0.4,
+          "smoothness": 0.2,
+          "roughness": 0.8
+        },
+        "components": {
+          "cylinder": {
+            "shape": "cylinder",
+            "color": "#1A4D99",
+            "metallic": 0.8,
+            "smoothness": 0.6
+          },
+          "piston": {
+            "shape": "cylinder",
+            "color": "#333333",
+            "metallic": 0.9,
+            "smoothness": 0.8
+          },
+          "hoses": {
+            "count": 2,
+            "shape": "cylinder",
+            "color": "#1A1A1A",
+            "metallic": 0.1,
+            "smoothness": 0.1
+          }
+        },
+        "properties": {
+          "power": "on",
+          "hydraulic_pressure": "normal",
+          "load_capacity": "2000kg"
+        },
+        "ml_interaction_profile": {
+          "interaction_types": ["inspect_hydraulics", "pressure_test", "safety_check"],
+          "skill_requirements": {
+            "2.C.4.a": {"minimum_level": 4.2, "is_critical": true},
+            "2.C.1.a": {"minimum_level": 3.8, "is_critical": true}
+          },
+          "reward_structure": {
+            "successful_interaction": 6.0,
+            "skill_match_bonus": 2.5,
+            "critical_skill_bonus": 2.0,
+            "failure_penalty": -2.5,
+            "safety_violation_penalty": -4.0
+          },
+          "neural_actions": {
+            "positive_actions": ["systematic_inspection", "pressure_testing", "document_results"],
+            "negative_actions": ["skip_pressure_test", "ignore_safety_protocols", "rush_inspection"],
+            "neutral_actions": ["review_specifications", "check_previous_reports", "assess_system_status"]
+          },
+          "contextual_timing": {
+            "right_action_right_time": {
+              "reward": 7.0,
+              "conditions": ["toolbox_accessed", "tools_available", "system_powered", "qualified_supervisor"]
+            },
+            "right_action_wrong_time": {
+              "reward": -1.5,
+              "conditions": ["tools_not_retrieved", "system_not_ready"],
+              "examples": ["inspecting_without_tools", "testing_unpowered_system"]
+            },
+            "wrong_action_right_time": {
+              "reward": -3.0,
+              "conditions": ["timing_correct", "but_wrong_procedure"],
+              "examples": ["skipping_systematic_approach", "testing_without_safety_gear"]
+            },
+            "wrong_action_wrong_time": {
+              "reward": -5.0,
+              "conditions": ["premature_and_incorrect_inspection"],
+              "examples": ["pressure_testing_without_preparation", "unsupervised_critical_inspection"]
+            },
+            "neutral_action_appropriate": {
+              "reward": 1.2,
+              "conditions": ["reviewing_before_inspection", "checking_readiness"],
+              "examples": ["review_hydraulic_specs", "verify_system_status"]
+            }
+          }
+        }
+      },
+      "tool_004": {
+        "objectId": "tool_004",
+        "name": "Safety Inspection Station",
+        "type": "workstation",
+        "isAvailable": true,
+        "isActive": false,
+        "currentUser": null,
+        "position": {"x": -2, "y": 0.5, "z": 3},
+        "color": "#1E90FF",
+        "materialColor": {"r": 0.2, "g": 0.8, "b": 0.2, "a": 1.0},
+        "properties": {
+          "power": "on",
+          "inspection_tools": ["multimeter", "pressure_gauge", "safety_checklist"]
+        },
+        "ml_interaction_profile": {
+          "interaction_types": ["conduct_safety_inspection", "compliance_check", "documentation"],
+          "skill_requirements": {
+            "2.C.1.b": {"minimum_level": 4.8, "is_critical": true},
+            "2.C.2.a": {"minimum_level": 4.0, "is_critical": true}
+          },
+          "reward_structure": {
+            "successful_interaction": 7.0,
+            "skill_match_bonus": 2.0,
+            "critical_skill_bonus": 2.5,
+            "failure_penalty": -3.0,
+            "safety_violation_penalty": -6.0
+          },
+          "neural_actions": {
+            "positive_actions": ["thorough_safety_check", "compliance_verification", "complete_documentation"],
+            "negative_actions": ["skip_safety_steps", "ignore_violations", "incomplete_documentation"],
+            "neutral_actions": ["review_safety_standards", "check_inspection_tools", "verify_previous_work"]
+          },
+          "contextual_timing": {
+            "right_action_right_time": {
+              "reward": 8.0,
+              "conditions": ["hydraulics_inspected", "qualified_inspector", "tools_ready", "compliance_due"]
+            },
+            "right_action_wrong_time": {
+              "reward": -2.0,
+              "conditions": ["hydraulics_not_complete", "premature_inspection"],
+              "examples": ["safety_check_before_hydraulic_inspection", "inspecting_incomplete_work"]
+            },
+            "wrong_action_right_time": {
+              "reward": -3.5,
+              "conditions": ["timing_correct", "but_wrong_inspection_method"],
+              "examples": ["superficial_inspection", "wrong_compliance_standards"]
+            },
+            "wrong_action_wrong_time": {
+              "reward": -6.0,
+              "conditions": ["premature_and_inadequate_inspection"],
+              "examples": ["safety_inspection_without_prerequisites", "unqualified_inspection"]
+            },
+            "neutral_action_appropriate": {
+              "reward": 1.5,
+              "conditions": ["reviewing_standards", "checking_readiness"],
+              "examples": ["review_compliance_requirements", "verify_hydraulic_completion"]
+            }
+          }
+        }
+      },
+      "workbench_001": {
+        "objectId": "workbench_001",
+        "name": "Main Assembly Workbench",
+        "type": "workstation",
+        "shape": "cube",
+        "isAvailable": true,
+        "isActive": false,
+        "currentUser": null,
+        "position": {"x": 2, "y": 0.8, "z": 3},
+        "color": "#FF8C00",
+        "materialColor": {"r": 1.0, "g": 0.55, "b": 0.0, "a": 1.0},
+        "material": {
+          "shader": "Standard",
+          "metallic": 0.3,
+          "smoothness": 0.1,
+          "roughness": 0.9
+        },
+        "components": {
+          "legs": {
+            "count": 4,
+            "shape": "cube",
+            "color": "#4D4D4D",
+            "metallic": 0.2,
+            "smoothness": 0.1
+          },
+          "surface": {
+            "shape": "cube",
+            "color": "#666666",
+            "metallic": 0.1,
+            "smoothness": 0.3
+          },
+          "controlPanel": {
+            "shape": "cube",
+            "color": "#1A1A1A",
+            "metallic": 0.8,
+            "smoothness": 0.9
+          },
+          "buttons": {
+            "count": 3,
+            "shapes": ["cylinder", "cylinder", "cylinder"],
+            "colors": ["#FF0000", "#FFFF00", "#00FF00"],
+            "metallic": 0.9,
+            "smoothness": 0.95
+          }
+        },
+        "properties": {
+          "surface_material": "steel",
+          "tools_available": ["drill", "saw", "measuring_tools"]
+        },
+        "ml_interaction_profile": {
+          "interaction_types": ["final_assembly", "system_testing", "quality_verification"],
+          "skill_requirements": {
+            "2.C.3.c": {"minimum_level": 4.3, "is_critical": true},
+            "2.C.1.d": {"minimum_level": 4.0, "is_critical": true}
+          },
+          "reward_structure": {
+            "successful_interaction": 8.0,
+            "skill_match_bonus": 3.0,
+            "critical_skill_bonus": 2.0,
+            "failure_penalty": -4.0,
+            "safety_violation_penalty": -5.0
+          },
+          "neural_actions": {
+            "positive_actions": ["systematic_assembly", "comprehensive_testing", "quality_verification"],
+            "negative_actions": ["rushed_assembly", "skip_testing", "ignore_quality_checks"],
+            "neutral_actions": ["review_assembly_specs", "check_component_readiness", "verify_prerequisites"]
+          },
+          "contextual_timing": {
+            "right_action_right_time": {
+              "reward": 10.0,
+              "conditions": ["motor_repaired", "safety_approved", "all_inspections_complete", "qualified_technician"]
+            },
+            "right_action_wrong_time": {
+              "reward": -2.0,
+              "conditions": ["dependencies_incomplete", "safety_not_approved"],
+              "examples": ["assembly_before_safety_approval", "testing_incomplete_repairs"]
+            },
+            "wrong_action_right_time": {
+              "reward": -4.0,
+              "conditions": ["timing_correct", "but_wrong_assembly_method"],
+              "examples": ["incorrect_assembly_sequence", "inadequate_testing_procedures"]
+            },
+            "wrong_action_wrong_time": {
+              "reward": -6.0,
+              "conditions": ["premature_and_incorrect_assembly"],
+              "examples": ["assembly_without_approvals", "testing_unsafe_systems"]
+            },
+            "neutral_action_appropriate": {
+              "reward": 2.0,
+              "conditions": ["verifying_readiness", "checking_dependencies"],
+              "examples": ["verify_all_inspections_complete", "check_component_compatibility"]
+            }
+          }
+        }
+      }
+  },
+    "dependencies": [
+      {
+        "stepId": "step_002",
+        "dependsOn": ["step_001"]
+      },
+      {
+        "stepId": "step_003",
+        "dependsOn": ["step_002"]
+      },
+      {
+        "stepId": "step_004",
+        "dependsOn": ["step_003"]
+      },
+      {
+        "stepId": "step_005",
+        "dependsOn": ["step_001", "step_004"]
+      }
+    ],
+    "sequence": [
+      {
+        "stepId": "step_001",
+        "stepName": "Motor Diagnostic and Repair",
+        "person": "SIMPLE_Technician_01",
+        "tool": "tool_001",
+        "actionVerb": "repair_motor",
+        "actionType": "Physical",
+        "description": "Diagnose and repair the industrial motor unit, checking electrical connections and mechanical components",
+        "requiredSkills": [
+          {
+            "onetSkillCode": "2.C.3.a",
+            "skillName": "Repairing",
+            "category": "Repairing",
+            "requiredLevel": 4.5,
+            "isCritical": true
+          },
+          {
+            "onetSkillCode": "2.C.3.b",
+            "skillName": "Equipment Maintenance",
+            "category": "EquipmentMaintenance",
+            "requiredLevel": 4.0,
+            "isCritical": true
+          }
+        ],
+        "ml_step_profile": {
+          "step_reward_potential": 8.0,
+          "skill_matching_logic": {
+            "primary_skill_check": "onetSkillLevels['2.C.3.a'] >= 4.5",
+            "secondary_skill_check": "onetSkillLevels['2.C.3.b'] >= 4.0",
+            "reward_calculation": "base_reward + (skill_matches * 2.0) + (critical_skills * 1.5)"
+          },
+          "timing_dependencies": [],
+          "success_multiplier": 1.0
+        },
+        "preconditions": [
+          {
+            "objectId": "tool_001",
+            "requiredState": "isAvailable",
+            "requiredValue": true
+          }
+        ],
+        "expectedStateChanges": [
+          {
+            "objectId": "tool_001",
+            "property": "power",
+            "newValue": "on"
+          },
+          {
+            "objectId": "tool_001",
+            "property": "condition",
+            "newValue": "operational"
+          }
+        ],
+        "successCriteria": {
+          "objectId": "tool_001",
+          "property": "power",
+          "expectedValue": "on"
+        },
+        "estimatedDuration": 5.0,
+        "dependsOnSteps": []
+      },
+      {
+        "stepId": "step_002",
+        "stepName": "Secure Toolbox Access",
+        "person": "SIMPLE_Technician_01",
+        "tool": "tool_002",
+        "actionVerb": "unlock_toolbox",
+        "actionType": "Physical",
+        "description": "Unlock the secure toolbox and retrieve necessary tools for maintenance operations",
+        "requiredSkills": [
+          {
+            "onetSkillCode": "2.C.1.c",
+            "skillName": "Operation Monitoring",
+            "category": "OperationMonitoring",
+            "requiredLevel": 3.0,
+            "isCritical": false
+          }
+        ],
+        "ml_step_profile": {
+          "step_reward_potential": 4.0,
+          "skill_matching_logic": {
+            "primary_skill_check": "onetSkillLevels['2.C.1.c'] >= 3.0",
+            "reward_calculation": "base_reward + skill_bonus"
+          },
+          "timing_dependencies": ["step_001"],
+          "success_multiplier": 1.2
+        },
+        "preconditions": [
+          {
+            "objectId": "tool_002",
+            "requiredState": "locked",
+            "requiredValue": true
+          }
+        ],
+        "expectedStateChanges": [
+          {
+            "objectId": "tool_002",
+            "property": "locked",
+            "newValue": false
+          }
+        ],
+        "successCriteria": {
+          "objectId": "tool_002",
+          "property": "locked",
+          "expectedValue": false
+        },
+        "estimatedDuration": 3.0,
+        "dependsOnSteps": ["step_001"]
+      },
+      {
+        "stepId": "step_003",
+        "stepName": "Hydraulic System Check",
+        "person": "SIMPLE_Supervisor_01",
+        "tool": "tool_003",
+        "actionVerb": "inspect_hydraulics",
+        "actionType": "Inspection",
+        "description": "Perform comprehensive inspection of hydraulic lift station including pressure tests and safety checks",
+        "requiredSkills": [
+          {
+            "onetSkillCode": "2.C.4.a",
+            "skillName": "Systems Analysis",
+            "category": "SystemsAnalysis",
+            "requiredLevel": 4.2,
+            "isCritical": true
+          },
+          {
+            "onetSkillCode": "2.C.1.a",
+            "skillName": "Quality Control Analysis",
+            "category": "QualityControl",
+            "requiredLevel": 3.8,
+            "isCritical": true
+          }
+        ],
+        "ml_step_profile": {
+          "step_reward_potential": 7.0,
+          "skill_matching_logic": {
+            "primary_skill_check": "onetSkillLevels['2.C.4.a'] >= 4.2",
+            "secondary_skill_check": "onetSkillLevels['2.C.1.a'] >= 3.8",
+            "reward_calculation": "base_reward + (critical_skills * 2.0) + timing_bonus"
+          },
+          "timing_dependencies": ["step_002"],
+          "success_multiplier": 1.5
+        },
+        "preconditions": [
+          {
+            "objectId": "tool_003",
+            "requiredState": "isAvailable",
+            "requiredValue": true
+          }
+        ],
+        "expectedStateChanges": [
+          {
+            "objectId": "tool_003",
+            "property": "inspection_status",
+            "newValue": "passed"
+          }
+        ],
+        "successCriteria": {
+          "objectId": "tool_003",
+          "property": "hydraulic_pressure",
+          "expectedValue": "normal"
+        },
+        "estimatedDuration": 4.0,
+        "dependsOnSteps": ["step_002"]
+      },
+      {
+        "stepId": "step_004",
+        "stepName": "Safety Compliance Inspection",
+        "person": "SIMPLE_Supervisor_02",
+        "tool": "tool_004",
+        "actionVerb": "conduct_safety_inspection",
+        "actionType": "Inspection",
+        "description": "Conduct thorough safety inspection using specialized equipment and compliance checklists",
+        "requiredSkills": [
+          {
+            "onetSkillCode": "2.C.1.b",
+            "skillName": "Safety Inspection",
+            "category": "SafetyInspection",
+            "requiredLevel": 4.8,
+            "isCritical": true
+          },
+          {
+            "onetSkillCode": "2.C.2.a",
+            "skillName": "Compliance Monitoring",
+            "category": "ComplianceMonitoring",
+            "requiredLevel": 4.0,
+            "isCritical": true
+          }
+        ],
+        "ml_step_profile": {
+          "step_reward_potential": 8.0,
+          "skill_matching_logic": {
+            "primary_skill_check": "onetSkillLevels['2.C.1.b'] >= 4.8",
+            "secondary_skill_check": "onetSkillLevels['2.C.2.a'] >= 4.0",
+            "reward_calculation": "base_reward + (critical_skills * 2.5) + compliance_bonus"
+          },
+          "timing_dependencies": ["step_003"],
+          "success_multiplier": 2.0
+        },
+        "preconditions": [
+          {
+            "objectId": "tool_004",
+            "requiredState": "isAvailable",
+            "requiredValue": true
+          }
+        ],
+        "expectedStateChanges": [
+          {
+            "objectId": "tool_004",
+            "property": "inspection_complete",
+            "newValue": true
+          }
+        ],
+        "successCriteria": {
+          "objectId": "tool_004",
+          "property": "safety_status",
+          "expectedValue": "compliant"
+        },
+        "estimatedDuration": 3.5,
+        "dependsOnSteps": ["step_003"]
+      },
+      {
+        "stepId": "step_005",
+        "stepName": "Final Assembly and Testing",
+        "person": "SIMPLE_Technician_01",
+        "tool": "workbench_001",
+        "actionVerb": "final_assembly",
+        "actionType": "Assembly",
+        "description": "Complete final assembly of components and conduct comprehensive system testing",
+        "requiredSkills": [
+          {
+            "onetSkillCode": "2.C.3.c",
+            "skillName": "Assembly Operations",
+            "category": "AssemblyOperations",
+            "requiredLevel": 4.3,
+            "isCritical": true
+          },
+          {
+            "onetSkillCode": "2.C.1.d",
+            "skillName": "System Testing",
+            "category": "SystemTesting",
+            "requiredLevel": 4.0,
+            "isCritical": true
+          }
+        ],
+        "ml_step_profile": {
+          "step_reward_potential": 10.0,
+          "skill_matching_logic": {
+            "primary_skill_check": "onetSkillLevels['2.C.3.c'] >= 4.3",
+            "secondary_skill_check": "onetSkillLevels['2.C.1.d'] >= 4.0",
+            "reward_calculation": "base_reward + (critical_skills * 3.0) + completion_bonus"
+          },
+          "timing_dependencies": ["step_001", "step_004"],
+          "success_multiplier": 2.5
+        },
+        "preconditions": [
+          {
+            "objectId": "workbench_001",
+            "requiredState": "isAvailable",
+            "requiredValue": true
+          }
+        ],
+        "expectedStateChanges": [
+          {
+            "objectId": "workbench_001",
+            "property": "assembly_complete",
+            "newValue": true
+          }
+        ],
+        "successCriteria": {
+          "objectId": "workbench_001",
+          "property": "test_status",
+          "expectedValue": "passed"
+        },
+        "estimatedDuration": 6.0,
+        "dependsOnSteps": ["step_001", "step_004"]
+      }
+    ],
+    "agentProfiles": {
+      "SIMPLE_Technician_01": {
+        "agentId": "SIMPLE_Technician_01",
+        "name": "Alex Rodriguez - Senior Technician",
+        "role": "Lead Maintenance Technician",
+        "position": {"x": -6, "y": 1, "z": 0},
+        "color": "#33FF33",
+        "materialColor": {"r": 0.1, "g": 0.8, "b": 0.1, "a": 1.0},
+        "shape": "capsule",
+        "experience_years": 8,
+        "certifications": ["Industrial Maintenance", "Electrical Systems", "Safety Compliance"],
+        "movementPattern": {
+          "type": "patrol",
+          "speed": 0.08,
+          "waypoints": [
+            {"x": -6, "y": 1, "z": 0},
+            {"x": -4, "y": 1, "z": -5},
+            {"x": 0, "y": 1, "z": -5},
+            {"x": 2, "y": 1, "z": 3},
+            {"x": -6, "y": 1, "z": 0}
+          ],
+          "pauseDuration": 3.0,
+          "rotationSpeed": 90.0
+        },
+        "onetSkillLevels": {
+          "2.C.3.a": 5.0,
+          "2.C.3.b": 4.2,
+          "2.C.1.c": 3.5,
+          "2.C.3.c": 4.3,
+          "2.C.1.d": 4.0
+        },
+        "ml_agent_profile": {
+          "learning_rate": 0.001,
+          "exploration_epsilon": 0.1,
+          "skill_confidence_modifiers": {
+            "2.C.3.a": 0.95,
+            "2.C.3.b": 0.88,
+            "2.C.1.c": 0.75,
+            "2.C.3.c": 0.90,
+            "2.C.1.d": 0.85
+          },
+          "behavioral_tendencies": {
+            "risk_tolerance": 0.3,
+            "efficiency_preference": 0.8,
+            "collaboration_tendency": 0.7,
+            "safety_prioritization": 0.9
+          },
+          "reward_history": {
+            "total_accumulated_reward": 0.0,
+            "average_reward_per_episode": 0.0,
+            "best_episode_reward": 0.0,
+            "episodes_completed": 0,
+            "skill_success_rates": {
+              "2.C.3.a": 0.0,
+              "2.C.3.b": 0.0,
+              "2.C.1.c": 0.0,
+              "2.C.3.c": 0.0,
+              "2.C.1.d": 0.0
+            }
+          }
+        }
+      },
+      "SIMPLE_Technician_02": {
+        "agentId": "SIMPLE_Technician_02",
+        "name": "Sarah Johnson - Junior Technician",
+        "role": "Maintenance Technician",
+        "position": {"x": 6, "y": 1, "z": 0},
+        "color": "#33FF33",
+        "materialColor": {"r": 0.2, "g": 1.0, "b": 0.2, "a": 1.0},
+        "shape": "capsule",
+        "experience_years": 3,
+        "certifications": ["Basic Maintenance", "Tool Operation", "Safety Protocols"],
+        "movementPattern": {
+          "type": "assist_technician",
+          "speed": 0.07,
+          "waypoints": [
+            {"x": 6, "y": 1, "z": 0},
+            {"x": 4, "y": 1, "z": -5},
+            {"x": 0, "y": 1, "z": -5},
+            {"x": 2, "y": 1, "z": 3},
+            {"x": 6, "y": 1, "z": 0}
+          ],
+          "behavior": "follow_lead_technician"
+        },
+        "skills": {
+          "2.C.1.a": 3.2,
+          "2.C.1.b": 3.5,
+          "2.C.1.c": 3.0,
+          "2.C.3.a": 3.5,
+          "2.C.3.b": 3.8,
+          "2.C.3.c": 3.2,
+          "2.C.3.d": 3.5
+        },
+        "ml_agent_profile": {
+          "learning_rate": 0.0012,
+          "exploration_epsilon": 0.15,
+          "skill_confidence_modifiers": {
+            "2.C.1.a": 0.70,
+            "2.C.1.b": 0.75,
+            "2.C.1.c": 0.65,
+            "2.C.3.a": 0.75,
+            "2.C.3.b": 0.80,
+            "2.C.3.c": 0.70,
+            "2.C.3.d": 0.75
+          },
+          "behavioral_tendencies": {
+            "risk_tolerance": 0.4,
+            "efficiency_preference": 0.7,
+            "collaboration_tendency": 0.8,
+            "safety_prioritization": 0.8
+          },
+          "reward_history": {
+            "total_accumulated_reward": 0.0,
+            "average_reward_per_episode": 0.0,
+            "best_episode_reward": 0.0,
+            "episodes_completed": 0,
+            "skill_success_rates": {
+              "2.C.1.a": 0.0,
+              "2.C.1.b": 0.0,
+              "2.C.1.c": 0.0,
+              "2.C.3.a": 0.0,
+              "2.C.3.b": 0.0,
+              "2.C.3.c": 0.0,
+              "2.C.3.d": 0.0
+            }
+          }
+        }
+      },
+  
+      "SIMPLE_Supervisor_01": {
+        "agentId": "SIMPLE_Supervisor_01",
+        "name": "Maria Santos - Operations Supervisor",
+        "role": "Maintenance Supervisor",
+        "position": {"x": 0, "y": 1, "z": 6},
+        "color": "#33FF33",
+        "materialColor": {"r": 0.1, "g": 0.6, "b": 0.1, "a": 1.0},
+        "shape": "capsule",
+        "experience_years": 12,
+        "certifications": ["Operations Management", "Quality Control", "Team Leadership"],
+        "movementPattern": {
+          "type": "inspection_rounds",
+          "speed": 0.06,
+          "waypoints": [
+            {"x": 0, "y": 1, "z": 6},
+            {"x": 4, "y": 1, "z": -5},
+            {"x": -2, "y": 1, "z": 3},
+            {"x": -4, "y": 1, "z": -5},
+            {"x": 0, "y": 1, "z": 6}
+          ],
+          "pauseDuration": 4.0,
+          "rotationSpeed": 60.0
+        },
+        "onetSkillLevels": {
+          "2.C.4.a": 4.2,
+          "2.C.1.a": 3.8,
+          "2.C.1.c": 4.5,
+          "2.C.2.b": 4.0
+        },
+        "ml_agent_profile": {
+          "learning_rate": 0.0008,
+          "exploration_epsilon": 0.08,
+          "skill_confidence_modifiers": {
+            "2.C.4.a": 0.92,
+            "2.C.1.a": 0.85,
+            "2.C.1.c": 0.93,
+            "2.C.2.b": 0.88
+          },
+          "behavioral_tendencies": {
+            "risk_tolerance": 0.2,
+            "efficiency_preference": 0.9,
+            "collaboration_tendency": 0.9,
+            "safety_prioritization": 0.95
+          },
+          "reward_history": {
+            "total_accumulated_reward": 0.0,
+            "average_reward_per_episode": 0.0,
+            "best_episode_reward": 0.0,
+            "episodes_completed": 0,
+            "skill_success_rates": {
+              "2.C.4.a": 0.0,
+              "2.C.1.a": 0.0,
+              "2.C.1.c": 0.0,
+              "2.C.2.b": 0.0
+            }
+          }
+        },
+      "SIMPLE_Supervisor_02": {
+        "agentId": "SIMPLE_Supervisor_02",
+        "name": "David Kim - Safety Inspector",
+        "role": "Safety and Compliance Inspector",
+        "position": {"x": 6, "y": 1, "z": 0},
+        "color": "#4DCC4D",
+        "materialColor": {"r": 0.3, "g": 0.9, "b": 0.3, "a": 1.0},
+        "shape": "capsule",
+        "experience_years": 10,
+        "certifications": ["Safety Inspection", "OSHA Compliance", "Risk Assessment"],
+        "movementPattern": {
+          "type": "stationary_observation",
+          "speed": 0.05,
+          "waypoints": [
+            {"x": 6, "y": 1, "z": 0},
+            {"x": 8, "y": 1, "z": 2},
+            {"x": 6, "y": 1, "z": 0},
+            {"x": 4, "y": 1, "z": -2}
+          ],
+          "pauseDuration": 6.0,
+          "rotationSpeed": 45.0
+        },
+        "onetSkillLevels": {
+          "2.C.1.b": 4.8,
+          "2.C.2.a": 4.0,
+          "2.C.1.a": 4.3,
+          "2.C.4.a": 3.9
+        },
+        "ml_agent_profile": {
+          "learning_rate": 0.0006,
+          "exploration_epsilon": 0.05,
+          "skill_confidence_modifiers": {
+            "2.C.1.b": 0.96,
+            "2.C.2.a": 0.90,
+            "2.C.1.a": 0.91,
+            "2.C.4.a": 0.87
+          },
+          "behavioral_tendencies": {
+            "risk_tolerance": 0.1,
+            "efficiency_preference": 0.7,
+            "collaboration_tendency": 0.6,
+            "safety_prioritization": 1.0
+          },
+          "reward_history": {
+            "total_accumulated_reward": 0.0,
+            "average_reward_per_episode": 0.0,
+            "best_episode_reward": 0.0,
+            "episodes_completed": 0,
+            "skill_success_rates": {
+              "2.C.1.b": 0.0,
+              "2.C.2.a": 0.0,
+              "2.C.1.a": 0.0,
+              "2.C.4.a": 0.0
+            }
+          }
+        }
+      }
+    },
+    "proximityDetection": {
+      "enabled": true,
+      "detectionRadius": 3.0,
+      "updateFrequency": 0.1,
+      "ml_integration": {
+        "reward_on_proximity": true,
+        "proximity_bonus": 0.2,
+        "optimal_distance_reward": 0.5,
+        "skill_evaluation_trigger": true
+      },
+      "proximityZones": [
+        {
+          "zoneId": "tool_001_proximity",
+          "centerObject": "tool_001",
+          "radius": 2.5,
+          "actionType": "Positive",
+          "ml_zone_config": {
+            "entry_reward": 0.1,
+            "optimal_position_reward": 0.3,
+            "skill_check_trigger": true,
+            "neural_activation": true,
+            "available_actions": ["approach_motor", "assess_condition", "wait_for_clearance"],
+            "timing_evaluation": true
+          },
+          "availableActions": [
+            {
+              "actionId": "repair_motor",
+              "actionName": "Repair Motor",
+              "actionType": "Positive",
+              "color": "#FFFFFF",
+              "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0}
+            },
+            {
+              "actionId": "inspect_motor",
+              "actionName": "Inspect Motor",
+              "actionType": "Neutral",
+              "color": "#808080",
+              "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0}
+            },
+            {
+              "actionId": "damage_motor",
+              "actionName": "Damage Motor",
+              "actionType": "Negative",
+              "color": "#000000",
+              "materialColor": {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0}
+            }
+          ],
+          "effects": {
+            "colorChange": {
+              "enabled": true,
+              "targetColor": "#FFFFFF",
+              "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0},
+              "fadeSpeed": 2.0
+            },
+            "directionChange": {
+              "enabled": true,
+              "avoidanceForce": 1.5,
+              "rotationSpeed": 45.0
+            },
+            "soundEffect": {
+              "enabled": true,
+              "soundClip": "proximity_alert",
+              "volume": 0.7
+            },
+            "ml_action_activation": {
+              "enabled": true,
+              "skill_check_popup": true,
+              "reward_calculation_trigger": true,
+              "contextual_timing_check": true
+            }
+          },
+          "affectedAgents": ["SIMPLE_Technician_01", "SIMPLE_Technician_02", "SIMPLE_Supervisor_01", "SIMPLE_Supervisor_02"]
+        },
+        {
+          "zoneId": "tool_002_proximity",
+          "centerObject": "tool_002",
+          "radius": 2.0,
+          "actionType": "Neutral",
+          "ml_zone_config": {
+            "entry_reward": 0.05,
+            "optimal_position_reward": 0.2,
+            "skill_check_trigger": true,
+            "neural_activation": true,
+            "available_actions": ["unlock_toolbox", "check_contents", "verify_authorization"],
+            "timing_evaluation": true
+          },
+          "availableActions": [
+            {
+              "actionId": "unlock_toolbox",
+              "actionName": "Unlock Toolbox",
+              "actionType": "Positive",
+              "color": "#FFFFFF",
+              "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0}
+            },
+            {
+              "actionId": "check_toolbox",
+              "actionName": "Check Toolbox",
+              "actionType": "Neutral",
+              "color": "#808080",
+              "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0}
+            },
+            {
+              "actionId": "break_toolbox",
+              "actionName": "Break Toolbox",
+              "actionType": "Negative",
+              "color": "#000000",
+              "materialColor": {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0}
+            }
+          ],
+          "effects": {
+            "colorChange": {
+              "enabled": true,
+              "targetColor": "#808080",
+              "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0},
+              "fadeSpeed": 1.8
+            },
+            "directionChange": {
+              "enabled": true,
+              "avoidanceForce": 1.2,
+              "rotationSpeed": 30.0
+            },
+            "soundEffect": {
+              "enabled": true,
+              "soundClip": "toolbox_proximity",
+              "volume": 0.5
+            },
+            "ml_action_activation": {
+              "enabled": true,
+              "skill_check_popup": true,
+              "reward_calculation_trigger": true,
+              "contextual_timing_check": true
+            }
+          },
+          "affectedAgents": ["SIMPLE_Technician_01", "SIMPLE_Technician_02", "SIMPLE_Supervisor_01"]
+        },
+        {
+          "zoneId": "tool_003_proximity",
+          "centerObject": "tool_003",
+          "radius": 3.0,
+          "actionType": "Positive",
+          "ml_zone_config": {
+            "entry_reward": 0.15,
+            "optimal_position_reward": 0.4,
+            "skill_check_trigger": true,
+            "neural_activation": true,
+            "available_actions": ["systematic_inspection", "pressure_test", "review_specifications"],
+            "timing_evaluation": true
+          },
+          "availableActions": [
+            {
+              "actionId": "operate_hydraulic",
+              "actionName": "Operate Hydraulic",
+              "actionType": "Positive",
+              "color": "#FFFFFF",
+              "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0}
+            },
+            {
+              "actionId": "test_hydraulic",
+              "actionName": "Test Hydraulic",
+              "actionType": "Neutral",
+              "color": "#808080",
+              "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0}
+            },
+            {
+              "actionId": "overload_hydraulic",
+              "actionName": "Overload Hydraulic",
+              "actionType": "Negative",
+              "color": "#000000",
+              "materialColor": {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0}
+            }
+          ],
+          "effects": {
+            "colorChange": {
+              "enabled": true,
+              "targetColor": "#FFFFFF",
+              "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0},
+              "fadeSpeed": 2.2
+            },
+            "directionChange": {
+              "enabled": true,
+              "avoidanceForce": 2.0,
+              "rotationSpeed": 60.0
+            },
+            "soundEffect": {
+              "enabled": true,
+              "soundClip": "hydraulic_proximity",
+              "volume": 0.8
+            },
+            "ml_action_activation": {
+              "enabled": true,
+              "skill_check_popup": true,
+              "reward_calculation_trigger": true,
+              "contextual_timing_check": true
+            }
+          },
+          "affectedAgents": ["SIMPLE_Supervisor_01", "SIMPLE_Supervisor_02"]
+        },
+        {
+          "zoneId": "tool_004_proximity",
+          "centerObject": "tool_004",
+          "radius": 2.5,
+          "actionType": "Neutral",
+          "ml_zone_config": {
+            "entry_reward": 0.2,
+            "optimal_position_reward": 0.5,
+            "skill_check_trigger": true,
+            "neural_activation": true,
+            "available_actions": ["thorough_safety_check", "compliance_verification", "review_standards"],
+            "timing_evaluation": true
+          },
+          "availableActions": [
+            {
+              "actionId": "safety_inspection",
+              "actionName": "Safety Inspection",
+              "actionType": "Positive",
+              "color": "#FFFFFF",
+              "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0}
+            },
+            {
+              "actionId": "routine_check",
+              "actionName": "Routine Check",
+              "actionType": "Neutral",
+              "color": "#808080",
+              "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0}
+            },
+            {
+              "actionId": "ignore_safety",
+              "actionName": "Ignore Safety",
+              "actionType": "Negative",
+              "color": "#000000",
+              "materialColor": {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0}
+            }
+          ],
+          "effects": {
+            "colorChange": {
+              "enabled": true,
+              "targetColor": "#808080",
+              "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0},
+              "fadeSpeed": 1.5
+            },
+            "directionChange": {
+              "enabled": true,
+              "avoidanceForce": 1.0,
+              "rotationSpeed": 25.0
+            },
+            "soundEffect": {
+              "enabled": true,
+              "soundClip": "safety_proximity",
+              "volume": 0.6
+            },
+            "ml_action_activation": {
+              "enabled": true,
+              "skill_check_popup": true,
+              "reward_calculation_trigger": true,
+              "contextual_timing_check": true
+            }
+          },
+          "affectedAgents": ["SIMPLE_Supervisor_02", "SIMPLE_Technician_01"]
+        },
+        {
+          "zoneId": "workbench_001_proximity",
+          "centerObject": "workbench_001",
+          "radius": 2.8,
+          "actionType": "Positive",
+          "ml_zone_config": {
+            "entry_reward": 0.25,
+            "optimal_position_reward": 0.6,
+            "skill_check_trigger": true,
+            "neural_activation": true,
+            "available_actions": ["systematic_assembly", "comprehensive_testing", "verify_prerequisites"],
+            "timing_evaluation": true
+          },
+          "availableActions": [
+            {
+              "actionId": "assemble_components",
+              "actionName": "Assemble Components",
+              "actionType": "Positive",
+              "color": "#FFFFFF",
+              "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0}
+            },
+            {
+              "actionId": "organize_tools",
+              "actionName": "Organize Tools",
+              "actionType": "Neutral",
+              "color": "#808080",
+              "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0}
+            },
+            {
+              "actionId": "mess_workbench",
+              "actionName": "Mess Workbench",
+              "actionType": "Negative",
+              "color": "#000000",
+              "materialColor": {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0}
+            }
+          ],
+          "effects": {
+            "colorChange": {
+              "enabled": true,
+              "targetColor": "#FFFFFF",
+              "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0},
+              "fadeSpeed": 2.5
+            },
+            "directionChange": {
+              "enabled": true,
+              "avoidanceForce": 1.8,
+              "rotationSpeed": 50.0
+            },
+            "soundEffect": {
+              "enabled": true,
+              "soundClip": "workbench_proximity",
+              "volume": 0.7
+            },
+            "ml_action_activation": {
+              "enabled": true,
+              "skill_check_popup": true,
+              "reward_calculation_trigger": true,
+              "contextual_timing_check": true
+            }
+          },
+          "affectedAgents": ["SIMPLE_Technician_01", "SIMPLE_Technician_02", "SIMPLE_Supervisor_01"]
+        }
+      ]
+    },
+    "ml_training_session": {
+      "session_id": "warehouse_maintenance_training_001",
+      "episode_length": 1800,
+      "max_episodes": 1000,
+      "success_criteria": {
+        "minimum_total_reward": 25.0,
+        "all_tasks_completed": true,
+        "no_safety_violations": true,
+        "efficiency_threshold": 0.8
+      },
+      "logging": {
+        "log_all_actions": true,
+        "log_skill_checks": true,
+        "log_reward_calculations": true,
+        "log_timing_decisions": true,
+        "export_training_data": true,
+        "save_successful_episodes": true
+      },
+      "curriculum_learning": {
+        "enabled": true,
+        "difficulty_progression": ["single_task", "dual_task", "full_workflow", "time_pressure", "skill_mismatch_scenarios"],
+        "current_difficulty": "single_task"
+      }
+    },
+  
+    "sceneLayout": {
+      "environment": {
+        "floor_size": 30,
+        "wall_height": 6,
+        "lighting": "industrial",
+        "atmosphere": "warehouse"
+      },
+      "zones": {
+        "maintenance_zone": {
+          "center": {"x": -2, "y": 0, "z": -3},
+          "radius": 8,
+          "tools": ["tool_001", "tool_002"],
+          "ml_zone_properties": {
+            "high_skill_requirement": true,
+            "safety_critical": true,
+            "reward_multiplier": 1.2
+          }
+        },
+        "inspection_zone": {
+          "center": {"x": 2, "y": 0, "z": 3},
+          "radius": 6,
+          "tools": ["tool_003", "tool_004", "workbench_001"],
+          "ml_zone_properties": {
+            "quality_focus": true,
+            "compliance_critical": true,
+            "reward_multiplier": 1.5
+          }
+        }
+      }
+    },
+  
+    "metadata": {
+      "version": "2.1_ML_Enhanced_Complete",
+      "created_date": "2024-01-15",
+      "last_modified": "2024-01-15",
+      "author": "EarnOut ML Integration - Complete Team Structure",
+      "scene_complexity": "advanced_ml_full_workflow",
+      "ml_features": [
+        "contextual_timing_scenarios",
+        "skill_ability_matching",
+        "neural_action_selection",
+        "reward_optimization",
+        "training_data_export",
+        "curriculum_learning",
+        "behavioral_profiling"
+      ],
+      "estimated_completion_time": "21.5 minutes",
+      "ml_training_ready": true
+    }
+  }
+  }

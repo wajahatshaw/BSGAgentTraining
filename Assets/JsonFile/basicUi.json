@@ -1,0 +1,879 @@
+{
+  "scene_id": "scene_warehouse_001",
+  "plan": {
+    "planId": "maintenance_workflow_001",
+    "planName": "Daily Equipment Maintenance Protocol",
+    "description": "Comprehensive maintenance workflow for warehouse equipment including motor repair, toolbox management, and safety inspections",
+    "estimatedTotalDuration": 15.0,
+    "priority": "high",
+    "assignedTeam": ["SIMPLE_Technician_01", "SIMPLE_Technician_02", "SIMPLE_Supervisor_01", "SIMPLE_Supervisor_02"]
+  },
+  "initialStates": {
+    "tool_001": {
+      "objectId": "tool_001",
+      "name": "Industrial Motor Unit",
+      "type": "motor",
+      "shape": "cylinder",
+      "isAvailable": true,
+      "isActive": false,
+      "currentUser": null,
+      "position": {"x": -4, "y": 0.5, "z": -5},
+      "color": "#DC143C",
+      "materialColor": {"r": 0.86, "g": 0.08, "b": 0.24, "a": 1.0},
+      "material": {
+        "shader": "Standard",
+        "metallic": 0.4,
+        "smoothness": 0.2,
+        "roughness": 0.8
+      },
+      "components": {
+        "housing": {
+          "shape": "cylinder",
+          "color": "#333333",
+          "metallic": 0.6,
+          "smoothness": 0.4
+        },
+        "coolingFins": {
+          "count": 8,
+          "shape": "cube",
+          "color": "#4D4D4D",
+          "metallic": 0.4,
+          "smoothness": 0.2
+        }
+      },
+      "properties": {
+        "temperature": "cold",
+        "power": "off",
+        "voltage": "220V",
+        "condition": "needs_repair"
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.3.a",
+          "skillName": "Repairing",
+          "category": "Repairing",
+          "requiredLevel": 5,
+          "isCritical": true,
+          "reward": 20
+        },
+        {
+          "onetSkillCode": "2.C.3.b",
+          "skillName": "Equipment Maintenance",
+          "category": "EquipmentMaintenance",
+          "requiredLevel": 20,
+          "isCritical": true,
+          "reward":30
+        }
+      ]
+    },
+    "tool_002": {
+      "objectId": "tool_002",
+      "name": "Secure Toolbox Alpha",
+      "type": "storage",
+      "shape": "cube",
+      "isAvailable": true,
+      "isActive": false,
+      "currentUser": null,
+      "position": {"x": 0, "y": 0.5, "z": -5},
+      "color": "#FFD700",
+      "materialColor": {"r": 1.0, "g": 0.84, "b": 0.0, "a": 1.0},
+      "material": {
+        "shader": "Standard",
+        "metallic": 0.4,
+        "smoothness": 0.2,
+        "roughness": 0.8
+      },
+      "components": {
+        "lid": {
+          "shape": "cube",
+          "color": "#CC9900",
+          "metallic": 0.7,
+          "smoothness": 0.8
+        },
+        "lock": {
+          "shape": "cylinder",
+          "color": "#1A1A1A",
+          "metallic": 0.9,
+          "smoothness": 0.95
+        }
+      },
+      "properties": {
+        "locked": true,
+        "contents": ["wrench_set", "screwdriver_kit", "safety_gear"],
+        "security_level": "high"
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.3.c",
+          "skillName": "Assembly Operations2",
+          "category": "AssemblyOperations2",
+          "requiredLevel": 40,
+          "isCritical": true,
+          "reward": 20
+        },
+        {
+          "onetSkillCode": "2.C.1.d",
+          "skillName": "System Testing2",
+          "category": "SystemTesting2",
+          "requiredLevel": 10,
+          "isCritical": true,
+          "reward": 20
+        }
+      ]
+    },
+    "tool_003": {
+      "objectId": "tool_003",
+      "name": "Hydraulic Lift Station",
+      "type": "machinery",
+      "shape": "cube",
+      "isAvailable": true,
+      "isActive": false,
+      "currentUser": null,
+      "position": {"x": 4, "y": 0.5, "z": -5},
+      "color": "#1E90FF",
+      "materialColor": {"r": 0.12, "g": 0.56, "b": 1.0, "a": 1.0},
+      "material": {
+        "shader": "Standard",
+        "metallic": 0.4,
+        "smoothness": 0.2,
+        "roughness": 0.8
+      },
+      "components": {
+        "cylinder": {
+          "shape": "cylinder",
+          "color": "#1A4D99",
+          "metallic": 0.8,
+          "smoothness": 0.6
+        },
+        "piston": {
+          "shape": "cylinder",
+          "color": "#333333",
+          "metallic": 0.9,
+          "smoothness": 0.8
+        },
+        "hoses": {
+          "count": 2,
+          "shape": "cylinder",
+          "color": "#1A1A1A",
+          "metallic": 0.1,
+          "smoothness": 0.1
+        }
+      },
+      "properties": {
+        "power": "on",
+        "hydraulic_pressure": "normal",
+        "load_capacity": "2000kg"
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.4.a",
+          "skillName": "Systems Analysis",
+          "category": "SystemsAnalysis",
+          "requiredLevel": 0,
+          "isCritical": true,
+          "reward": 30
+        },
+        {
+          "onetSkillCode": "2.C.1.a",
+          "skillName": "Quality Control Analysis",
+          "category": "QualityControl",
+          "requiredLevel": 30,
+          "isCritical": true,
+          "reward": 40
+        }
+      ]
+    },
+    "tool_004": {
+      "objectId": "tool_004",
+      "name": "Safety Inspection Station",
+      "type": "workstation",
+      "isAvailable": true,
+      "isActive": false,
+      "currentUser": null,
+      "position": {"x": -2, "y": 0.5, "z": 3},
+      "color": "#1E90FF",
+      "materialColor": {"r": 0.2, "g": 0.8, "b": 0.2, "a": 1.0},
+      "properties": {
+        "power": "on",
+        "inspection_tools": ["multimeter", "pressure_gauge", "safety_checklist"]
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.1.b",
+          "skillName": "Safety Inspection",
+          "category": "SafetyInspection",
+          "requiredLevel": 30,
+          "isCritical": true,
+          "reward": 30
+        },
+        {
+          "onetSkillCode": "2.C.2.a",
+          "skillName": "Compliance Monitoring",
+          "category": "ComplianceMonitoring",
+          "requiredLevel": 10,
+          "isCritical": true,
+          "reward": 10
+        }
+      ]
+ 
+    },
+    "workbench_001": {
+      "objectId": "workbench_001",
+      "name": "Main Assembly Workbench",
+      "type": "workstation",
+      "shape": "cube",
+      "isAvailable": true,
+      "isActive": false,
+      "currentUser": null,
+      "position": {"x": 2, "y": 0.8, "z": 3},
+      "color": "#FF8C00",
+      "materialColor": {"r": 1.0, "g": 0.55, "b": 0.0, "a": 1.0},
+      "material": {
+        "shader": "Standard",
+        "metallic": 0.3,
+        "smoothness": 0.1,
+        "roughness": 0.9
+      },
+      "components": {
+        "legs": {
+          "count": 4,
+          "shape": "cube",
+          "color": "#4D4D4D",
+          "metallic": 0.2,
+          "smoothness": 0.1
+        },
+        "surface": {
+          "shape": "cube",
+          "color": "#666666",
+          "metallic": 0.1,
+          "smoothness": 0.3
+        },
+        "controlPanel": {
+          "shape": "cube",
+          "color": "#1A1A1A",
+          "metallic": 0.8,
+          "smoothness": 0.9
+        },
+        "buttons": {
+          "count": 3,
+          "shapes": ["cylinder", "cylinder", "cylinder"],
+          "colors": ["#FF0000", "#FFFF00", "#00FF00"],
+          "metallic": 0.9,
+          "smoothness": 0.95
+        }
+      },
+      "properties": {
+        "surface_material": "steel",
+        "tools_available": ["drill", "saw", "measuring_tools"]
+      },
+      "requiredSkills": [
+        {
+          "onetSkillCode": "2.C.3.c",
+          "skillName": "Assembly Operations",
+          "category": "AssemblyOperations",
+          "requiredLevel": 0,
+          "isCritical": true,
+          "reward": 20
+        },
+        {
+          "onetSkillCode": "2.C.1.d",
+          "skillName": "System Testing",
+          "category": "SystemTesting",
+          "requiredLevel": 30,
+          "isCritical": true,
+          "reward": 40
+        }
+      ]
+    }
+  },
+  "dependencies": [
+    {
+      "stepId": "step_002",
+      "dependsOn": ["step_001"]
+    },
+    {
+      "stepId": "step_003",
+      "dependsOn": ["step_002"]
+    },
+    {
+      "stepId": "step_004",
+      "dependsOn": ["step_003"]
+    },
+    {
+      "stepId": "step_005",
+      "dependsOn": ["step_001", "step_004"]
+    }
+  ],
+  "sequence": [
+    {
+      "stepId": "step_001",
+      "stepName": "Motor Diagnostic and Repair",
+      "person": "SIMPLE_Technician_01",
+      "tool": "tool_001",
+      "actionVerb": "repair_motor",
+      "actionType": "Physical",
+      "description": "Diagnose and repair the industrial motor unit, checking electrical connections and mechanical components",
+      "preconditions": [
+        {
+          "objectId": "tool_001",
+          "requiredState": "isAvailable",
+          "requiredValue": true
+        }
+      ],
+      "expectedStateChanges": [
+        {
+          "objectId": "tool_001",
+          "property": "power",
+          "newValue": "on"
+        },
+        {
+          "objectId": "tool_001",
+          "property": "condition",
+          "newValue": "operational"
+        }
+      ],
+      "successCriteria": {
+        "objectId": "tool_001",
+        "property": "power",
+        "expectedValue": "on"
+      },
+      "estimatedDuration": 5.0,
+      "dependsOnSteps": []
+    },
+    {
+      "stepId": "step_002",
+      "stepName": "Secure Toolbox Access",
+      "person": "SIMPLE_Technician_01",
+      "tool": "tool_002",
+      "actionVerb": "unlock_toolbox",
+      "actionType": "Physical",
+      "description": "Unlock the secure toolbox and retrieve necessary tools for maintenance operations",
+      "preconditions": [
+        {
+          "objectId": "tool_002",
+          "requiredState": "locked",
+          "requiredValue": true
+        }
+      ],
+      "expectedStateChanges": [
+        {
+          "objectId": "tool_002",
+          "property": "locked",
+          "newValue": false
+        }
+      ],
+      "successCriteria": {
+        "objectId": "tool_002",
+        "property": "locked",
+        "expectedValue": false
+      },
+      "estimatedDuration": 3.0,
+      "dependsOnSteps": ["step_001"]
+    },
+    {
+      "stepId": "step_003",
+      "stepName": "Hydraulic System Check",
+      "person": "SIMPLE_Supervisor_01",
+      "tool": "tool_003",
+      "actionVerb": "inspect_hydraulics",
+      "actionType": "Inspection",
+      "description": "Perform comprehensive inspection of hydraulic lift station including pressure tests and safety checks",
+      "preconditions": [
+        {
+          "objectId": "tool_003",
+          "requiredState": "isAvailable",
+          "requiredValue": true
+        }
+      ],
+      "expectedStateChanges": [
+        {
+          "objectId": "tool_003",
+          "property": "inspection_status",
+          "newValue": "passed"
+        }
+      ],
+      "successCriteria": {
+        "objectId": "tool_003",
+        "property": "hydraulic_pressure",
+        "expectedValue": "normal"
+      },
+      "estimatedDuration": 4.0,
+      "dependsOnSteps": ["step_002"]
+    },
+    {
+      "stepId": "step_004",
+      "stepName": "Safety Compliance Inspection",
+      "person": "SIMPLE_Supervisor_02",
+      "tool": "tool_004",
+      "actionVerb": "conduct_safety_inspection",
+      "actionType": "Inspection",
+      "description": "Conduct thorough safety inspection using specialized equipment and compliance checklists",
+      "preconditions": [
+        {
+          "objectId": "tool_004",
+          "requiredState": "isAvailable",
+          "requiredValue": true
+        }
+      ],
+      "expectedStateChanges": [
+        {
+          "objectId": "tool_004",
+          "property": "inspection_complete",
+          "newValue": true
+        }
+      ],
+      "successCriteria": {
+        "objectId": "tool_004",
+        "property": "safety_status",
+        "expectedValue": "compliant"
+      },
+      "estimatedDuration": 3.5,
+      "dependsOnSteps": ["step_003"]
+    },
+    {
+      "stepId": "step_005",
+      "stepName": "Final Assembly and Testing",
+      "person": "SIMPLE_Technician_01",
+      "tool": "workbench_001",
+      "actionVerb": "final_assembly",
+      "actionType": "Assembly",
+      "description": "Complete final assembly of components and conduct comprehensive system testing",
+      "preconditions": [
+        {
+          "objectId": "workbench_001",
+          "requiredState": "isAvailable",
+          "requiredValue": true
+        }
+      ],
+      "expectedStateChanges": [
+        {
+          "objectId": "workbench_001",
+          "property": "assembly_complete",
+          "newValue": true
+        }
+      ],
+      "successCriteria": {
+        "objectId": "workbench_001",
+        "property": "test_status",
+        "expectedValue": "passed"
+      },
+      "estimatedDuration": 6.0,
+      "dependsOnSteps": ["step_001", "step_004"]
+    }
+  ],
+  "agentProfiles": {
+    "SIMPLE_Technician_01": {
+      "agentId": "SIMPLE_Technician_01",
+      "name": "Alex Rodriguez - Senior Technician",
+      "role": "Lead Maintenance Technician",
+      "position": {"x": -6, "y": 1, "z": 0},
+      "color": "#33FF33",
+      "materialColor": {"r": 0.1, "g": 0.8, "b": 0.1, "a": 1.0},
+      "shape": "capsule",
+      "experience_years": 8,
+      "certifications": ["Industrial Maintenance", "Electrical Systems", "Safety Compliance"],
+      "movementPattern": {
+        "type": "patrol",
+        "speed": 0.08,
+        "waypoints": [
+          {"x": -6, "y": 1, "z": 0},
+          {"x": -4, "y": 1, "z": -5},
+          {"x": 0, "y": 1, "z": -5},
+          {"x": 2, "y": 1, "z": 3},
+          {"x": -6, "y": 1, "z": 0}
+        ],
+        "pauseDuration": 3.0,
+        "rotationSpeed": 90.0
+      },
+      "onetSkillLevels": {
+        "2.C.3.a": 5.0,
+        "2.C.3.b": 4.2,
+        "2.C.1.c": 3.5,
+        "2.C.3.c": 4.3,
+        "2.C.1.d": 4.0
+      },
+      "skillLevel": 0,
+      "desireLevel":  100,
+      "isCompleted": false,
+      "availableSkills": []
+    },
+    "SIMPLE_Technician_02": {
+      "agentId": "SIMPLE_Technician_02",
+      "name": "Sarah Johnson - Junior Technician",
+      "role": "Maintenance Technician",
+      "position": {"x": 6, "y": 1, "z": 0},
+      "color": "#33FF33",
+      "materialColor": {"r": 0.2, "g": 1.0, "b": 0.2, "a": 1.0},
+      "shape": "capsule",
+      "experience_years": 3,
+      "certifications": ["Basic Maintenance", "Tool Operation", "Safety Protocols"],
+      "movementPattern": {
+        "type": "assist_technician",
+        "speed": 0.07,
+        "waypoints": [
+          {"x": 6, "y": 1, "z": 0},
+          {"x": 4, "y": 1, "z": -5},
+          {"x": 0, "y": 1, "z": -5},
+          {"x": 2, "y": 1, "z": 3},
+          {"x": 6, "y": 1, "z": 0}
+        ],
+        "behavior": "follow_lead_technician"
+      },
+      "skills": {
+        "2.C.1.a": 3.2,
+        "2.C.1.b": 3.5,
+        "2.C.1.c": 3.0,
+        "2.C.3.a": 3.5,
+        "2.C.3.b": 3.8,
+        "2.C.3.c": 3.2,
+        "2.C.3.d": 3.5
+      },
+      "skillLevel": 0,
+      "desireLevel":  80,
+      "isCompleted": false,
+      "availableSkills": []
+    },
+    "SIMPLE_Supervisor_01": {
+      "agentId": "SIMPLE_Supervisor_01",
+      "name": "Maria Santos - Operations Supervisor",
+      "role": "Maintenance Supervisor",
+      "position": {"x": 0, "y": 1, "z": 6},
+      "color": "#33FF33",
+      "materialColor": {"r": 0.1, "g": 0.6, "b": 0.1, "a": 1.0},
+      "shape": "capsule",
+      "experience_years": 12,
+      "certifications": ["Operations Management", "Quality Control", "Team Leadership"],
+      "movementPattern": {
+        "type": "inspection_rounds",
+        "speed": 0.06,
+        "waypoints": [
+          {"x": 0, "y": 1, "z": 6},
+          {"x": 4, "y": 1, "z": -5},
+          {"x": -2, "y": 1, "z": 3},
+          {"x": -4, "y": 1, "z": -5},
+          {"x": 0, "y": 1, "z": 6}
+        ],
+        "pauseDuration": 4.0,
+        "rotationSpeed": 60.0
+      },
+      "onetSkillLevels": {
+        "2.C.4.a": 4.2,
+        "2.C.1.a": 3.8,
+        "2.C.1.c": 4.5,
+        "2.C.2.b": 4.0
+      },
+      "skillLevel": 0,
+      "desireLevel":  90,
+      "isCompleted": false,
+      "availableSkills": []
+    },
+    "SIMPLE_Supervisor_02": {
+      "agentId": "SIMPLE_Supervisor_02",
+      "name": "David Kim - Safety Inspector",
+      "role": "Safety and Compliance Inspector",
+      "position": {"x": 6, "y": 1, "z": 0},
+      "color": "#4DCC4D",
+      "materialColor": {"r": 0.3, "g": 0.9, "b": 0.3, "a": 1.0},
+      "shape": "capsule",
+      "experience_years": 10,
+      "certifications": ["Safety Inspection", "OSHA Compliance", "Risk Assessment"],
+      "movementPattern": {
+        "type": "stationary_observation",
+        "speed": 0.05,
+        "waypoints": [
+          {"x": 6, "y": 1, "z": 0},
+          {"x": 8, "y": 1, "z": 2},
+          {"x": 6, "y": 1, "z": 0},
+          {"x": 4, "y": 1, "z": -2}
+        ],
+        "pauseDuration": 6.0,
+        "rotationSpeed": 45.0
+      },
+      "onetSkillLevels": {
+        "2.C.1.b": 4.8,
+        "2.C.2.a": 4.0,
+        "2.C.1.a": 4.3,
+        "2.C.4.a": 3.9
+      },
+      "skillLevel": 0,
+      "desireLevel":  100,
+      "isCompleted": false,
+      "availableSkills": []
+    }
+  },
+  "proximityDetection": {
+    "enabled": true,
+    "detectionRadius": 3.0,
+    "updateFrequency": 0.1,
+    "proximityZones": [
+      {
+        "zoneId": "tool_001_proximity",
+        "centerObject": "tool_001",
+        "radius": 2.5,
+        "actionType": "Positive",
+        "availableActions": [
+          {
+            "actionId": "repair_motor",
+            "actionName": "Repair Motor",
+            "actionType": "Positive",
+            "color": "#FFFFFF",
+            "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0}
+          },
+          {
+            "actionId": "inspect_motor",
+            "actionName": "Inspect Motor",
+            "actionType": "Neutral",
+            "color": "#808080",
+            "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0}
+          },
+          {
+            "actionId": "damage_motor",
+            "actionName": "Damage Motor",
+            "actionType": "Negative",
+            "color": "#000000",
+            "materialColor": {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0}
+          }
+        ],
+        "effects": {
+          "colorChange": {
+            "enabled": true,
+            "targetColor": "#FFFFFF",
+            "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0},
+            "fadeSpeed": 2.0
+          },
+          "directionChange": {
+            "enabled": true,
+            "avoidanceForce": 1.5,
+            "rotationSpeed": 45.0
+          },
+          "soundEffect": {
+            "enabled": true,
+            "soundClip": "proximity_alert",
+            "volume": 0.7
+          }
+        },
+        "affectedAgents": ["SIMPLE_Technician_01", "SIMPLE_Technician_02", "SIMPLE_Supervisor_01", "SIMPLE_Supervisor_02"]
+      },
+      {
+        "zoneId": "tool_002_proximity",
+        "centerObject": "tool_002",
+        "radius": 2.0,
+        "actionType": "Neutral",
+        "availableActions": [
+          {
+            "actionId": "unlock_toolbox",
+            "actionName": "Unlock Toolbox",
+            "actionType": "Positive",
+            "color": "#FFFFFF",
+            "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0}
+          },
+          {
+            "actionId": "check_toolbox",
+            "actionName": "Check Toolbox",
+            "actionType": "Neutral",
+            "color": "#808080",
+            "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0}
+          },
+          {
+            "actionId": "break_toolbox",
+            "actionName": "Break Toolbox",
+            "actionType": "Negative",
+            "color": "#000000",
+            "materialColor": {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0}
+          }
+        ],
+        "effects": {
+          "colorChange": {
+            "enabled": true,
+            "targetColor": "#808080",
+            "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0},
+            "fadeSpeed": 1.8
+          },
+          "directionChange": {
+            "enabled": true,
+            "avoidanceForce": 1.2,
+            "rotationSpeed": 30.0
+          },
+          "soundEffect": {
+            "enabled": true,
+            "soundClip": "toolbox_proximity",
+            "volume": 0.5
+          }
+        },
+        "affectedAgents": ["SIMPLE_Technician_01", "SIMPLE_Technician_02", "SIMPLE_Supervisor_01"]
+      },
+      {
+        "zoneId": "tool_003_proximity",
+        "centerObject": "tool_003",
+        "radius": 3.0,
+        "actionType": "Positive",
+        "availableActions": [
+          {
+            "actionId": "operate_hydraulic",
+            "actionName": "Operate Hydraulic",
+            "actionType": "Positive",
+            "color": "#FFFFFF",
+            "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0}
+          },
+          {
+            "actionId": "test_hydraulic",
+            "actionName": "Test Hydraulic",
+            "actionType": "Neutral",
+            "color": "#808080",
+            "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0}
+          },
+          {
+            "actionId": "overload_hydraulic",
+            "actionName": "Overload Hydraulic",
+            "actionType": "Negative",
+            "color": "#000000",
+            "materialColor": {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0}
+          }
+        ],
+        "effects": {
+          "colorChange": {
+            "enabled": true,
+            "targetColor": "#FFFFFF",
+            "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0},
+            "fadeSpeed": 2.2
+          },
+          "directionChange": {
+            "enabled": true,
+            "avoidanceForce": 2.0,
+            "rotationSpeed": 60.0
+          },
+          "soundEffect": {
+            "enabled": true,
+            "soundClip": "hydraulic_proximity",
+            "volume": 0.8
+          }
+        },
+        "affectedAgents": ["SIMPLE_Supervisor_01", "SIMPLE_Supervisor_02"]
+      },
+      {
+        "zoneId": "tool_004_proximity",
+        "centerObject": "tool_004",
+        "radius": 2.5,
+        "actionType": "Neutral",
+        "availableActions": [
+          {
+            "actionId": "safety_inspection",
+            "actionName": "Safety Inspection",
+            "actionType": "Positive",
+            "color": "#FFFFFF",
+            "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0}
+          },
+          {
+            "actionId": "routine_check",
+            "actionName": "Routine Check",
+            "actionType": "Neutral",
+            "color": "#808080",
+            "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0}
+          },
+          {
+            "actionId": "ignore_safety",
+            "actionName": "Ignore Safety",
+            "actionType": "Negative",
+            "color": "#000000",
+            "materialColor": {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0}
+          }
+        ],
+        "effects": {
+          "colorChange": {
+            "enabled": true,
+            "targetColor": "#808080",
+            "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0},
+            "fadeSpeed": 1.5
+          },
+          "directionChange": {
+            "enabled": true,
+            "avoidanceForce": 1.0,
+            "rotationSpeed": 25.0
+          },
+          "soundEffect": {
+            "enabled": true,
+            "soundClip": "safety_proximity",
+            "volume": 0.6
+          }
+        },
+        "affectedAgents": ["SIMPLE_Supervisor_02", "SIMPLE_Technician_01"]
+      },
+      {
+        "zoneId": "workbench_001_proximity",
+        "centerObject": "workbench_001",
+        "radius": 2.8,
+        "actionType": "Positive",
+        "availableActions": [
+          {
+            "actionId": "assemble_components",
+            "actionName": "Assemble Components",
+            "actionType": "Positive",
+            "color": "#FFFFFF",
+            "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0}
+          },
+          {
+            "actionId": "organize_tools",
+            "actionName": "Organize Tools",
+            "actionType": "Neutral",
+            "color": "#808080",
+            "materialColor": {"r": 0.5, "g": 0.5, "b": 0.5, "a": 1.0}
+          },
+          {
+            "actionId": "mess_workbench",
+            "actionName": "Mess Workbench",
+            "actionType": "Negative",
+            "color": "#000000",
+            "materialColor": {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0}
+          }
+        ],
+        "effects": {
+          "colorChange": {
+            "enabled": true,
+            "targetColor": "#FFFFFF",
+            "materialColor": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0},
+            "fadeSpeed": 2.5
+          },
+          "directionChange": {
+            "enabled": true,
+            "avoidanceForce": 1.8,
+            "rotationSpeed": 50.0
+          },
+          "soundEffect": {
+            "enabled": true,
+            "soundClip": "workbench_proximity",
+            "volume": 0.7
+          }
+        },
+        "affectedAgents": ["SIMPLE_Technician_01", "SIMPLE_Technician_02", "SIMPLE_Supervisor_01"]
+      }
+    ]
+  },
+  "sceneLayout": {
+    "environment": {
+      "floor_size": 30,
+      "wall_height": 6,
+      "lighting": "industrial",
+      "atmosphere": "warehouse"
+    },
+    "zones": {
+      "maintenance_zone": {
+        "center": {"x": -2, "y": 0, "z": -3},
+        "radius": 8,
+        "tools": ["tool_001", "tool_002"]
+      },
+      "inspection_zone": {
+        "center": {"x": 2, "y": 0, "z": 3},
+        "radius": 6,
+        "tools": ["tool_003", "tool_004", "workbench_001"]
+      }
+    }
+  },
+  "metadata": {
+    "version": "2.0",
+    "created_date": "2024-01-15",
+    "last_modified": "2024-01-15",
+    "author": "Warehouse Management System",
+    "scene_complexity": "advanced",
+    "estimated_completion_time": "21.5 minutes"
+  }
+}

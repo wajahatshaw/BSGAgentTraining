@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2f29ef2451cdc943b43d8ec333587d0, type: 3}
+  m_Name: SimulationConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SimulationConfigSO
+  userId: 3b83a5c8-bf31-45af-a7f4-b179ba9df0c2
+  accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhbmltZWtpbmc0ZXZlcjFAZ21haWwuY29tIiwidXNlcl9pZCI6IjNiODNhNWM4LWJmMzEtNDVhZi1hN2Y0LWIxNzliYTlkZjBjMiIsImV4cCI6MTc3NDM0MDgyMywianRpIjoiY2NhNjA1NjgtZGQwOS00ODJiLWE5ZWItNTkwNzVmZTk5Yjk0In0.dEB-zI6FRjj2-pklbejWznJRkH5ljDOhq8bDkRvvk5c
+  refreshToken: f8aaa344-ad42-4bf7-a64a-3ded84688456
+  sessionId: 
+  activityId: pa_sprint_2026_q2
+  photonRoomName: _SimulationRoom
+  loadConversationLogsApi: https://api.pap-inc.com/performed-activities/{activity_id}/all-conversations
+  storeLogsApi: https://api.pap-inc.com/logs/store
+  generateQuestionsApi: https://api.pap-inc.com/generate-unity-questions
+  updateSkillApi: https://api.pap-inc.com/phase-d2/skill-level-by-name
+  getSimulationSessionApi: https://api.pap-inc.com/simulation-session/{session_id}
+  requestTimeoutSeconds: 15
+  enableDebugLogs: 1
+  contentTypeHeader: application/json
+  authorizationHeaderFormat: Bearer {access_token}
+  refreshHeaderFormat: Bearer {refresh_token}
