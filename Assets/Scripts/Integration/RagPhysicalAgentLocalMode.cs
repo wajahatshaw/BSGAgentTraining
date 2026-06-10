@@ -52,7 +52,12 @@ public static class RagPhysicalAgentLocalMode
         if (playerMovement == null)
             return;
 
-        playerMovement.fixedJoystick = null;
+        PlayerMovementInputProcessor inputProcessor = playerMovement.InputProcessor;
+        if (inputProcessor != null)
+            inputProcessor.DisableManualJoystick();
+        else
+            playerMovement.fixedJoystick = null;
+
         playerMovement.fixedTouchField = null;
         playerMovement.DisableAll(move: false, crouch: false, interact: false, jump: false, look: true);
         HideWorldMapDotOnPlayer(playerMovement.gameObject);

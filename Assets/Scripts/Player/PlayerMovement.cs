@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Generic;
 using Photon.Pun;
-using Photon.Realtime;
-using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
+[RequireComponent(typeof(PlayerMovementInputProcessor))]
+public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] Animator playerAnimator;
     [Header("Movement Settings")]
@@ -19,8 +17,6 @@ public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
     [SerializeField] private Transform cameraTransform;
     public float mouseSensitivity = 100f;
 
-    
-
     [Header("Crouch Settings")]
     [SerializeField] private CapsuleCollider capsuleCollider;
     public float crouchHeight = 1f;
@@ -32,50 +28,35 @@ public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
     public event Action OnJump;
 
     public Rigidbody rb;
-    private float _xRotation;
-    private bool _isCrouching, _bCanMove = true, _bCanCrouch = true, _bCanJump = true, _bCanInteract = true, _bCanLook = true;
 
-   [HideInInspector] public FixedJoystick fixedJoystick;
     [HideInInspector] public FixedTouchField fixedTouchField;
 
-    private PhotonView pv;
-    private AgentGroundMotor _ragGroundMotor;
-    private bool _useGroundMotorForMovement;
-
-    [Header("RAG physical autopilot (multiplayer zone 0)")]
-    [Tooltip("When true, joystick input is ignored while RAG drives the player through physical steps.")]
-    [SerializeField] private bool ragAutopilotActive;
-    private Vector2 _ragVirtualJoystick;
-    private int _ragZoneIndex = -1;
-
-    public bool RagAutopilotActive => ragAutopilotActive;
-
-    public void SetRagAutopilot(bool active, int zoneIndex = 0)
+    /// <summary>Backward-compatible joystick hook (GameManager, etc.) — forwards to input processor.</summary>
+    public FixedJoystick fixedJoystick
     {
-        ragAutopilotActive = active;
-        if (active)
-            _ragZoneIndex = zoneIndex;
-        if (!active)
+        get => _inputProcessor != null ? _inputProcessor.Joystick : null;
+        set
         {
-            _ragVirtualJoystick = Vector2.zero;
-            UpdateAnimator(0f);
+            if (_inputProcessor != null)
+                _inputProcessor.BindJoystick(value);
         }
     }
 
-    public void SetRagVirtualJoystick(Vector2 axes)
-    {
-        _ragVirtualJoystick = Vector2.ClampMagnitude(axes, 1f);
-    }
+    public bool RagAutopilotActive => _inputProcessor != null && _inputProcessor.RagAutopilotActive;
 
-    public void ApplyRagMovementDelta(Vector3 delta)
-    {
-        ApplyRagGroundMovementDelta(delta);
-    }
+    PlayerMovementInputProcessor _inputProcessor;
+    PhotonView pv;
+    AgentGroundMotor _ragGroundMotor;
+    bool _useGroundMotorForMovement;
+    float _xRotation;
+    bool _isCrouching;
+    bool _bCanMove = true;
+    bool _bCanCrouch = true;
+    bool _bCanJump = true;
+    bool _bCanInteract = true;
+    bool _bCanLook = true;
 
-    public void ApplyRagGroundMovementDelta(Vector3 delta)
-    {
-        SetRagVirtualJoystick(RagMovementInputFeed.DeltaToVirtualJoystick(delta, transform));
-    }
+    public PlayerMovementInputProcessor InputProcessor => _inputProcessor;
 
     public void EnableRagGroundMotorMovement(AgentGroundMotor motor)
     {
@@ -91,7 +72,14 @@ public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
         }
     }
 
-    private void Start()
+    void Awake()
+    {
+        _inputProcessor = GetComponent<PlayerMovementInputProcessor>();
+        if (_inputProcessor == null)
+            _inputProcessor = gameObject.AddComponent<PlayerMovementInputProcessor>();
+    }
+
+    void Start()
     {
         pv = GetComponent<PhotonView>();
         rb = GetComponent<Rigidbody>();
@@ -108,7 +96,7 @@ public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
 
         rb.freezeRotation = true;
 
-        fixedJoystick = FindAnyObjectByType<FixedJoystick>();
+        _inputProcessor.BindJoystick(FindAnyObjectByType<FixedJoystick>());
         fixedTouchField = FindAnyObjectByType<FixedTouchField>();
 
         if (cameraTransform != null)
@@ -118,28 +106,32 @@ public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
             RagPhysicalAgentLocalMode.ApplyForLocalClient(this);
     }
 
-
-    private void Update()
+    void Update()
     {
-        if(!pv.IsMine) return;
+        if (!pv.IsMine)
+            return;
 
         if (_bCanLook)
             HandleLook();
 
-        if (ragAutopilotActive)
+        if (_inputProcessor.SuppressesManualMovement)
             return;
 
-        if (_bCanCrouch) HandleCrouch();
-        if (_bCanJump) HandleJump();
-        if (_bCanInteract && Input.GetKeyDown(KeyCode.E)) HandleInteraction();
+        if (_bCanCrouch)
+            HandleCrouch();
+        if (_bCanJump)
+            HandleJump();
+        if (_bCanInteract && Input.GetKeyDown(KeyCode.E))
+            HandleInteraction();
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
-        if(!pv.IsMine) return;
+        if (!pv.IsMine)
+            return;
 
         // RagSequenceAgentMover drives AgentGroundMotor directly during physical autopilot.
-        if (ragAutopilotActive)
+        if (_inputProcessor.SuppressesManualMovement)
             return;
 
         if (!_bCanMove)
@@ -148,11 +140,13 @@ public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
         HandleMovement();
     }
 
-    private void HandleLook()
+    void HandleLook()
     {
-        var touchDist = fixedTouchField ? fixedTouchField.touchDist : new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * mouseSensitivity;
-        var mouseX = touchDist.x * mouseSensitivity * Time.deltaTime;
-        var mouseY = touchDist.y * mouseSensitivity * Time.deltaTime;
+        Vector2 touchDist = fixedTouchField
+            ? fixedTouchField.touchDist
+            : new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * mouseSensitivity;
+        float mouseX = touchDist.x * mouseSensitivity * Time.deltaTime;
+        float mouseY = touchDist.y * mouseSensitivity * Time.deltaTime;
 
         _xRotation -= mouseY;
         _xRotation = Mathf.Clamp(_xRotation, -85f, 85f);
@@ -161,20 +155,18 @@ public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
         transform.Rotate(Vector3.up * mouseX);
     }
 
-    private void HandleMovement()
+    void HandleMovement()
     {
-        Vector2 moveInput = ReadMoveInput();
+        Vector2 moveInput = _inputProcessor.GetMoveAxes();
         float horizontal = moveInput.x;
         float vertical = moveInput.y;
 
-        var moveDir = (transform.right * horizontal + transform.forward * vertical).normalized;
-        var currentSpeed = _isCrouching ? crouchSpeed : moveSpeed;
+        Vector3 moveDir = (transform.right * horizontal + transform.forward * vertical).normalized;
+        float currentSpeed = _isCrouching ? crouchSpeed : moveSpeed;
 
         if (_useGroundMotorForMovement && _ragGroundMotor != null)
         {
-            Vector3 direction = ragAutopilotActive
-                ? transform.forward * vertical + transform.right * horizontal
-                : moveDir;
+            Vector3 direction = moveDir;
             if (direction.sqrMagnitude > 1e-8f)
                 direction = direction.normalized * currentSpeed;
 
@@ -184,9 +176,9 @@ public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
             return;
         }
 
-        if (!fixedJoystick && !ragAutopilotActive)
+        if (!_inputProcessor.HasJoystickReference)
         {
-            var targetVelocity = moveDir * currentSpeed;
+            Vector3 targetVelocity = moveDir * currentSpeed;
             rb.linearVelocity = new Vector3(
                 targetVelocity.x,
                 rb.linearVelocity.y,
@@ -206,60 +198,37 @@ public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
             joyDirection.z
         );
 
-        if (ragAutopilotActive && _ragZoneIndex >= 0)
-        {
-            Vector3 clamped = ZonePlayAreaBounds.ClampPosition(_ragZoneIndex, rb.position);
-            if ((clamped - rb.position).sqrMagnitude > 1e-8f)
-            {
-                rb.position = clamped;
-                rb.linearVelocity = new Vector3(joyDirection.x, rb.linearVelocity.y, joyDirection.z);
-            }
-        }
-
         UpdateAnimator(vertical);
     }
 
-    Vector2 ReadMoveInput()
-    {
-        if (ragAutopilotActive)
-            return _ragVirtualJoystick;
-
-        if (fixedJoystick)
-            return new Vector2(fixedJoystick.Horizontal, fixedJoystick.Vertical);
-
-        return new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-    }
-
-    private void UpdateAnimator(float verticalInput)
+    void UpdateAnimator(float verticalInput)
     {
         float walkValue = 0f;
 
         if (Mathf.Abs(verticalInput) > 0.1f)
-        {
-            if (verticalInput > 0f)
-                walkValue = 0.5f;
-            else
-                walkValue = 1f;
-        }
+            walkValue = verticalInput > 0f ? 0.5f : 1f;
 
-        playerAnimator.SetFloat("WalkSpeed", walkValue);
+        if (playerAnimator != null)
+            playerAnimator.SetFloat("WalkSpeed", walkValue);
     }
 
-    private void HandleJump()
+    void HandleJump()
     {
         if (_useGroundMotorForMovement)
             return;
-        if (!Input.GetKeyDown(KeyCode.Space) || !IsGrounded()) return;
+        if (!Input.GetKeyDown(KeyCode.Space) || !IsGrounded())
+            return;
+
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         OnJump?.Invoke();
     }
 
-    private bool IsGrounded()
+    bool IsGrounded()
     {
         return Physics.Raycast(transform.position, Vector3.down, standingHeight / 2 + 0.1f);
     }
 
-    private void HandleCrouch()
+    void HandleCrouch()
     {
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
@@ -273,21 +242,16 @@ public class PlayerMovement : MonoBehaviour, IRagPlayerMovementHost
             OnCrouchStateChange?.Invoke(false);
         }
 
-        var targetHeight = _isCrouching ? crouchHeight : standingHeight;
-        var smoothHeight = Mathf.Lerp(capsuleCollider.height, targetHeight, Time.deltaTime * crouchTransitionSpeed);
-
-        capsuleCollider.height = smoothHeight;
+        float targetHeight = _isCrouching ? crouchHeight : standingHeight;
+        capsuleCollider.height = Mathf.Lerp(
+            capsuleCollider.height,
+            targetHeight,
+            Time.deltaTime * crouchTransitionSpeed);
     }
 
-    public bool GetCrouching()
-    {
-        return _isCrouching;
-    }
+    public bool GetCrouching() => _isCrouching;
 
-    public void HandleInteraction()
-    {
-        OnInteract?.Invoke();
-    }
+    public void HandleInteraction() => OnInteract?.Invoke();
 
     public void DisableAll(bool move, bool crouch, bool interact, bool jump, bool look)
     {

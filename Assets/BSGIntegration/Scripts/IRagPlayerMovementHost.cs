@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Implemented by the Photon player controller in Assembly-CSharp so
+/// Implemented by <see cref="PlayerMovementInputProcessor"/> on the Photon player so
 /// <see cref="RagSequenceAgentMover"/> can drive movement without a circular asmdef reference.
 /// </summary>
 public interface IRagPlayerMovementHost

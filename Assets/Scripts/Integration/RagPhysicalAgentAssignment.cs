@@ -3,19 +3,26 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
-using Jy_Util;
 
 /// <summary>
 /// Session-wide designation of which player acts as zone 0 physical agent P1 (RAG physical steps).
 /// Master Client sets room property <see cref="RoomPropertyKey"/>.
-/// Priority: editor test nick (*Editor, e.g. HamidEditor) → lowest Worker → solo room fallback.
+/// Only the Hamid editor test client is designated; all other players keep fixed-joystick movement.
 /// </summary>
 public static class RagPhysicalAgentAssignment
 {
     public const string RoomPropertyKey = "RagPhysicalActorNumber";
 
-    /// <summary>NetworkManager appends this in UNITY_EDITOR (Hamid → HamidEditor).</summary>
-    public const string EditorNickSuffix = "Editor";
+    /// <summary>
+    /// NetworkManager sets playerName to "Hamid" and appends "Editor" in UNITY_EDITOR → HamidEditor.
+    /// Aliases cover underscore variants used in older scenes.
+    /// </summary>
+    static readonly string[] DesignatedPhysicalPlayerNicks =
+    {
+        "HamidEditor",
+        "Hamid_editor",
+        "Hamid_Editor",
+    };
 
     public static int DesignatedActorNumber { get; private set; } = -1;
 
@@ -101,25 +108,11 @@ public static class RagPhysicalAgentAssignment
 
     public static int ResolveDesignatedActorNumber()
     {
-        int editorPlayer = FindPlayerByNickSuffix(EditorNickSuffix);
-        if (editorPlayer >= 0)
-            return editorPlayer;
-
-        int lowestWorker = FindLowestWorkerActorNumber();
-        if (lowestWorker >= 0)
-            return lowestWorker;
-
-        if (PhotonNetwork.PlayerList.Length == 1 && PhotonNetwork.PlayerList[0] != null)
-            return PhotonNetwork.PlayerList[0].ActorNumber;
-
-        return -1;
+        return FindDesignatedPhysicalPlayerActorNumber();
     }
 
-    static int FindPlayerByNickSuffix(string suffix)
+    static int FindDesignatedPhysicalPlayerActorNumber()
     {
-        if (string.IsNullOrEmpty(suffix))
-            return -1;
-
         int lowest = int.MaxValue;
         bool found = false;
 
@@ -127,7 +120,8 @@ public static class RagPhysicalAgentAssignment
         {
             if (player == null || string.IsNullOrEmpty(player.NickName))
                 continue;
-            if (!player.NickName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+
+            if (!IsDesignatedPhysicalPlayerNick(player.NickName))
                 continue;
 
             if (player.ActorNumber < lowest)
@@ -140,30 +134,17 @@ public static class RagPhysicalAgentAssignment
         return found ? lowest : -1;
     }
 
-    static int FindLowestWorkerActorNumber()
+    static bool IsDesignatedPhysicalPlayerNick(string nick)
     {
-        int lowest = int.MaxValue;
-        bool found = false;
+        if (string.IsNullOrEmpty(nick))
+            return false;
 
-        foreach (Player player in PhotonNetwork.PlayerList)
+        foreach (string designatedNick in DesignatedPhysicalPlayerNicks)
         {
-            if (player == null || player.IsMasterClient)
-                continue;
-
-            if (player.CustomProperties.TryGetValue(Jy_Utility._Designation, out object designation)
-                && designation != null
-                && designation.ToString() == PlayerRole.Supervisor.ToString())
-            {
-                continue;
-            }
-
-            if (player.ActorNumber < lowest)
-            {
-                lowest = player.ActorNumber;
-                found = true;
-            }
+            if (string.Equals(nick, designatedNick, StringComparison.OrdinalIgnoreCase))
+                return true;
         }
 
-        return found ? lowest : -1;
+        return false;
     }
 }

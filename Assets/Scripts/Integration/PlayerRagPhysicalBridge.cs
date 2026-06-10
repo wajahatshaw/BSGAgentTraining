@@ -107,8 +107,6 @@ public static class PlayerRagPhysicalBridge
         mover.gateOperationalOnLeaderCognitive = true;
         ApplyDesignatedPlayerNavTuning(mover);
         mover.moveSpeed = moveSpeed;
-        mover.reachThreshold = 1.05f;
-        mover.cognitiveInteractionStandDistance = 0.92f;
         mover.mentalLeaderAgentId = ResolveZone0MentalLeaderId();
 
         HandRotationManager.EnsureOnAgent(playerGo);
@@ -236,6 +234,12 @@ public static class PlayerRagPhysicalBridge
         if (mover == null)
             return;
 
+        float playerScale = Mathf.Max(mover.transform.lossyScale.x, mover.transform.lossyScale.z);
+        if (playerScale < 1.01f)
+            playerScale = DesignatedPhysicalPlayerAppearance.GetScale();
+
+        mover.reachThreshold = Mathf.Max(1.35f, 0.92f * playerScale);
+        mover.cognitiveInteractionStandDistance = Mathf.Max(0.92f, 0.58f * playerScale);
         mover.avoidCognitiveObstacles = true;
         mover.useProximityCognitiveSteering = true;
         mover.useProximityEnvironmentSteering = true;

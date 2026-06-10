@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Converts RAG navigation deltas into player-local joystick axes for <see cref="PlayerMovement"/>.
+/// Converts RAG navigation deltas into player-local move axes for <see cref="PlayerMovementInputProcessor"/>.
 /// </summary>
 public static class RagMovementInputFeed
 {

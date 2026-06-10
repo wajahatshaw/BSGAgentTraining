@@ -430,6 +430,7 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
 
         string effectiveTargetId = ResolveEffectiveTargetObjectId(step);
+
         Vector3? targetPos = ResolveTargetPosition(effectiveTargetId);
         if (!targetPos.HasValue)
         {
@@ -473,7 +474,11 @@ public class RagSequenceAgentMover : MonoBehaviour
         float dist = to.magnitude;
         float progressDist = GetApproachProgressDistance(effectiveTargetId, stationCenter, dist);
 
-        if (!HasArrivedAtStep(step, effectiveTargetId, stationCenter, dist))
+        bool arrived = step.isActivated;
+        if (!arrived)
+            arrived = HasArrivedAtStep(step, effectiveTargetId, stationCenter, dist);
+
+        if (!arrived)
         {
             dwellTimer = 0f;
             if (!IsMenuOpenedForStep(step))
@@ -533,10 +538,14 @@ public class RagSequenceAgentMover : MonoBehaviour
             Vector3 delta = dir * moveSpeed * speedMult * Time.deltaTime;
             ApplyMovementDelta(delta, effectiveTargetId);
 
-            if (dir.sqrMagnitude > 0.001f)
+            Vector3 faceFlat = stationCenter - transform.position;
+            faceFlat.y = 0f;
+            if (faceFlat.sqrMagnitude < 0.04f)
+                faceFlat = dir;
+            if (faceFlat.sqrMagnitude > 0.001f)
             {
                 float rotRate = _navEscapeRemaining > 0f ? 11f : 8f;
-                Quaternion look = Quaternion.LookRotation(dir, Vector3.up);
+                Quaternion look = Quaternion.LookRotation(faceFlat.normalized, Vector3.up);
                 transform.rotation = Quaternion.Slerp(transform.rotation, look, rotRate * Time.deltaTime);
             }
             if (walkAnim != null) walkAnim.StartWalking();
@@ -552,9 +561,13 @@ public class RagSequenceAgentMover : MonoBehaviour
             cogMl?.ClearMlNavigationTarget();
         }
 
-        // Arrived — Goal Buffer triple (bottom/middle/top) or single dwell
+        // Arrived — latch activation, record observation, then dwell + act before completion.
         if (walkAnim != null) walkAnim.StopWalking();
-        step.isActivated = true;
+        if (!step.isActivated)
+        {
+            step.isActivated = true;
+            OnStepArrived(step);
+        }
 
         if (isMentalAgent && runningCognitive && GoalBufferTripleOrchestrator.IsTripleModeStep(step))
         {
@@ -574,6 +587,11 @@ public class RagSequenceAgentMover : MonoBehaviour
             ApplyMenuHandPose(step, true);
             ApplyMenuReachPose(stationCenter, true);
         }
+        else if (IsPhysicalManualActStep(step))
+        {
+            ApplyMenuHandPose(step, true);
+            ApplyMenuReachPose(stationCenter, true);
+        }
 
         dwellTimer += Time.deltaTime;
 
@@ -581,6 +599,8 @@ public class RagSequenceAgentMover : MonoBehaviour
         dwellNeed = Mathf.Clamp(dwellNeed, minDwellSeconds, maxDwellSeconds);
         if (RagMenuController.IsMenuStep(step))
             dwellNeed = IsMenuOpenedForStep(step) ? 0.18f : 0.28f;
+        else if (IsPhysicalManualActStep(step))
+            dwellNeed = Mathf.Max(dwellNeed, 0.35f);
 
         UpdateImaginalThoughtBubbleWhileDwelling(step);
 
@@ -603,8 +623,36 @@ public class RagSequenceAgentMover : MonoBehaviour
             return;
         }
 
+        FinishStepDwellAndComplete(step);
+    }
+
+    /// <summary>ManualModule press/type/scroll physical steps — navigate to target first, then act in place.</summary>
+    static bool IsPhysicalManualActStep(ActionSequenceStep step)
+    {
+        if (step == null)
+            return false;
+        if (RagMenuController.IsMenuStep(step))
+            return false;
+        return string.Equals(step.actionType, "act", StringComparison.OrdinalIgnoreCase);
+    }
+
+    float GetPhysicalManualActArrivalDistance(ActionSequenceStep step)
+    {
+        float stand = GetInteractionStandDistance();
+        float dist = Mathf.Max(reachThreshold, stand + 0.28f);
+        if (hostPlayerMovement)
+            dist = Mathf.Max(dist, stand + 0.42f);
+        if (IsPhysicalManualActStep(step))
+            dist = Mathf.Max(dist, 1.35f);
+        return dist;
+    }
+
+    void FinishStepDwellAndComplete(ActionSequenceStep step)
+    {
+        if (step == null || active == null)
+            return;
+
         _imaginalThoughtBubble?.Hide();
-        OnStepArrived(step);
         ApplyPhysicalOnlyStepReward(step);
         RecordStepProducedPayload(step);
         ApplyBufferStateSideEffects(step);
@@ -622,20 +670,23 @@ public class RagSequenceAgentMover : MonoBehaviour
             RagMenuController.EnsureInScene()?.HideAllMenus();
             ResetMenuReachPose();
         }
+        else if (IsPhysicalManualActStep(step))
+        {
+            ApplyMenuHandPose(step, false);
+            ResetMenuReachPose();
+        }
+
         active.MarkStepCompleted();
         if (!_orchestratorMode)
             active.MoveToNextStep();
         dwellTimer = 0f;
 
-        // In orchestrator mode, notify the DAG executor immediately so it can evaluate
-        // the next ready steps. The tail handler will clear `active` on the next frame.
         if (_orchestratorMode && !string.IsNullOrEmpty(step.stepId))
         {
             _currentOrchestratorStepId = null;
             NotifyOrchestratorStepCompleted(step.stepId);
         }
 
-        // Mental: cognitive pass only. Physical: operational steps (dynamic RAG targets).
         if (!RagOrchestratorStepReporterRegistry.HasReporter)
         {
             if (isMentalAgent && runningCognitive)
@@ -1537,6 +1588,18 @@ public class RagSequenceAgentMover : MonoBehaviour
             }
 
             return distToMoveGoal <= (IsMenuOpenedForStep(step) ? 0.65f : 0.85f);
+        }
+
+        if (IsPhysicalManualActStep(step))
+        {
+            float arriveDist = GetPhysicalManualActArrivalDistance(step);
+            Vector3 a = transform.position;
+            a.y = 0f;
+            Vector3 c = stationCenter;
+            c.y = 0f;
+            if (Vector3.Distance(a, c) <= arriveDist)
+                return true;
+            return distToMoveGoal <= arriveDist;
         }
 
         return HasArrivedAtTarget(targetObjectId, stationCenter, distToMoveGoal);
