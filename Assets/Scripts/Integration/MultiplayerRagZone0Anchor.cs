@@ -148,6 +148,14 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
     public float playAreaMinZ = -22f;
     public float playAreaMaxZ = -2f;
 
+    [Header("ML-Agents training (zone 0 embed)")]
+    [Tooltip("When on, mlagents-learn collects PhysicalAgentZone0 from the designated Photon player (P1) and CognitiveAgentZone0 from M1. Turn off for normal multiplayer without Python.")]
+    public bool enableMlTrainingInRagMode = true;
+    [Tooltip("Train M1 cognitive brain → CognitiveAgentZone0.onnx.")]
+    public bool enableMlTrainingForCognitiveAgents = true;
+    [Tooltip("Bitmask for ML bootstrap. 1 = zone 0 only (recommended). 0 = all zones.")]
+    public int trainZonesMask = 1;
+
     [Header("Overlap avoidance")]
     public Bounds excludeOverlapBounds = new Bounds(new Vector3(-2f, 0.5f, 0f), new Vector3(12f, 2f, 14f));
     [Min(0.5f)] public float playerSpawnPadding = 3.5f;
@@ -239,6 +247,12 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
             ValidateOverlapAndNudge,
             PrepareLayoutFromSceneData);
         BsgIntegrationSettings.EnsureDisplay2OverviewCamera = EnsureDisplay2OverviewCamera;
+        BsgIntegrationSettings.TryResolveDesignatedPhysicalSpawnWorld = ResolveDesignatedPhysicalSpawnForBridge;
+    }
+
+    Vector3? ResolveDesignatedPhysicalSpawnForBridge(float worldY)
+    {
+        return TryGetDesignatedPhysicalAgentSpawnWorld(out Vector3 worldPos, worldY) ? worldPos : (Vector3?)null;
     }
 
     void Start()
@@ -310,6 +324,9 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
 
     void OnDestroy()
     {
+        if (BsgIntegrationSettings.TryResolveDesignatedPhysicalSpawnWorld == ResolveDesignatedPhysicalSpawnForBridge)
+            BsgIntegrationSettings.TryResolveDesignatedPhysicalSpawnWorld = null;
+
         if (Instance == this)
         {
             BsgIntegrationSettings.MultiplayerAgentScaleMultiplier = 1f;
@@ -1174,9 +1191,65 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
         Vector3 physicalCenter = GetPhysicalPlacementCenterBase();
         float backZ = _zone0InteriorBounds.min.z + physicalBandInsetFromBackWall;
         float frontZ = backZ + physicalBandDepth;
-        float spawnZ = physicalCenter.z + physicalBandDepth * 0.32f;
-        spawnZ = Mathf.Clamp(spawnZ, backZ + 1.25f, frontZ - 0.85f);
-        return ClampBaseLocalToZoneInterior(new Vector2(physicalCenter.x, spawnZ));
+
+        if (TryGetPhysicalTargetClusterCentroidBaseLocal(out Vector2 clusterCentroid))
+        {
+            float spawnZ = Mathf.Clamp(clusterCentroid.y + physicalBandDepth * 0.12f, backZ + 1.25f, frontZ - 0.85f);
+            return ClampBaseLocalToZoneInterior(new Vector2(clusterCentroid.x, spawnZ));
+        }
+
+        float spawnZFallback = physicalCenter.z + physicalBandDepth * 0.32f;
+        spawnZFallback = Mathf.Clamp(spawnZFallback, backZ + 1.25f, frontZ - 0.85f);
+        return ClampBaseLocalToZoneInterior(new Vector2(physicalCenter.x, spawnZFallback));
+    }
+
+    bool TryGetPhysicalTargetClusterCentroidBaseLocal(out Vector2 centroid)
+    {
+        centroid = Vector2.zero;
+        if (_baseTransform == null)
+            _baseTransform = transform.parent;
+        if (_baseTransform == null)
+            return false;
+
+        Vector2 sum = Vector2.zero;
+        int count = 0;
+
+        foreach (DeclarativeObjectMetadata meta in FindObjectsOfType<DeclarativeObjectMetadata>())
+        {
+            if (meta == null || IsMentalClusterObject(meta.gameObject))
+                continue;
+            if (!IsPhysicalClusterObject(meta.gameObject))
+                continue;
+
+            Vector2 bl = WorldToBaseLocalXZ(meta.transform.position);
+            sum += bl;
+            count++;
+        }
+
+        Transform ragRoot = GetOrCreateRagWorldRoot();
+        if (ragRoot != null)
+        {
+            foreach (Transform child in ragRoot.GetComponentsInChildren<Transform>(true))
+            {
+                if (child == null || child == ragRoot)
+                    continue;
+                GameObject go = child.gameObject;
+                if (!go.name.StartsWith("Tool_", System.StringComparison.OrdinalIgnoreCase))
+                    continue;
+                if (IsMentalClusterObject(go))
+                    continue;
+
+                Vector2 bl = WorldToBaseLocalXZ(go.transform.position);
+                sum += bl;
+                count++;
+            }
+        }
+
+        if (count < 1)
+            return false;
+
+        centroid = sum / count;
+        return true;
     }
 
     public bool TryGetDesignatedPhysicalAgentSpawnWorld(out Vector3 worldPos, float worldY = 0f)
@@ -1189,7 +1262,54 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
 
         Vector2 baseLocal = GetDesignatedPhysicalAgentSpawnBaseLocal();
         worldPos = BaseLocalXZToWorld(baseLocal.x, baseLocal.y, worldY);
+        worldPos = NudgeSpawnClearOfCognitiveStations(worldPos);
         return true;
+    }
+
+    Vector3 NudgeSpawnClearOfCognitiveStations(Vector3 worldPos)
+    {
+        float playerRadius = Mathf.Max(0.35f, designatedPhysicalPlayerScale * 0.32f);
+        float playerHeight = Mathf.Max(1.5f, designatedPhysicalPlayerScale * 0.95f);
+        Vector3 physicalBandDir = GetPhysicalPlacementCenterBase() - GetMentalPlacementCenterBase();
+        physicalBandDir.y = 0f;
+        if (physicalBandDir.sqrMagnitude < 0.01f)
+            physicalBandDir = Vector3.back;
+        physicalBandDir.Normalize();
+
+        for (int attempt = 0; attempt < 12; attempt++)
+        {
+            if (!IsOverlappingCognitiveStation(worldPos, playerRadius, playerHeight))
+                return worldPos;
+
+            worldPos += physicalBandDir * (playerRadius * 1.15f);
+            worldPos = BaseLocalXZToWorld(
+                WorldToBaseLocalXZ(worldPos).x,
+                WorldToBaseLocalXZ(worldPos).y,
+                worldPos.y);
+            Vector2 clamped = ClampBaseLocalToZoneInterior(WorldToBaseLocalXZ(worldPos));
+            worldPos = BaseLocalXZToWorld(clamped.x, clamped.y, worldPos.y);
+        }
+
+        return worldPos;
+    }
+
+    static bool IsOverlappingCognitiveStation(Vector3 feetWorld, float radius, float height)
+    {
+        Vector3 p1 = feetWorld + Vector3.up * radius;
+        Vector3 p2 = feetWorld + Vector3.up * Mathf.Max(height - radius, radius * 2f);
+        Collider[] hits = Physics.OverlapCapsule(p1, p2, radius, Physics.AllLayers, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider c = hits[i];
+            if (c == null || c.isTrigger)
+                continue;
+            if (c.GetComponentInParent<CognitiveStationInteractable>() != null)
+                return true;
+            if (c.transform != null && c.transform.name == "CognitiveNavObstacle")
+                return true;
+        }
+
+        return false;
     }
 
     public Quaternion GetDesignatedPhysicalAgentSpawnWorldRotation()

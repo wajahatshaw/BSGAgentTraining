@@ -2977,6 +2977,10 @@ public class RagSequenceAgentMover : MonoBehaviour
     /// </summary>
     public static void ResetZoneForMlAgentsEpisode(int zoneIndex)
     {
+        if (BsgIntegrationSettings.ShouldHoldMultiplayerIdleAfterZoneComplete
+            && BsgIntegrationSettings.IsZoneMlRunComplete(zoneIndex))
+            return;
+
         CognitivePhaseOrchestrator orch = CognitivePhaseOrchestrator.GetOrCreateForZone(zoneIndex);
         orch?.ResetProgressForMlAgentsEpisodeRestart();
 

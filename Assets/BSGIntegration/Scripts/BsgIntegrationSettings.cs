@@ -55,6 +55,24 @@ public static class BsgIntegrationSettings
     /// <summary>World-space XZ play area for zone 0 when embedded in ProtoypeSceneMultiplayer (set by anchor).</summary>
     public static ZonePlayAreaWorldRect? MultiplayerZone0PlayAreaWorld;
 
+    /// <summary>Per-zone flag: multiplayer embed finished full DAG — hold idle instead of ML episode restart.</summary>
+    static readonly bool[] ZoneMlRunComplete = new bool[4];
+
+    public static void MarkZoneMlRunComplete(int zoneIndex)
+    {
+        if (zoneIndex >= 0 && zoneIndex < ZoneMlRunComplete.Length)
+            ZoneMlRunComplete[zoneIndex] = true;
+    }
+
+    public static bool IsZoneMlRunComplete(int zoneIndex) =>
+        zoneIndex >= 0 && zoneIndex < ZoneMlRunComplete.Length && ZoneMlRunComplete[zoneIndex];
+
+    public static bool ShouldHoldMultiplayerIdleAfterZoneComplete =>
+        MultiplayerEmbedMode;
+
+    /// <summary>Set by <c>MultiplayerRagZone0Anchor</c> — resolves designated P1 spawn in physical band (Assembly-CSharp bridge).</summary>
+    public static System.Func<float, Vector3?> TryResolveDesignatedPhysicalSpawnWorld;
+
     public static bool HasSceneAnchorLayout =>
         MapJsonToWorld != null && GetRagWorldRoot != null;
 
@@ -133,6 +151,9 @@ public static class BsgIntegrationSettings
         ZoneLayoutSpacingOverride = null;
         EnsureDisplay2OverviewCamera = null;
         MultiplayerZone0PlayAreaWorld = null;
+        for (int i = 0; i < ZoneMlRunComplete.Length; i++)
+            ZoneMlRunComplete[i] = false;
+        TryResolveDesignatedPhysicalSpawnWorld = null;
     }
 }
 

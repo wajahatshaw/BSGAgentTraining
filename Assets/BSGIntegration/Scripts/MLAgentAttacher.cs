@@ -11,6 +11,29 @@ using UnityEditor;
 /// </summary>
 public static class MLAgentAttacher
 {
+    public struct PendingMlAttachSeed
+    {
+        public Vector3 spawnWorld;
+        public string agentId;
+        public int zoneIndex;
+        public bool preserveHostPlayerPosition;
+    }
+
+    static readonly System.Collections.Generic.Dictionary<int, PendingMlAttachSeed> s_pendingAttachSeeds =
+        new System.Collections.Generic.Dictionary<int, PendingMlAttachSeed>();
+
+    /// <summary>Consumed by <see cref="BSGMLAgent.Initialize"/> before default grid teleport runs.</summary>
+    internal static bool TryConsumePendingAttachSeed(GameObject agent, out PendingMlAttachSeed seed)
+    {
+        seed = default;
+        if (agent == null) return false;
+        int id = agent.GetInstanceID();
+        if (!s_pendingAttachSeeds.TryGetValue(id, out seed))
+            return false;
+        s_pendingAttachSeeds.Remove(id);
+        return true;
+    }
+
     /// <summary>
     /// Attach ML-Agents components to a runtime-created agent
     /// </summary>
@@ -65,6 +88,24 @@ public static class MLAgentAttacher
         var mlAgent = agent.GetComponent<BSGMLAgent>();
         if (mlAgent == null)
         {
+            RagSequenceAgentMover mover = agent.GetComponent<RagSequenceAgentMover>();
+            bool hostPlayer = mover != null && mover.hostPlayerMovement;
+            int zi = mover != null ? mover.zoneIndex : 0;
+            Vector3 seedSpawn = ragSpawnWorldPosition ?? agent.transform.position;
+            if (hostPlayer && BsgIntegrationSettings.TryResolveDesignatedPhysicalSpawnWorld != null)
+            {
+                Vector3? designated = BsgIntegrationSettings.TryResolveDesignatedPhysicalSpawnWorld(seedSpawn.y);
+                if (designated.HasValue)
+                    seedSpawn = designated.Value;
+            }
+
+            s_pendingAttachSeeds[agent.GetInstanceID()] = new PendingMlAttachSeed
+            {
+                spawnWorld = seedSpawn,
+                agentId = agentId,
+                zoneIndex = zi,
+                preserveHostPlayerPosition = hostPlayer,
+            };
             mlAgent = agent.AddComponent<BSGMLAgent>();
         }
         
@@ -72,6 +113,9 @@ public static class MLAgentAttacher
         mlAgent.behaviorName = behaviorName;
         if (ragSpawnWorldPosition.HasValue)
             mlAgent.SetRagSpawnPreserve(ragSpawnWorldPosition.Value);
+        else if (agent.GetComponent<RagSequenceAgentMover>() is RagSequenceAgentMover hostMover
+                 && hostMover.hostPlayerMovement)
+            mlAgent.SetRagSpawnPreserve(agent.transform.position);
 
         if (IsPhysicalAgent(agentId, behaviorName))
             HandRotationManager.EnsureOnAgent(agent);

@@ -7,31 +7,22 @@ using Unity.MLAgents;
 /// </summary>
 public static class RagRuntimeMLBootstrap
 {
-    // Mirror ReplicaSceneSetup zone layout for play-area clamps on BSGMLAgent.
-    const float ZoneHalf = 20f;
     const float ZoneInset = 18f;
-    const float GridShiftZ = 18f;
-
-    static Vector3 ZoneWorldOffset(int zoneIndex)
-    {
-        switch (Mathf.Clamp(zoneIndex, 0, 3))
-        {
-            case 0: return new Vector3(-ZoneHalf, 0f, -ZoneHalf + GridShiftZ);
-            case 1: return new Vector3(ZoneHalf, 0f, -ZoneHalf + GridShiftZ);
-            case 2: return new Vector3(-ZoneHalf, 0f, ZoneHalf + GridShiftZ);
-            default: return new Vector3(ZoneHalf, 0f, ZoneHalf + GridShiftZ);
-        }
-    }
 
     static void ApplyZonePlayAreaBounds(BSGMLAgent mlAgent, int zoneIndex)
     {
         if (mlAgent == null) return;
-        Vector3 zone = ZoneWorldOffset(zoneIndex);
+
+        // Multiplayer anchor lives in Assembly-CSharp — sync world rect via BsgIntegrationSettings only.
+        if (BsgIntegrationSettings.MultiplayerEmbedMode && zoneIndex == 0)
+            BsgIntegrationSettings.ApplyPlayAreaToAgents?.Invoke();
+
+        ZonePlayAreaBounds.GetXZBounds(zoneIndex, out float minX, out float maxX, out float minZ, out float maxZ, ZoneInset);
         mlAgent.constrainToPlayArea = true;
-        mlAgent.playAreaMinX = zone.x - ZoneInset;
-        mlAgent.playAreaMaxX = zone.x + ZoneInset;
-        mlAgent.playAreaMinZ = zone.z - ZoneInset;
-        mlAgent.playAreaMaxZ = zone.z + ZoneInset;
+        mlAgent.playAreaMinX = minX;
+        mlAgent.playAreaMaxX = maxX;
+        mlAgent.playAreaMinZ = minZ;
+        mlAgent.playAreaMaxZ = maxZ;
     }
 
     /// <summary>
@@ -85,83 +76,8 @@ public static class RagRuntimeMLBootstrap
             if (mover == null || mover.isMentalAgent)
                 continue;
 
-            int zoneBit = 1 << Mathf.Clamp(mover.zoneIndex, 0, 3);
-            bool zoneTrainingEnabled = setup.trainZonesMask == 0 || (setup.trainZonesMask & zoneBit) != 0;
-            if (!zoneTrainingEnabled)
-            {
-                Debug.Log($"ℹ️ RAG ML bootstrap: skipping physical '{mover.agentId}' zone {mover.zoneIndex} (trainZonesMask={setup.trainZonesMask})");
-                continue;
-            }
-
-            GameObject go = mover.gameObject;
-            string agentId = ZoneAgentIds.NormalizeProfileAgentId(
-                string.IsNullOrWhiteSpace(mover.agentId) ? go.name : mover.agentId.Trim(),
-                mover.zoneIndex);
-
-            AgentProfile profile = null;
-            if (profiles != null)
-                profiles.TryGetValue(agentId, out profile);
-
-            string behaviorName = MLAgentAttacher.ResolveMlBehaviorNameForRagPhysical(profile, mover.zoneIndex, agentId);
-
-            // Keep RagSequenceAgentMover enabled — it owns orchestrator physical steps, humanoid walk,
-            // and SceneGenerator target resolution. BSGMLAgent is attached for ML-Agents policy IO only.
-            mover.enabled = true;
-
-            HumanBodyBuilder.EnsureBareCapsuleHidden(go);
-
-            AgentProximity legacyProx = go.GetComponent<AgentProximity>();
-            if (legacyProx != null && HumanBodyBuilder.HasHumanoidBody(go))
-                Object.Destroy(legacyProx);
-
-            Vector3 spawnWorld = go.transform.position;
-
-            MLAgentAttacher.AttachMLAgentComponents(go, behaviorName, agentId, spawnWorld);
-
-            var ml = go.GetComponent<BSGMLAgent>();
-            if (ml != null)
-            {
-                ml.zoneIndex = Mathf.Clamp(mover.zoneIndex, 0, 3);
-                ml.agentId = ZoneAgentIds.NormalizeProfileAgentId(agentId, ml.zoneIndex);
-                ml.agentRole = BSGMLAgent.AgentRole.Physical;
-                ml.waitForCognitiveReady = true;
-                ml.moveSpeed = 2f;
-                ml.physicalMovementSpeed = 2.5f;
-                ml.physicalMovementSpeedMultiplier = 1f;
-                ml.rotationSpeed = 90f;
-                if (profile != null)
-                {
-                    ml.skillLevel = profile.skillLevel;
-                    ml.desireLevel = profile.desireLevel > 0f ? profile.desireLevel : profile.skillLevel;
-                }
-
-                ApplyZonePlayAreaBounds(ml, ml.zoneIndex);
-                ml.ConfigureRagPhysicalPresentation();
-                RagStepRewardBridge.RegisterPhysicalMlAgentForRewards(ml);
-
-                AgentGroundMotor motor = go.GetComponent<AgentGroundMotor>();
-                if (motor != null)
-                {
-                    motor.clampZoneIndex = Mathf.Clamp(mover.zoneIndex, 0, 3);
-                    motor.SnapFeetToGround();
-                }
-            }
-
-            HumanWalkAnimation walk = go.GetComponent<HumanWalkAnimation>();
-            if (walk != null)
-                walk.enabled = true;
-
-            bool enableDecisions = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "JSONWorkflowScenePersona";
-            var dr = go.GetComponent<DecisionRequester>();
-            if (dr != null)
-            {
-                dr.enabled = enableDecisions;
-                int period = Mathf.Max(1, setup.ragPhysicalMlDecisionPeriod);
-                dr.DecisionPeriod = period;
-            }
-
-            attached++;
-            Debug.Log($"✅ RAG ML bootstrap: attached '{behaviorName}' to physical agent '{agentId}' (zone {mover.zoneIndex}).");
+            if (TryAttachPhysicalMlAgent(mover, setup, profiles))
+                attached++;
         }
 
         int cognitiveAttached = BootstrapCognitiveRagAgents(setup, movers, profiles);
@@ -170,6 +86,128 @@ public static class RagRuntimeMLBootstrap
                   "Behaviors: PhysicalAgentZone0-3 + CognitiveAgentZone0-3. " +
                   "Python trainer can now collect steps — leave Play running until checkpoints save .onnx " +
                   "(checkpoint_interval in worker_training_config_fixed.yaml). Ctrl+C exports final models if steps > 0.");
+    }
+
+    /// <summary>
+    /// Attach PhysicalAgentZoneN to a single physical <see cref="RagSequenceAgentMover"/>.
+    /// Safe to call again when the Photon player is bound after initial <see cref="TryBootstrap"/>.
+    /// </summary>
+    public static bool TryAttachPhysicalMlAgent(
+        RagSequenceAgentMover mover,
+        ReplicaSceneSetup setup,
+        System.Collections.Generic.Dictionary<string, AgentProfile> profiles = null)
+    {
+        if (mover == null || mover.isMentalAgent || setup == null || !setup.enableMlTrainingInRagMode)
+            return false;
+
+        int zoneBit = 1 << Mathf.Clamp(mover.zoneIndex, 0, 3);
+        bool zoneTrainingEnabled = setup.trainZonesMask == 0 || (setup.trainZonesMask & zoneBit) != 0;
+        if (!zoneTrainingEnabled)
+        {
+            Debug.Log($"ℹ️ RAG ML bootstrap: skipping physical '{mover.agentId}' zone {mover.zoneIndex} (trainZonesMask={setup.trainZonesMask})");
+            return false;
+        }
+
+        GameObject go = mover.gameObject;
+        if (go.GetComponent<BSGMLAgent>() != null)
+            return true;
+
+        if (profiles == null)
+        {
+            var loader = Object.FindObjectOfType<SceneUILoader>();
+            profiles = loader != null && loader.sceneData != null ? loader.sceneData.agentProfiles : null;
+        }
+
+        string agentId = ZoneAgentIds.NormalizeProfileAgentId(
+            string.IsNullOrWhiteSpace(mover.agentId) ? go.name : mover.agentId.Trim(),
+            mover.zoneIndex);
+
+        AgentProfile profile = null;
+        if (profiles != null)
+            profiles.TryGetValue(agentId, out profile);
+
+        string behaviorName = MLAgentAttacher.ResolveMlBehaviorNameForRagPhysical(profile, mover.zoneIndex, agentId);
+
+        // Keep RagSequenceAgentMover enabled — it owns orchestrator physical steps, humanoid walk,
+        // and SceneGenerator target resolution. BSGMLAgent is attached for ML-Agents policy IO only.
+        mover.enabled = true;
+
+        HumanBodyBuilder.EnsureBareCapsuleHidden(go);
+
+        AgentProximity legacyProx = go.GetComponent<AgentProximity>();
+        if (legacyProx != null && HumanBodyBuilder.HasHumanoidBody(go))
+            Object.Destroy(legacyProx);
+
+        Vector3 spawnWorld = go.transform.position;
+        if (mover.hostPlayerMovement && BsgIntegrationSettings.TryResolveDesignatedPhysicalSpawnWorld != null)
+        {
+            Vector3? designated = BsgIntegrationSettings.TryResolveDesignatedPhysicalSpawnWorld(spawnWorld.y);
+            if (designated.HasValue)
+                spawnWorld = designated.Value;
+        }
+
+        MLAgentAttacher.AttachMLAgentComponents(go, behaviorName, agentId, spawnWorld);
+
+        var ml = go.GetComponent<BSGMLAgent>();
+        if (ml != null)
+        {
+            ml.zoneIndex = Mathf.Clamp(mover.zoneIndex, 0, 3);
+            ml.agentId = ZoneAgentIds.NormalizeProfileAgentId(agentId, ml.zoneIndex);
+            ml.agentRole = BSGMLAgent.AgentRole.Physical;
+            ml.waitForCognitiveReady = true;
+            ml.moveSpeed = 2f;
+            ml.physicalMovementSpeed = 2.5f;
+            ml.physicalMovementSpeedMultiplier = 1f;
+            ml.rotationSpeed = 90f;
+            if (profile != null)
+            {
+                ml.skillLevel = profile.skillLevel;
+                ml.desireLevel = profile.desireLevel > 0f ? profile.desireLevel : profile.skillLevel;
+            }
+
+            ApplyZonePlayAreaBounds(ml, ml.zoneIndex);
+            ml.ConfigureRagPhysicalPresentation();
+            RagStepRewardBridge.RegisterPhysicalMlAgentForRewards(ml);
+
+            AgentGroundMotor motor = go.GetComponent<AgentGroundMotor>();
+            if (motor != null)
+            {
+                motor.clampZoneIndex = Mathf.Clamp(mover.zoneIndex, 0, 3);
+                motor.SnapFeetToGround();
+            }
+        }
+
+        HumanWalkAnimation walk = go.GetComponent<HumanWalkAnimation>();
+        if (walk != null)
+            walk.enabled = true;
+
+        bool enableDecisions = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "JSONWorkflowScenePersona";
+        var dr = go.GetComponent<DecisionRequester>();
+        if (dr != null)
+        {
+            dr.enabled = enableDecisions;
+            int period = Mathf.Max(1, setup.ragPhysicalMlDecisionPeriod);
+            dr.DecisionPeriod = period;
+        }
+
+        string hostTag = mover.hostPlayerMovement ? " (Photon player)" : string.Empty;
+        Debug.Log($"✅ RAG ML bootstrap: attached '{behaviorName}' to physical agent '{agentId}' (zone {mover.zoneIndex}){hostTag}.");
+        return true;
+    }
+
+    /// <summary>
+    /// Multiplayer embed: SceneGenerator skips P1 spawn; Photon player binds later via <see cref="PlayerRagPhysicalBridge"/>.
+    /// </summary>
+    public static bool TryBootstrapPhotonPlayerPhysical(RagSequenceAgentMover mover)
+    {
+        if (mover == null || mover.isMentalAgent || !mover.hostPlayerMovement)
+            return false;
+
+        ReplicaSceneSetup setup = Object.FindObjectOfType<ReplicaSceneSetup>();
+        if (setup == null || !setup.enableMlTrainingInRagMode)
+            return false;
+
+        return TryAttachPhysicalMlAgent(mover, setup);
     }
 
     static int BootstrapCognitiveRagAgents(

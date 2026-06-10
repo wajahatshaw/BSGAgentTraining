@@ -95,7 +95,7 @@ crashlytics-build.properties
 
 # Crashes & local output
 mono_crash.*
-results/
+
 UIElementsSchema/
 *.slnx
 *.csproj.lscache

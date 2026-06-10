@@ -61,8 +61,10 @@ public class RagMultiplayerSceneBootstrap : MonoBehaviour
         options.spawnZonesMask = 1;
         options.skipEnvironmentGeneration = true;
         options.useSceneAnchorLayout = true;
-        options.enableMlTrainingInRagMode = enableMlTrainingInRagMode;
-        options.enableMlTrainingForCognitiveAgents = enableMlTrainingForCognitiveAgents;
+        options.enableMlTrainingInRagMode = anchor.enableMlTrainingInRagMode || enableMlTrainingInRagMode;
+        options.enableMlTrainingForCognitiveAgents =
+            anchor.enableMlTrainingForCognitiveAgents || enableMlTrainingForCognitiveAgents;
+        options.trainZonesMask = anchor.trainZonesMask != 0 ? anchor.trainZonesMask : 1;
 
         RagSceneFactory.EnsureReplicaSceneManager(options);
 
@@ -82,7 +84,9 @@ public class RagMultiplayerSceneBootstrap : MonoBehaviour
         StartCoroutine(EnsureDesignatedPlayerAppearanceWhenReady());
         PlayerRagPhysicalBridge.BeginBinding(this);
 
-        Debug.Log("[RagMultiplayerSceneBootstrap] Zone 0 RAG embed started — multiplayer scene remains primary.");
+        Debug.Log($"[RagMultiplayerSceneBootstrap] Zone 0 RAG embed started — mlTraining={options.enableMlTrainingInRagMode}, " +
+                  $"cognitiveMl={options.enableMlTrainingForCognitiveAgents}, trainZonesMask={options.trainZonesMask}. " +
+                  "PhysicalAgentZone0 attaches when the designated Photon player binds as P1.");
     }
 
     IEnumerator ApplyRagPhysicalAgentLocalModeWhenReady()

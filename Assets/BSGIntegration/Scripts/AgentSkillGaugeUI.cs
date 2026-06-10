@@ -660,7 +660,10 @@ public class AgentSkillGaugeUI : MonoBehaviour
 
         string mental = mentalTotal > 0 ? $"{mentalDone}/{mentalTotal}" : $"{mentalDone}";
         string physical = physicalTotal > 0 ? $"{physicalDone}/{physicalTotal}" : $"{physicalDone}";
-        zone0StepIndicatorText.text = $"Zone 0 Steps  M: {mental}   P: {physical}";
+        if (orch.IsAllComplete || BsgIntegrationSettings.IsZoneMlRunComplete(0))
+            zone0StepIndicatorText.text = $"Zone 0 Steps  M: {mental}   P: {physical}  — Complete";
+        else
+            zone0StepIndicatorText.text = $"Zone 0 Steps  M: {mental}   P: {physical}";
     }
     
     void UpdateGauge(string agentId)

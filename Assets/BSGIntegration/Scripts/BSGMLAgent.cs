@@ -304,9 +304,38 @@ public class BSGMLAgent : Agent
             agentCollider.material = agentPhysicsMaterial;
         }
         
-        Vector3 pos = GetUniquePositionForAgent();
-        transform.position = pos;
-        Debug.Log($"📍 [{agentId}] Initial spawn position: {pos}");
+        Vector3 pos;
+        if (MLAgentAttacher.TryConsumePendingAttachSeed(gameObject, out MLAgentAttacher.PendingMlAttachSeed pending))
+        {
+            if (!string.IsNullOrWhiteSpace(pending.agentId))
+                agentId = ZoneAgentIds.NormalizeProfileAgentId(pending.agentId, pending.zoneIndex);
+            if (pending.zoneIndex >= 0)
+                zoneIndex = pending.zoneIndex;
+            pos = pending.spawnWorld;
+            ragSpawnPreserveActive = true;
+            ragSpawnPreservePosition = pos;
+            ApplyWorldPositionPreservingRigidbody(pos);
+            Debug.Log($"📍 [{agentId}] Host/designated spawn preserved: {pos}");
+        }
+        else
+        {
+            RagSequenceAgentMover hostMover = GetComponent<RagSequenceAgentMover>();
+            if (hostMover != null && hostMover.hostPlayerMovement)
+            {
+                Vector3? designated = BsgIntegrationSettings.TryResolveDesignatedPhysicalSpawnWorld?.Invoke(transform.position.y);
+                pos = designated ?? transform.position;
+                ragSpawnPreserveActive = true;
+                ragSpawnPreservePosition = pos;
+                ApplyWorldPositionPreservingRigidbody(pos);
+                Debug.Log($"📍 [{agentId}] Photon physical player spawn preserved: {pos}");
+            }
+            else
+            {
+                pos = GetUniquePositionForAgent();
+                transform.position = pos;
+                Debug.Log($"📍 [{agentId}] Initial spawn position: {pos}");
+            }
+        }
         
         // Reset velocities to prevent any initial movement
         rb.linearVelocity = Vector3.zero;
@@ -589,6 +618,25 @@ public class BSGMLAgent : Agent
         Debug.Log($"📍 [{agentId}] Position FORCED to unique: {correctPos}");
     }
     
+    void ApplyWorldPositionPreservingRigidbody(Vector3 worldPos)
+    {
+        if (rb == null)
+            rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            bool wasKinematic = rb.isKinematic;
+            rb.isKinematic = true;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.position = worldPos;
+            rb.isKinematic = wasKinematic;
+        }
+        else
+        {
+            transform.position = worldPos;
+        }
+    }
+
     /// <summary>
     /// Get unique position for this agent based on agentId
     /// </summary>
@@ -797,8 +845,31 @@ public class BSGMLAgent : Agent
         if (completedZoneIndex != zoneIndex) return;
         if (!ragSpawnPreserveActive || agentRole != AgentRole.Physical) return;
 
-        Debug.Log($"[BSGMLAgent] {agentId} zone {zoneIndex} — all RAG steps complete, ending ML episode.");
+        if (BsgIntegrationSettings.ShouldHoldMultiplayerIdleAfterZoneComplete)
+        {
+            BsgIntegrationSettings.MarkZoneMlRunComplete(zoneIndex);
+            DisableMlDecisionsForZone(zoneIndex);
+            Debug.Log($"[BSGMLAgent] {agentId} zone {zoneIndex} — all RAG steps complete; holding idle (multiplayer, no DAG restart).");
+        }
+        else
+        {
+            Debug.Log($"[BSGMLAgent] {agentId} zone {zoneIndex} — all RAG steps complete, ending ML episode.");
+        }
+
         EndEpisode();
+    }
+
+    static void DisableMlDecisionsForZone(int zoneIndex)
+    {
+        BSGMLAgent[] agents = FindObjectsOfType<BSGMLAgent>();
+        for (int i = 0; i < agents.Length; i++)
+        {
+            BSGMLAgent ml = agents[i];
+            if (ml == null || ml.zoneIndex != zoneIndex) continue;
+            DecisionRequester dr = ml.GetComponent<DecisionRequester>();
+            if (dr != null)
+                dr.enabled = false;
+        }
     }
 
     /// <summary>Called from <see cref="RagRuntimeMLBootstrap"/> after ML attach — keeps humanoid look.</summary>
@@ -1408,6 +1479,15 @@ public class BSGMLAgent : Agent
         if (episodeSteps > 0)
         {
             LogEpisodeSummary();
+        }
+
+        // Multiplayer embed: one full DAG run then idle — do not reset orchestrator / step HUD to 0.
+        if (BsgIntegrationSettings.ShouldHoldMultiplayerIdleAfterZoneComplete
+            && BsgIntegrationSettings.IsZoneMlRunComplete(zoneIndex))
+        {
+            ForceIdle();
+            Debug.Log($"[{agentId}] Zone {zoneIndex} run complete — skipping ML episode restart (multiplayer idle).");
+            return;
         }
         
         // RAG mental (M1–M4): RagSequenceAgentMover drives stations — do not teleport to stale ragSpawnPreserve on ML episode ticks.

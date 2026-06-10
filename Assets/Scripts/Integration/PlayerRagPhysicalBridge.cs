@@ -123,6 +123,13 @@ public static class PlayerRagPhysicalBridge
 
     static IEnumerator FinalizeBindAfterMoverStart(RagSequenceAgentMover mover)
     {
+        for (int i = 0; i < 40; i++)
+        {
+            if (IsPhysicalEmbedContentReady())
+                break;
+            yield return new WaitForSeconds(0.25f);
+        }
+
         yield return null;
 
         CognitivePhaseOrchestrator orch = CognitivePhaseOrchestrator.GetOrCreateForZone(ZoneIndex);
@@ -135,7 +142,43 @@ public static class PlayerRagPhysicalBridge
         }
 
         if (mover != null)
-            RelocateDesignatedPlayerToPhysicalSpawn(mover.transform);
+            RelocateDesignatedPlayerToPhysicalSpawn(mover.transform, force: true);
+
+        TryAttachMlTrainingForDesignatedPlayer(mover);
+    }
+
+    static bool IsPhysicalEmbedContentReady()
+    {
+        MultiplayerRagZone0Anchor anchor = MultiplayerRagZone0Anchor.Instance;
+        if (anchor == null)
+            return false;
+
+        foreach (DeclarativeObjectMetadata meta in UnityEngine.Object.FindObjectsOfType<DeclarativeObjectMetadata>())
+        {
+            if (meta == null || meta.gameObject.name.IndexOf("cognitive_", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                continue;
+            if (meta.gameObject.name.StartsWith("Tool_", System.StringComparison.OrdinalIgnoreCase)
+                || meta.GetComponent<EnvironmentSolidCollider>() != null)
+                return true;
+        }
+
+        return UnityEngine.Object.FindObjectOfType<CognitiveStationInteractable>() != null;
+    }
+
+    /// <summary>
+    /// SceneGenerator skips P1 in multiplayer — attach PhysicalAgentZone0 after the Photon player binds.
+    /// </summary>
+    static void TryAttachMlTrainingForDesignatedPlayer(RagSequenceAgentMover mover)
+    {
+        if (mover == null || !RagPhysicalAgentAssignment.IsLocalPlayerRagPhysicalAgent())
+            return;
+
+        if (!RagRuntimeMLBootstrap.TryBootstrapPhotonPlayerPhysical(mover))
+            return;
+
+        MultiplayerRagZone0Anchor anchor = MultiplayerRagZone0Anchor.Instance;
+        anchor?.ApplyPlayAreaToZoneAgents();
+        Debug.Log("[PlayerRagPhysicalBridge] PhysicalAgentZone0 ML attached to designated Photon player (P1, zone 0).");
     }
 
     static IEnumerator EnsurePhysicalSpawnPlacement(PlayerMovement playerMovement)
@@ -156,7 +199,7 @@ public static class PlayerRagPhysicalBridge
         }
     }
 
-    static void RelocateDesignatedPlayerToPhysicalSpawn(Transform playerTransform)
+    static void RelocateDesignatedPlayerToPhysicalSpawn(Transform playerTransform, bool force = false)
     {
         if (playerTransform == null || !RagPhysicalAgentAssignment.IsLocalPlayerRagPhysicalAgent())
             return;
@@ -167,10 +210,11 @@ public static class PlayerRagPhysicalBridge
 
         Vector3 delta = target - playerTransform.position;
         delta.y = 0f;
-        if (delta.sqrMagnitude < 0.35f)
+        if (!force && delta.sqrMagnitude < 0.35f)
             return;
 
         Rigidbody rb = playerTransform.GetComponent<Rigidbody>();
+        Quaternion rot = anchor.GetDesignatedPhysicalAgentSpawnWorldRotation();
         if (rb != null)
         {
             bool wasKinematic = rb.isKinematic;
@@ -178,13 +222,20 @@ public static class PlayerRagPhysicalBridge
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             rb.position = target;
-            rb.rotation = anchor.GetDesignatedPhysicalAgentSpawnWorldRotation();
+            rb.rotation = rot;
             rb.isKinematic = wasKinematic;
         }
         else
         {
-            playerTransform.SetPositionAndRotation(target, anchor.GetDesignatedPhysicalAgentSpawnWorldRotation());
+            playerTransform.SetPositionAndRotation(target, rot);
         }
+
+        AgentGroundMotor motor = playerTransform.GetComponent<AgentGroundMotor>();
+        motor?.SnapFeetToGround();
+
+        BSGMLAgent ml = playerTransform.GetComponent<BSGMLAgent>();
+        if (ml != null)
+            ml.SetRagSpawnPreserve(target);
 
         Debug.Log($"[PlayerRagPhysicalBridge] Designated physical agent moved to spawn near physical targets at {target}.");
     }
@@ -243,18 +294,19 @@ public static class PlayerRagPhysicalBridge
         mover.avoidCognitiveObstacles = true;
         mover.useProximityCognitiveSteering = true;
         mover.useProximityEnvironmentSteering = true;
-        mover.proximitySteerAggression = 1.38f;
-        mover.proximityStationHullPadding = 0.72f;
-        mover.proximityApproachBand = 3.15f;
-        mover.environmentSteerHullPadding = 0.98f;
-        mover.environmentSteerApproachBand = 3.85f;
-        mover.obstacleLookAhead = 3.9f;
-        mover.obstacleProbeRadius = 0.5f;
-        mover.obstacleFanMaxDegrees = 105f;
-        mover.obstacleFanMinPickAngleDegrees = 36f;
-        mover.obstacleFanWideSweepBonus = 0.024f;
-        mover.navStuckTimeoutSeconds = 0.78f;
-        mover.navEscapeDurationSeconds = 1.55f;
+        mover.proximitySteerAggression = 1.55f;
+        mover.proximityStationHullPadding = 0.88f;
+        mover.proximityApproachBand = 3.45f;
+        mover.environmentSteerHullPadding = 1.05f;
+        mover.environmentSteerApproachBand = 4.1f;
+        mover.obstacleLookAhead = 4.25f;
+        mover.obstacleProbeRadius = 0.56f;
+        mover.obstacleFanMaxDegrees = 115f;
+        mover.obstacleFanMinPickAngleDegrees = 32f;
+        mover.obstacleFanWideSweepBonus = 0.032f;
+        mover.navStuckTimeoutSeconds = 0.62f;
+        mover.navEscapeDurationSeconds = 1.85f;
+        mover.navEscapeSpeedMultiplier = 1.22f;
     }
 
     public static void ResetForDomainReload()
