@@ -45,6 +45,9 @@ MonoBehaviour:
   - RPC_RequestInteract
   - RPC_ApplyForce
   - RPC_RequestApplyForce
+  - RpcApplyStepCompleted
+  - RpcCognitivePhaseComplete
+  - RpcRequestStepCompleted
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

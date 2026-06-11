@@ -233,6 +233,7 @@ GameObject:
   - component: {fileID: 1824551187374979841}
   - component: {fileID: 4996008556198519721}
   - component: {fileID: 904381455677046094}
+  - component: {fileID: 4715411097317465941}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -310,7 +311,6 @@ MonoBehaviour:
   standingHeight: 2
   crouchTransitionSpeed: 25
   rb: {fileID: 2861689980472918999}
-  fixedJoystick: {fileID: 0}
   fixedTouchField: {fileID: 0}
 --- !u!114 &6149655970658344664
 MonoBehaviour:
@@ -391,6 +391,18 @@ MonoBehaviour:
   playerNameText: {fileID: 1716864989533764146}
   miniMapIcon: {fileID: 8889725571243325633}
   playerBody: []
+--- !u!114 &4715411097317465941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4023717809925525891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00a9759297580461e829e6c4f4b95c53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementInputProcessor
 --- !u!1 &5866064027907742655
 GameObject:
   m_ObjectHideFlags: 0
