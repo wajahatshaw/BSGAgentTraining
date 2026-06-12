@@ -47,6 +47,58 @@ public static class RagPhysicalAgentLocalMode
         ApplyForLocalClient();
     }
 
+    /// <summary>
+    /// Restores normal fixed-joystick worker control for non-designated multiplayer clients.
+    /// </summary>
+    public static void EnsureWorkerControlForLocalClient(PlayerMovement playerMovement)
+    {
+        if (playerMovement == null || IsActive)
+            return;
+
+        PhotonView pv = playerMovement.GetComponent<PhotonView>();
+        if (pv != null && !pv.IsMine)
+            return;
+
+        if (RagPhysicalAgentAssignment.IsLocalPlayerRagPhysicalAgent())
+            return;
+
+        playerMovement.EnableRagGroundMotorMovement(null);
+
+        Rigidbody rb = playerMovement.rb;
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+            rb.useGravity = true;
+        }
+
+        playerMovement.DisableAll(move: true, crouch: true, interact: true, jump: true, look: true);
+
+        PlayerMovementInputProcessor inputProcessor = playerMovement.InputProcessor;
+        if (inputProcessor != null)
+        {
+            inputProcessor.SetRagAutopilot(false);
+            FixedJoystick joy = playerMovement.fixedJoystick != null
+                ? playerMovement.fixedJoystick
+                : Object.FindAnyObjectByType<FixedJoystick>();
+            inputProcessor.EnableManualJoystick(joy);
+        }
+
+        if (UIManager.Instance != null)
+            UIManager.Instance.ToggleHudInput(true);
+
+        foreach (FixedJoystick joy in Object.FindObjectsOfType<FixedJoystick>(true))
+        {
+            if (joy != null && joy.gameObject != null)
+                joy.gameObject.SetActive(true);
+        }
+
+        foreach (FixedTouchField touch in Object.FindObjectsOfType<FixedTouchField>(true))
+        {
+            if (touch != null && touch.gameObject != null)
+                touch.gameObject.SetActive(true);
+        }
+    }
+
     static void ConfigurePlayer(PlayerMovement playerMovement)
     {
         if (playerMovement == null)

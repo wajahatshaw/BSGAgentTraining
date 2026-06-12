@@ -7,6 +7,8 @@ public interface IRagOrchestratorStepReporter
 
     void ReportStepCompleted(int zoneIndex, string stepId, bool isMentalStep);
 
+    void ReportMentalStepActivated(int zoneIndex, string stepId);
+
     void ReportCognitivePhaseComplete(int zoneIndex);
 
     void ReportExternalStepCompleted(int zoneIndex, string stepId);
@@ -29,6 +31,12 @@ public static class RagOrchestratorStepReporterRegistry
             _reporter.ReportStepCompleted(zoneIndex, stepId, isMentalStep);
         else
             CognitivePhaseOrchestrator.GetOrCreateForZone(zoneIndex)?.NotifyStepCompleted(stepId);
+    }
+
+    public static void ReportMentalStepActivated(int zoneIndex, string stepId)
+    {
+        if (_reporter != null && _reporter.IsActive)
+            _reporter.ReportMentalStepActivated(zoneIndex, stepId);
     }
 
     public static void ReportCognitivePhaseComplete(int zoneIndex)

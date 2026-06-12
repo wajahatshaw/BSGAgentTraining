@@ -82,6 +82,7 @@ public class RagMultiplayerSceneBootstrap : MonoBehaviour
         StartCoroutine(EnsureHudSwitchWhenHudReady());
         StartCoroutine(EnsureDisplay2OverviewWhenReady());
         StartCoroutine(EnsureDesignatedPlayerAppearanceWhenReady());
+        StartCoroutine(EnsureWorkerPlayerControlWhenReady());
         PlayerRagPhysicalBridge.BeginBinding(this);
 
         Debug.Log($"[RagMultiplayerSceneBootstrap] Zone 0 RAG embed started — mlTraining={options.enableMlTrainingInRagMode}, " +
@@ -149,10 +150,38 @@ public class RagMultiplayerSceneBootstrap : MonoBehaviour
                 continue;
             }
 
-            Transform designated = DesignatedPhysicalPlayerAppearance.TryFindDesignatedPlayerTransform();
-            if (designated != null)
+            DesignatedPhysicalPlayerAppearance.SyncAllPhysicalPlayerAppearances();
+            yield break;
+        }
+    }
+
+    IEnumerator EnsureWorkerPlayerControlWhenReady()
+    {
+        for (int i = 0; i < 120; i++)
+        {
+            if (SceneManager.GetActiveScene().name != MultiplayerSceneName)
+                yield break;
+
+            RagPhysicalAgentAssignment.EnsureAssignedInRoom();
+            if (!RagPhysicalAgentAssignment.WaitForDesignationReady())
             {
-                DesignatedPhysicalPlayerAppearance.ApplyScale(designated);
+                yield return new WaitForSeconds(0.25f);
+                continue;
+            }
+
+            if (RagPhysicalAgentAssignment.IsLocalPlayerRagPhysicalAgent())
+                yield break;
+
+            foreach (PlayerMovement pm in FindObjectsOfType<PlayerMovement>())
+            {
+                if (pm == null)
+                    continue;
+
+                PhotonView pv = pm.GetComponent<PhotonView>();
+                if (pv == null || !pv.IsMine)
+                    continue;
+
+                RagPhysicalAgentLocalMode.EnsureWorkerControlForLocalClient(pm);
                 yield break;
             }
 

@@ -59,12 +59,31 @@ public class RagOrchestratorNetworkSync : MonoBehaviourPunCallbacks, IRagOrchest
         }
 
         RagPhysicalAgentAssignment.RefreshFromRoom();
+        DesignatedPhysicalPlayerAppearance.SyncAllPhysicalPlayerAppearances();
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (PhotonNetwork.IsMasterClient)
+        {
             RagPhysicalAgentAssignment.EnsureAssignedInRoom();
+            BroadcastMentalStepSnapshot(0);
+        }
+
+        DesignatedPhysicalPlayerAppearance.SyncAllPhysicalPlayerAppearances();
+    }
+
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        RagMentalAgentNetworkAuthority.ApplyAfterZoneSpawn(0);
+
+        if (PhotonNetwork.IsMasterClient)
+            BroadcastMentalStepSnapshot(0);
+    }
+
+    public void ReportMentalStepActivated(int zoneIndex, string stepId)
+    {
+        RequestMentalStepActivated(zoneIndex, stepId);
     }
 
     public void ReportStepCompleted(int zoneIndex, string stepId, bool isMentalStep)
@@ -169,6 +188,48 @@ public class RagOrchestratorNetworkSync : MonoBehaviourPunCallbacks, IRagOrchest
         sync?.photonView.RPC(nameof(RpcCognitivePhaseComplete), RpcTarget.All, zoneIndex);
     }
 
+    void RequestMentalStepActivated(int zoneIndex, string stepId)
+    {
+        if (string.IsNullOrEmpty(stepId))
+            return;
+
+        if (!ShouldUseNetworkSync())
+        {
+            ApplyStepActivatedLocally(zoneIndex, stepId);
+            return;
+        }
+
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
+        RagOrchestratorNetworkSync sync = Instance ?? EnsureInScene();
+        sync?.photonView.RPC(nameof(RpcApplyStepActivated), RpcTarget.All, zoneIndex, stepId);
+    }
+
+    void BroadcastMentalStepSnapshot(int zoneIndex)
+    {
+        if (!ShouldUseNetworkSync() || !PhotonNetwork.IsMasterClient)
+            return;
+
+        CognitivePhaseOrchestrator orch = CognitivePhaseOrchestrator.GetOrCreateForZone(zoneIndex);
+        if (orch == null)
+            return;
+
+        if (orch.TryGetFirstActiveCognitiveStepId(out string activeId))
+        {
+            ActionSequenceStep step = orch.GetStep(activeId);
+            if (step != null && step.isActivated)
+                RequestMentalStepActivated(zoneIndex, activeId);
+        }
+
+        RagOrchestratorNetworkSync sync = Instance ?? EnsureInScene();
+        if (sync == null)
+            return;
+
+        foreach (string stepId in orch.GetCompletedStepIdsSnapshot())
+            sync.photonView.RPC(nameof(RpcApplyStepCompleted), RpcTarget.All, zoneIndex, stepId);
+    }
+
     static bool ShouldUseNetworkSync()
     {
         return BsgIntegrationSettings.UsePhotonPlayerAsPhysicalAgent && PhotonNetwork.InRoom;
@@ -194,6 +255,12 @@ public class RagOrchestratorNetworkSync : MonoBehaviourPunCallbacks, IRagOrchest
     }
 
     [PunRPC]
+    void RpcApplyStepActivated(int zoneIndex, string stepId)
+    {
+        ApplyStepActivatedLocally(zoneIndex, stepId);
+    }
+
+    [PunRPC]
     void RpcApplyStepCompleted(int zoneIndex, string stepId)
     {
         ApplyStepCompletedLocally(zoneIndex, stepId);
@@ -203,6 +270,20 @@ public class RagOrchestratorNetworkSync : MonoBehaviourPunCallbacks, IRagOrchest
     void RpcCognitivePhaseComplete(int zoneIndex)
     {
         ApplyCognitivePhaseCompleteLocally(zoneIndex);
+    }
+
+    static void ApplyStepActivatedLocally(int zoneIndex, string stepId)
+    {
+        CognitivePhaseOrchestrator orch = CognitivePhaseOrchestrator.GetOrCreateForZone(zoneIndex);
+        if (orch == null)
+            return;
+
+        ActionSequenceStep step = orch.GetStep(stepId);
+        if (step == null)
+            return;
+
+        step.isActivated = true;
+        RagCognitiveStepFx.ApplyStepActivatedFx(step, zoneIndex);
     }
 
     static void ApplyStepCompletedLocally(int zoneIndex, string stepId)
@@ -215,6 +296,12 @@ public class RagOrchestratorNetworkSync : MonoBehaviourPunCallbacks, IRagOrchest
             return;
 
         ActionSequenceStep step = orch.GetStep(stepId);
+        if (step != null)
+        {
+            step.isActivated = false;
+            step.isStepCompleted = true;
+        }
+
         orch.NotifyStepCompleted(stepId);
 
         if (step != null)

@@ -19,6 +19,10 @@ public static class RagMentalAgentNetworkAuthority
             return;
 
         MasterMentalMover = mentalMover;
+        EnsureNetworkComponents(mentalMover);
+
+        CognitivePhaseOrchestrator orch = CognitivePhaseOrchestrator.GetOrCreateForZone(zoneIndex);
+        orch?.EnsureInitializedFromSceneAgents();
 
         if (PhotonNetwork.IsMasterClient)
             EnableMasterSimulation(mentalMover);
@@ -44,6 +48,8 @@ public static class RagMentalAgentNetworkAuthority
         BSGMLAgent mlAgent = mentalMover.GetComponent<BSGMLAgent>();
         if (mlAgent != null)
             mlAgent.enabled = false;
+
+        RagMentalAgentNetworkObserver.EnsureOn(mentalMover.gameObject);
     }
 
     static void EnableMasterSimulation(RagSequenceAgentMover mentalMover)
@@ -51,21 +57,9 @@ public static class RagMentalAgentNetworkAuthority
         GameObject go = mentalMover.gameObject;
         mentalMover.enabled = true;
 
-        PhotonView pv = go.GetComponent<PhotonView>();
-        if (pv == null)
-            pv = go.AddComponent<PhotonView>();
-
-        if (pv.ViewID == 0)
-            pv.ViewID = PhotonNetwork.AllocateViewID(false);
-
-        PhotonTransformView ptv = go.GetComponent<PhotonTransformView>();
-        if (ptv == null)
-            ptv = go.AddComponent<PhotonTransformView>();
-
-        var observed = new List<Component>();
-        if (ptv != null)
-            observed.Add(ptv);
-        pv.ObservedComponents = observed;
+        RagMentalAgentNetworkObserver observer = go.GetComponent<RagMentalAgentNetworkObserver>();
+        if (observer != null)
+            observer.enabled = false;
 
         Rigidbody rb = go.GetComponent<Rigidbody>();
         if (rb != null)
@@ -81,6 +75,30 @@ public static class RagMentalAgentNetworkAuthority
         motor.SnapFeetToGround();
 
         mentalMover.RecoverOrchestratorDispatchIfNeeded();
+    }
+
+    static void EnsureNetworkComponents(RagSequenceAgentMover mentalMover)
+    {
+        if (mentalMover == null)
+            return;
+
+        GameObject go = mentalMover.gameObject;
+
+        PhotonView pv = go.GetComponent<PhotonView>();
+        if (pv == null)
+            pv = go.AddComponent<PhotonView>();
+
+        if (PhotonNetwork.IsMasterClient && pv.ViewID == 0)
+            pv.ViewID = PhotonNetwork.AllocateViewID(false);
+
+        PhotonTransformView ptv = go.GetComponent<PhotonTransformView>();
+        if (ptv == null)
+            ptv = go.AddComponent<PhotonTransformView>();
+
+        var observed = new List<Component>();
+        if (ptv != null)
+            observed.Add(ptv);
+        pv.ObservedComponents = observed;
     }
 
     static RagSequenceAgentMover FindZoneMentalMover(int zoneIndex)

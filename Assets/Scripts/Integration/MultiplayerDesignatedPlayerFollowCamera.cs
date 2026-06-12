@@ -82,11 +82,14 @@ public class MultiplayerDesignatedPlayerFollowCamera : MonoBehaviour
     {
         EnforceExclusiveDisplay();
 
+        if (!RagPhysicalAgentAssignment.WaitForDesignationReady())
+            return;
+
+        DesignatedPhysicalPlayerAppearance.SyncAllPhysicalPlayerAppearances();
+
         Transform target = ResolveDesignatedPlayerTransform();
         if (target == null)
             return;
-
-        DesignatedPhysicalPlayerAppearance.ApplyScale(target);
 
         if (target != _lastTarget)
         {

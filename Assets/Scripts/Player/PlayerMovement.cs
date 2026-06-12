@@ -261,4 +261,5 @@ public class PlayerMovement : MonoBehaviour
         _bCanJump = jump;
         _bCanLook = look;
     }
+
 }

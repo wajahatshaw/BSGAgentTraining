@@ -5,6 +5,18 @@ using UnityEngine;
 /// </summary>
 public static class RagCognitiveStepFx
 {
+    public static void ApplyStepActivatedFx(ActionSequenceStep step, int zoneIndex)
+    {
+        if (step == null)
+            return;
+
+        if (!string.IsNullOrWhiteSpace(step.targetObjectId))
+            FlashTarget(step.targetObjectId, zoneIndex, VerbToColor(step.actionVerb), 0.35f);
+
+        RagSequenceAgentMover mentalMover = FindZoneMentalMover(zoneIndex);
+        mentalMover?.PlayNetworkStepCompletionFlash();
+    }
+
     public static void ApplyStepCompletedFx(ActionSequenceStep step, int zoneIndex)
     {
         if (step == null)

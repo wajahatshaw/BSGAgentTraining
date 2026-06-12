@@ -549,6 +549,7 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         {
             step = foundStep;
             step.isStepCompleted = true;
+            step.isActivated = false;
         }
 
         Debug.Log($"[CognitivePhaseOrchestrator] ✅ Step completed: {stepId} | completed={_completedSteps.Count} active={_activeSteps.Count}");
@@ -579,6 +580,14 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
 
     /// <summary>Returns true if stepId is currently executing.</summary>
     public bool IsStepActive(string stepId) => _activeSteps.Contains(stepId);
+
+    /// <summary>Snapshot of completed step ids for late-join multiplayer resync.</summary>
+    public string[] GetCompletedStepIdsSnapshot()
+    {
+        var ids = new string[_completedSteps.Count];
+        _completedSteps.CopyTo(ids);
+        return ids;
+    }
 
     /// <summary>First active physical DAG step (for inference recovery when dispatch event was missed).</summary>
     public bool TryGetFirstActivePhysicalStepId(out string stepId)
@@ -766,10 +775,12 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
     void DispatchStep(ActionSequenceStep step)
     {
         _activeSteps.Add(step.stepId);
-        step.isActivated = true;
 
-        bool isCognitive = string.Equals(step.agentRole, "M", StringComparison.OrdinalIgnoreCase)
+        bool isCognitive = string.Equals(step.agentRole, "M", System.StringComparison.OrdinalIgnoreCase)
                         || IsCognitiveStepByTarget(step.targetObjectId);
+
+        // Cognitive steps activate only after the mental agent physically reaches the station.
+        step.isActivated = !isCognitive;
 
         if (isCognitive)
         {

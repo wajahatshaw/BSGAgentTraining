@@ -56,9 +56,39 @@ public static class RagPhysicalAgentAssignment
             return;
 
         if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(RoomPropertyKey, out object value)
-            && value is int actorNumber)
+            && TryParseActorNumber(value, out int actorNumber))
         {
             DesignatedActorNumber = actorNumber;
+        }
+    }
+
+    public static bool TryParseActorNumber(object value, out int actorNumber)
+    {
+        actorNumber = -1;
+        if (value == null)
+            return false;
+
+        switch (value)
+        {
+            case int i:
+                actorNumber = i;
+                return true;
+            case byte b:
+                actorNumber = b;
+                return true;
+            case short s:
+                actorNumber = s;
+                return true;
+            default:
+                try
+                {
+                    actorNumber = Convert.ToInt32(value);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
         }
     }
 
@@ -90,7 +120,7 @@ public static class RagPhysicalAgentAssignment
             return;
 
         if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(RoomPropertyKey, out object existing)
-            && existing is int current
+            && TryParseActorNumber(existing, out int current)
             && current == designated)
         {
             DesignatedActorNumber = designated;

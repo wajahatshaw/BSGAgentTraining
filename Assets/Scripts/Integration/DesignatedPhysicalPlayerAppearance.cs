@@ -9,6 +9,9 @@ public static class DesignatedPhysicalPlayerAppearance
 {
     public const float DefaultBodyHeight = 1.75f;
 
+    const string PlayerCapsuleName = "PlayerCapsule";
+    const string YBotVisualName = "Y Bot";
+
     public static float GetScale()
     {
         MultiplayerRagZone0Anchor anchor = MultiplayerRagZone0Anchor.Instance;
@@ -24,6 +27,124 @@ public static class DesignatedPhysicalPlayerAppearance
         Vector3 desired = Vector3.one * scale;
         if ((playerRoot.localScale - desired).sqrMagnitude > 0.0004f)
             playerRoot.localScale = desired;
+
+        ApplyYBotVisual(playerRoot);
+    }
+
+    /// <summary>Default multiplayer worker look — procedural half-body, no Y Bot, unit scale.</summary>
+    public static void ApplyDefaultWorkerVisual(Transform playerRoot)
+    {
+        if (playerRoot == null)
+            return;
+
+        if ((playerRoot.localScale - Vector3.one).sqrMagnitude > 0.0004f)
+            playerRoot.localScale = Vector3.one;
+
+        Transform capsule = playerRoot.Find(PlayerCapsuleName);
+        if (capsule == null)
+            return;
+
+        for (int i = 0; i < capsule.childCount; i++)
+        {
+            Transform child = capsule.GetChild(i);
+            if (child == null)
+                continue;
+
+            string childName = child.name;
+            if (childName == YBotVisualName)
+            {
+                child.gameObject.SetActive(false);
+                continue;
+            }
+
+            if (IsLegacyProceduralVisual(childName))
+                child.gameObject.SetActive(true);
+        }
+
+        // PlayerCapsule mesh is collision-only; prefab ships with MeshRenderer disabled.
+        MeshRenderer capsuleRenderer = capsule.GetComponent<MeshRenderer>();
+        if (capsuleRenderer != null)
+            capsuleRenderer.enabled = false;
+    }
+
+    /// <summary>
+    /// Keeps exactly one designated avatar on Y Bot (all clients) and restores worker visuals for everyone else.
+    /// </summary>
+    public static void SyncAllPhysicalPlayerAppearances()
+    {
+        if (!BsgIntegrationSettings.UsePhotonPlayerAsPhysicalAgent)
+            return;
+
+        RagPhysicalAgentAssignment.EnsureAssignedInRoom();
+        RagPhysicalAgentAssignment.RefreshFromRoom();
+        int designatedActor = RagPhysicalAgentAssignment.DesignatedActorNumber;
+        if (designatedActor < 0)
+            return;
+
+        foreach (PlayerMovement pm in Object.FindObjectsOfType<PlayerMovement>())
+        {
+            if (pm == null)
+                continue;
+
+            PhotonView pv = pm.GetComponent<PhotonView>();
+            if (pv == null || pv.Owner == null)
+                continue;
+
+            if (!IsPhysicalPlayerTransform(pm.transform))
+                continue;
+
+            if (pv.Owner.ActorNumber == designatedActor)
+                ApplyScale(pm.transform);
+            else
+                ApplyDefaultWorkerVisual(pm.transform);
+        }
+    }
+
+    /// <summary>
+    /// Swaps the designated player from procedural HumanBodyBuilder parts to the Y Bot rig
+    /// already nested under PlayerCapsule in Resources/Player.prefab (Mixamo humanoid).
+    /// Visual-only — does not touch movement, RAG, or cognitive components.
+    /// </summary>
+    public static void ApplyYBotVisual(Transform playerRoot)
+    {
+        if (playerRoot == null)
+            return;
+
+        Transform capsule = playerRoot.Find(PlayerCapsuleName);
+        if (capsule == null)
+            return;
+
+        Transform yBot = null;
+        for (int i = 0; i < capsule.childCount; i++)
+        {
+            Transform child = capsule.GetChild(i);
+            if (child == null)
+                continue;
+
+            string childName = child.name;
+            if (childName == YBotVisualName)
+            {
+                yBot = child;
+                continue;
+            }
+
+            if (IsLegacyProceduralVisual(childName))
+                child.gameObject.SetActive(false);
+        }
+
+        if (yBot != null)
+            yBot.gameObject.SetActive(true);
+
+        MeshRenderer capsuleRenderer = capsule.GetComponent<MeshRenderer>();
+        if (capsuleRenderer != null)
+            capsuleRenderer.enabled = false;
+    }
+
+    static bool IsLegacyProceduralVisual(string childName)
+    {
+        return childName == "Head"
+            || childName == "Body"
+            || childName.StartsWith("handmesh", System.StringComparison.OrdinalIgnoreCase);
     }
 
     public static float ResolveBodyHeight(Transform target)
@@ -50,6 +171,8 @@ public static class DesignatedPhysicalPlayerAppearance
         RagPhysicalAgentAssignment.EnsureAssignedInRoom();
         RagPhysicalAgentAssignment.RefreshFromRoom();
         int actor = RagPhysicalAgentAssignment.DesignatedActorNumber;
+        if (actor < 0)
+            return null;
 
         if (PlayerRagPhysicalBridge.IsBound && PlayerRagPhysicalBridge.BoundMover != null)
         {

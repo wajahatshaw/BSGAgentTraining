@@ -1180,6 +1180,10 @@ public class RagSequenceAgentMover : MonoBehaviour
     void OnStepArrived(ActionSequenceStep step)
     {
         if (step == null) return;
+
+        if (isMentalAgent && RagOrchestratorStepReporterRegistry.HasReporter)
+            RagOrchestratorStepReporterRegistry.ReportMentalStepActivated(zoneIndex, step.stepId);
+
         if (!string.IsNullOrWhiteSpace(step.actionVerb))
         {
             ShowVerbLabel(step.actionVerb, Mathf.Clamp(step.expectedDuration, minDwellSeconds, maxDwellSeconds));
