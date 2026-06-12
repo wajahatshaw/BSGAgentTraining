@@ -2,15 +2,6 @@
     "CognitiveAgentZone0": {
         "checkpoints": [
             {
-                "steps": 1792,
-                "file_path": "results/persona_training/CognitiveAgentZone0/CognitiveAgentZone0-1792.onnx",
-                "reward": null,
-                "creation_time": 1781086114.9832692,
-                "auxillary_file_paths": [
-                    "results/persona_training/CognitiveAgentZone0/CognitiveAgentZone0-1792.pt"
-                ]
-            },
-            {
                 "steps": 7168,
                 "file_path": "results/persona_training/CognitiveAgentZone0/CognitiveAgentZone0-7168.onnx",
                 "reward": null,
@@ -36,29 +27,38 @@
                 "auxillary_file_paths": [
                     "results/persona_training/CognitiveAgentZone0/CognitiveAgentZone0-8192.pt"
                 ]
+            },
+            {
+                "steps": 8192,
+                "file_path": "results/persona_training/CognitiveAgentZone0/CognitiveAgentZone0-8192.onnx",
+                "reward": null,
+                "creation_time": 1781263399.0825129,
+                "auxillary_file_paths": [
+                    "results/persona_training/CognitiveAgentZone0/CognitiveAgentZone0-8192.pt"
+                ]
+            },
+            {
+                "steps": 8960,
+                "file_path": "results/persona_training/CognitiveAgentZone0/CognitiveAgentZone0-8960.onnx",
+                "reward": null,
+                "creation_time": 1781263551.0553339,
+                "auxillary_file_paths": [
+                    "results/persona_training/CognitiveAgentZone0/CognitiveAgentZone0-8960.pt"
+                ]
             }
         ],
         "final_checkpoint": {
-            "steps": 8192,
+            "steps": 8960,
             "file_path": "results/persona_training/CognitiveAgentZone0.onnx",
             "reward": null,
-            "creation_time": 1781087745.1311202,
+            "creation_time": 1781263551.0553339,
             "auxillary_file_paths": [
-                "results/persona_training/CognitiveAgentZone0/CognitiveAgentZone0-8192.pt"
+                "results/persona_training/CognitiveAgentZone0/CognitiveAgentZone0-8960.pt"
             ]
         }
     },
     "PhysicalAgentZone0": {
         "checkpoints": [
-            {
-                "steps": 1045,
-                "file_path": "results/persona_training/PhysicalAgentZone0/PhysicalAgentZone0-1045.onnx",
-                "reward": 122.92581176757812,
-                "creation_time": 1781086115.119404,
-                "auxillary_file_paths": [
-                    "results/persona_training/PhysicalAgentZone0/PhysicalAgentZone0-1045.pt"
-                ]
-            },
             {
                 "steps": 4735,
                 "file_path": "results/persona_training/PhysicalAgentZone0/PhysicalAgentZone0-4735.onnx",
@@ -85,15 +85,33 @@
                 "auxillary_file_paths": [
                     "results/persona_training/PhysicalAgentZone0/PhysicalAgentZone0-5247.pt"
                 ]
+            },
+            {
+                "steps": 5247,
+                "file_path": "results/persona_training/PhysicalAgentZone0/PhysicalAgentZone0-5247.onnx",
+                "reward": null,
+                "creation_time": 1781263399.213435,
+                "auxillary_file_paths": [
+                    "results/persona_training/PhysicalAgentZone0/PhysicalAgentZone0-5247.pt"
+                ]
+            },
+            {
+                "steps": 5759,
+                "file_path": "results/persona_training/PhysicalAgentZone0/PhysicalAgentZone0-5759.onnx",
+                "reward": null,
+                "creation_time": 1781263551.186025,
+                "auxillary_file_paths": [
+                    "results/persona_training/PhysicalAgentZone0/PhysicalAgentZone0-5759.pt"
+                ]
             }
         ],
         "final_checkpoint": {
-            "steps": 5247,
+            "steps": 5759,
             "file_path": "results/persona_training/PhysicalAgentZone0.onnx",
             "reward": null,
-            "creation_time": 1781087745.2639081,
+            "creation_time": 1781263551.186025,
             "auxillary_file_paths": [
-                "results/persona_training/PhysicalAgentZone0/PhysicalAgentZone0-5247.pt"
+                "results/persona_training/PhysicalAgentZone0/PhysicalAgentZone0-5759.pt"
             ]
         }
     },

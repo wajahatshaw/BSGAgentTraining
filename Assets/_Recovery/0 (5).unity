@@ -364,7 +364,7 @@ MonoBehaviour:
   playerName: Hamid
   roomSuffix: _SimulationRoom
   maxPlayers: 8
-  nextLevelName: ProtoypeSceneMultiplayer
+  nextLevelName: ProtoypeSceneMultiplayerInference
   startButton: {fileID: 0}
 --- !u!4 &1064292543
 Transform:

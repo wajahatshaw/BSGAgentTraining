@@ -11,6 +11,9 @@ public class RagInferenceSceneController : MonoBehaviour
 {
     public static bool IsInferenceSceneActive()
     {
+        if (BsgIntegrationSettings.MultiplayerInferenceSceneActive)
+            return true;
+
         var ctrl = Object.FindObjectOfType<RagInferenceSceneController>();
         return ctrl != null && ctrl.isActiveAndEnabled;
     }
@@ -48,6 +51,9 @@ public class RagInferenceSceneController : MonoBehaviour
 
     public static bool UseInvisibleCognitiveScriptedWalk()
     {
+        if (BsgIntegrationSettings.MultiplayerInferenceSceneActive)
+            return true;
+
         var ctrl = Object.FindObjectOfType<RagInferenceSceneController>();
         return ctrl != null && ctrl.isActiveAndEnabled && ctrl.useInvisibleCognitiveScriptedWalk;
     }
@@ -60,6 +66,9 @@ public class RagInferenceSceneController : MonoBehaviour
 
     public static bool UseScriptedPhysicalLocomotion()
     {
+        if (BsgIntegrationSettings.MultiplayerInferenceSceneActive)
+            return true;
+
         var ctrl = Object.FindObjectOfType<RagInferenceSceneController>();
         return ctrl == null || !ctrl.isActiveAndEnabled || ctrl.useScriptedPhysicalLocomotion;
     }

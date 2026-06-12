@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// HUD pill switch (Settings track + knob) left of Chat in ProtoypeSceneMultiplayer only.
+/// HUD pill switch (Settings track + knob) left of Chat in multiplayer RAG embed scenes.
 /// Uses <see cref="Toggle"/> + onValueChanged like SwitchController. OFF by default.
 /// </summary>
 [DefaultExecutionOrder(250)]
@@ -11,8 +11,11 @@ public class RagTrainingHudSwitchController : MonoBehaviour
 {
     public const string SwitchObjectName = "RagTrainingHudSwitch";
 
-    /// <summary>Only this scene gets the switch (not MultiplayerSetup lobby).</summary>
+    /// <summary>Training multiplayer game scene.</summary>
     public const string AllowedSceneName = "ProtoypeSceneMultiplayer";
+
+    /// <summary>ONNX inference multiplayer game scene (same HUD as training embed).</summary>
+    public const string AllowedInferenceSceneName = "ProtoypeSceneMultiplayerInference";
 
     const string TrackChildName = "Background";
     const string KnobChildName = "Handle";
@@ -47,7 +50,8 @@ public class RagTrainingHudSwitchController : MonoBehaviour
 
     public static bool IsAllowedScene(string sceneName)
     {
-        return string.Equals(sceneName, AllowedSceneName, System.StringComparison.Ordinal);
+        return string.Equals(sceneName, AllowedSceneName, System.StringComparison.Ordinal)
+               || string.Equals(sceneName, AllowedInferenceSceneName, System.StringComparison.Ordinal);
     }
 
     public static RagTrainingHudSwitchController EnsureInScene()
@@ -405,7 +409,7 @@ public class RagTrainingHudSwitchController : MonoBehaviour
 
 }
 
-/// <summary>Cleans up HUD switch outside ProtoypeSceneMultiplayer; creation is driven by <see cref="RagMultiplayerSceneBootstrap"/>.</summary>
+/// <summary>Cleans up HUD switch outside multiplayer RAG embed scenes; creation is driven by scene bootstraps.</summary>
 public static class RagTrainingHudSwitchBootstrap
 {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]

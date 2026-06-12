@@ -15,6 +15,7 @@ static class MultiplayerEmbedDomainReset
         MultiplayerEnvironmentToolPhysics.ResetForDomainReload();
         MultiplayerCognitiveStationPhysics.ResetForDomainReload();
         PlayerRagPhysicalBridge.ResetForDomainReload();
+        PlayerRagInferenceBridge.ResetForDomainReload();
         RagPhysicalAgentLocalMode.ResetForDomainReload();
         CognitivePhaseOrchestrator.ResetStaticRegistry();
         ProximityConfigLoader.ResetForDomainReload();

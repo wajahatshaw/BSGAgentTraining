@@ -259,11 +259,6 @@ MonoBehaviour:
   fixedJoystick: {fileID: 0}
   fixedTouchField: {fileID: 0}
   interactButton: {fileID: 0}
-  miniMapCameraManager: {fileID: 0}
-  taskCompletionStatus_Completed: {fileID: 0}
-  taskCompletionStatus_Pending: {fileID: 0}
-  taskCompletionStatus_OnGoing: {fileID: 0}
-  taskCompletionStatus_Faild: {fileID: 0}
   inventorySCOs: []
 --- !u!114 &108303936
 MonoBehaviour:
@@ -364,7 +359,7 @@ MonoBehaviour:
   playerName: Hamid
   roomSuffix: _SimulationRoom
   maxPlayers: 8
-  nextLevelName: ProtoypeSceneMultiplayer
+  nextLevelName: ProtoypeSceneMultiplayerInference
   startButton: {fileID: 0}
 --- !u!4 &1064292543
 Transform:

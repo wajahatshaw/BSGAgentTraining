@@ -11,6 +11,9 @@ public static class BsgIntegrationSettings
     public static Vector3 ZoneWorldOrigin = Vector3.zero;
     public static int ActiveZoneIndex = 0;
 
+    /// <summary>ProtoypeSceneMultiplayerInference: ONNX inference active (no Python trainer).</summary>
+    public static bool MultiplayerInferenceSceneActive;
+
     /// <summary>ProtoypeSceneMultiplayer: spawn RAG zone 0 only; no BSG training HUD or camera takeover.</summary>
     public static bool MultiplayerEmbedMode;
 
@@ -132,6 +135,7 @@ public static class BsgIntegrationSettings
         SingleZoneMode = false;
         ZoneWorldOrigin = Vector3.zero;
         ActiveZoneIndex = 0;
+        MultiplayerInferenceSceneActive = false;
         MultiplayerEmbedMode = false;
         UsePhotonPlayerAsPhysicalAgent = false;
         SpawnZonesMask = 0;

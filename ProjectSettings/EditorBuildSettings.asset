@@ -29,5 +29,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ProtoypeSceneMultiplayerML.unity
     guid: 092e9c71b65a409fbd98986020fa675b
+  - enabled: 1
+    path: Assets/Scenes/MultiplayerInferenceSetup.unity
+    guid: 6c8a7a474dbd436ab0b10b017c042d99
+  - enabled: 1
+    path: Assets/Scenes/ProtoypeSceneMultiplayerInference.unity
+    guid: db73497dc24f41f48f2bd9489a594439
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

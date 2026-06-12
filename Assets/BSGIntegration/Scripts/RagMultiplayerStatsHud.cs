@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Zone 0 cognitive/physical step stats HUD for ProtoypeSceneMultiplayer (toggle via RagTrainingHudSwitch).
+/// Zone 0 cognitive/physical step stats HUD for multiplayer RAG embed (toggle via RagTrainingHudSwitch).
 /// </summary>
 public static class RagMultiplayerStatsHud
 {

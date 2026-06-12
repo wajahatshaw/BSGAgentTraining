@@ -1,16 +1,16 @@
 ﻿{
-    "timestamp": "2026-06-12 10:51:03",
+    "timestamp": "2026-06-12 16:28:36",
     "sceneId": "scene_warehouse_replica_001",
     "mlAgentsRunId": "persona_training",
     "resultsRunLogsRelativePath": "results/persona_training/run_logs/",
-    "totalAgents": 2,
+    "totalAgents": 1,
     "agents": [
         {
             "agentId": "P1",
             "behaviorName": "PhysicalAgentZone0",
-            "skillLevel": 2.0,
+            "skillLevel": 12.0,
             "desireLevel": 100.0,
-            "skillPercentage": 2.00,
+            "skillPercentage": 12.00,
             "isCompleted": false,
             "learnedSkillsCount": 0,
             "learnedSkillsNames": [],
@@ -20,7 +20,7 @@
             "totalSteps": 20,
             "cognitiveSequenceCompleted": false,
             "cognitiveCompletedSteps": 0,
-            "cognitiveTotalSteps": 0,
+            "cognitiveTotalSteps": 105,
             "stepProgress": [
                 {
                     "stepId": "t01_phy_s14",
@@ -304,25 +304,6 @@
                 }
             ],
             "cognitiveStepProgress": [
-            ]
-        },
-        {
-            "agentId": "M1",
-            "behaviorName": "PhysicalAgentZone0",
-            "skillLevel": 0.0,
-            "desireLevel": 100.0,
-            "skillPercentage": 0.00,
-            "isCompleted": false,
-            "learnedSkillsCount": 0,
-            "learnedSkillsNames": [],
-            "episodes": 0,
-            "totalReward": 0.00,
-            "completedSteps": 0,
-            "totalSteps": 105,
-            "cognitiveSequenceCompleted": false,
-            "cognitiveCompletedSteps": 0,
-            "cognitiveTotalSteps": 0,
-            "stepProgress": [
                 {
                     "stepId": "t01_cog_s01",
                     "stepOrder": 1,
@@ -334,6 +315,7 @@
                     "expectedDuration": 2.00,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "IntentionalModule",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -348,6 +330,7 @@
                     "expectedDuration": 2.00,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "GoalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -362,6 +345,7 @@
                     "expectedDuration": 2.00,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -376,6 +360,7 @@
                     "expectedDuration": 3.00,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -390,6 +375,7 @@
                     "expectedDuration": 2.00,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -404,6 +390,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -418,6 +405,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -432,6 +420,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -446,6 +435,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": ["critical_thinking"],
                     "skillsLearned": []
                 },
@@ -460,6 +450,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": ["technology_design"],
                     "skillsLearned": []
                 },
@@ -474,6 +465,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -488,6 +480,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -502,6 +495,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -516,6 +510,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -530,6 +525,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -544,6 +540,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -558,6 +555,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -572,6 +570,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -586,6 +585,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -600,6 +600,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -614,6 +615,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -628,6 +630,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -642,6 +645,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -656,6 +660,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -670,6 +675,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -684,6 +690,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -698,6 +705,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -712,6 +720,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -726,6 +735,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -740,6 +750,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -754,6 +765,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -768,6 +780,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -782,6 +795,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -796,6 +810,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -810,6 +825,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -824,6 +840,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -838,6 +855,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -852,6 +870,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -866,6 +885,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -880,6 +900,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -894,6 +915,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -908,6 +930,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -922,6 +945,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -936,6 +960,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -950,6 +975,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -964,6 +990,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -978,6 +1005,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -992,6 +1020,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1006,6 +1035,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1020,6 +1050,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": ["critical_thinking"],
                     "skillsLearned": []
                 },
@@ -1034,6 +1065,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1048,6 +1080,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1062,6 +1095,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "IntentionalModule",
                     "requiredSkillCodes": ["critical_thinking"],
                     "skillsLearned": []
                 },
@@ -1076,6 +1110,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": ["critical_thinking"],
                     "skillsLearned": []
                 },
@@ -1090,6 +1125,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1104,6 +1140,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1118,6 +1155,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": ["critical_thinking"],
                     "skillsLearned": []
                 },
@@ -1132,6 +1170,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": ["technology_design"],
                     "skillsLearned": []
                 },
@@ -1146,6 +1185,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1160,6 +1200,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1174,6 +1215,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1188,6 +1230,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1202,6 +1245,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1216,6 +1260,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1230,6 +1275,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1244,6 +1290,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1258,6 +1305,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1272,6 +1320,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1286,6 +1335,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1300,6 +1350,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1314,6 +1365,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1328,6 +1380,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1342,6 +1395,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1356,6 +1410,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1370,6 +1425,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1384,6 +1440,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1398,6 +1455,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1412,6 +1470,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1426,6 +1485,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1440,6 +1500,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1454,6 +1515,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1468,6 +1530,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1482,6 +1545,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1496,6 +1560,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1510,6 +1575,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1524,6 +1590,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1538,6 +1605,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1552,6 +1620,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1566,6 +1635,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1580,6 +1650,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1594,6 +1665,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1608,6 +1680,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1622,6 +1695,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ProductionMemory",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1636,6 +1710,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1650,6 +1725,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1664,6 +1740,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1678,6 +1755,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1692,6 +1770,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": ["critical_thinking"],
                     "skillsLearned": []
                 },
@@ -1706,6 +1785,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1720,6 +1800,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1734,6 +1815,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "IntentionalModule",
                     "requiredSkillCodes": ["critical_thinking"],
                     "skillsLearned": []
                 },
@@ -1748,6 +1830,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1762,6 +1845,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1776,6 +1860,7 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1790,11 +1875,10 @@
                     "expectedDuration": 0.10,
                     "isCompleted": false,
                     "completionTime": 0.00,
+                    "currentCognitiveState": "GoalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 }
-            ],
-            "cognitiveStepProgress": [
             ]
         }
     ]
