@@ -83,10 +83,20 @@ public static class PlayerRagPhysicalBridge
         GameObject playerGo = playerMovement.gameObject;
         AgentGroundMotor motor = PlayerRagPhysicalAgentSetup.Configure(playerGo, ZoneIndex);
         playerMovement.EnableRagGroundMotorMovement(motor);
+        HandRotationManager.EnsureOnAgent(playerGo)?.RefreshRigWire();
 
         RagSequenceAgentMover existingMover = playerGo.GetComponent<RagSequenceAgentMover>();
         if (existingMover != null)
         {
+            existingMover.hostPlayerMovement = true;
+            KleinFrameExecutor kleinExisting = KleinFrameExecutor.EnsureOnAgent(playerGo, ZoneIndex);
+            string ragTextExisting = ResolveActiveRagJsonText();
+            if (kleinExisting != null)
+            {
+                kleinExisting.BootstrapFromRagText(ragTextExisting);
+                existingMover.BindKleinFrameExecutor(kleinExisting, ragTextExisting);
+            }
+
             IsBound = true;
             BoundMover = existingMover;
             ApplyDesignatedPlayerNavTuning(existingMover);
@@ -110,6 +120,14 @@ public static class PlayerRagPhysicalBridge
         mover.mentalLeaderAgentId = ResolveZone0MentalLeaderId();
 
         HandRotationManager.EnsureOnAgent(playerGo);
+
+        KleinFrameExecutor kleinExec = KleinFrameExecutor.EnsureOnAgent(playerGo, ZoneIndex);
+        string ragText = ResolveActiveRagJsonText();
+        if (kleinExec != null)
+        {
+            kleinExec.BootstrapFromRagText(ragText);
+            mover.BindKleinFrameExecutor(kleinExec, ragText);
+        }
 
         IsBound = true;
         BoundMover = mover;
@@ -145,6 +163,39 @@ public static class PlayerRagPhysicalBridge
             RelocateDesignatedPlayerToPhysicalSpawn(mover.transform, force: true);
 
         TryAttachMlTrainingForDesignatedPlayer(mover);
+        if (mover != null)
+        {
+            DesignatedPhysicalPlayerAppearance.ApplyScale(mover.transform);
+            HandRotationManager.EnsureOnAgent(mover.gameObject)?.RefreshRigWire();
+        }
+        TryBootstrapKleinMotorResting(mover);
+    }
+
+    static void TryBootstrapKleinMotorResting(RagSequenceAgentMover mover)
+    {
+        if (mover == null || !RagPhysicalAgentAssignment.IsLocalPlayerRagPhysicalAgent())
+            return;
+
+        KleinFrameExecutor exec = mover.GetComponent<KleinFrameExecutor>();
+        if (exec == null)
+            return;
+
+        exec.TryExecuteRestingFrame();
+    }
+
+    static string ResolveActiveRagJsonText()
+    {
+        SceneUILoader loader = Object.FindObjectOfType<SceneUILoader>();
+        if (loader == null)
+            return string.Empty;
+
+        if (!string.IsNullOrEmpty(loader.MergedRawRagJson))
+            return loader.MergedRawRagJson;
+        if (!string.IsNullOrEmpty(loader.RawJsonText))
+            return loader.RawJsonText;
+        if (!string.IsNullOrEmpty(loader.EffectivePipelineJson))
+            return loader.EffectivePipelineJson;
+        return string.Empty;
     }
 
     static bool IsPhysicalEmbedContentReady()
@@ -289,8 +340,13 @@ public static class PlayerRagPhysicalBridge
         if (playerScale < 1.01f)
             playerScale = DesignatedPhysicalPlayerAppearance.GetScale();
 
-        mover.reachThreshold = Mathf.Max(1.35f, 0.92f * playerScale);
-        mover.cognitiveInteractionStandDistance = Mathf.Max(0.92f, 0.58f * playerScale);
+        float capsuleRadius = 0.28f * playerScale;
+        CapsuleCollider cap = mover.GetComponent<CapsuleCollider>();
+        if (cap != null)
+            capsuleRadius = cap.radius * Mathf.Max(mover.transform.lossyScale.x, mover.transform.lossyScale.z);
+
+        mover.reachThreshold = Mathf.Max(0.42f, capsuleRadius + 0.12f);
+        mover.cognitiveInteractionStandDistance = Mathf.Max(0.38f, 0.36f * playerScale);
         mover.avoidCognitiveObstacles = true;
         mover.useProximityCognitiveSteering = true;
         mover.useProximityEnvironmentSteering = true;

@@ -23,6 +23,9 @@ public class AgentGroundMotor : MonoBehaviour
     [Tooltip("When true, capsule sweeps ignore cognitive-station solid hulls (mental band). Used for the designated Photon physical agent.")]
     public bool skipCognitiveStationSolids;
 
+    [Tooltip("Current RAG step target — its environment nav hull is ignored so the host can enter press range.")]
+    public string approachTargetObjectId;
+
     /// <summary>0 = moved fully; 1 = move fully blocked by environment collision.</summary>
     public float LastMoveBlockedFraction { get; private set; }
 
@@ -239,6 +242,10 @@ public class AgentGroundMotor : MonoBehaviour
         if (c == null || IsSelf(c))
             return true;
 
+        if (!string.IsNullOrWhiteSpace(approachTargetObjectId)
+            && IsColliderOnApproachTarget(c, approachTargetObjectId))
+            return true;
+
         if (!skipCognitiveStationSolids)
             return false;
 
@@ -247,5 +254,43 @@ public class AgentGroundMotor : MonoBehaviour
 
         Transform t = c.transform;
         return t != null && t.name == "CognitiveNavObstacle";
+    }
+
+    static bool IsColliderOnApproachTarget(Collider c, string stepTargetObjectId)
+    {
+        if (c == null || string.IsNullOrWhiteSpace(stepTargetObjectId))
+            return false;
+
+        Transform root = c.transform;
+        while (root.parent != null)
+        {
+            if (root.GetComponent<DeclarativeObjectMetadata>() != null
+                || root.name.StartsWith("Tool_", System.StringComparison.Ordinal))
+            {
+                break;
+            }
+            root = root.parent;
+        }
+
+        GameObject toolRoot = root.gameObject;
+        DeclarativeObjectMetadata meta = toolRoot.GetComponent<DeclarativeObjectMetadata>();
+        if (meta != null && !string.IsNullOrEmpty(meta.objectId))
+        {
+            if (RagSequenceAgentMover.StationIdsMatch(meta.objectId, stepTargetObjectId))
+                return true;
+        }
+
+        string name = toolRoot.name;
+        if (name.StartsWith("Tool_", System.StringComparison.Ordinal))
+        {
+            string id = name.Substring("Tool_".Length);
+            int zoneIdx = id.IndexOf("_zone", System.StringComparison.OrdinalIgnoreCase);
+            if (zoneIdx > 0)
+                id = id.Substring(0, zoneIdx);
+            if (RagSequenceAgentMover.StationIdsMatch(id, stepTargetObjectId))
+                return true;
+        }
+
+        return RagSequenceAgentMover.StationIdsMatch(name, stepTargetObjectId);
     }
 }

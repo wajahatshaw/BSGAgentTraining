@@ -211,6 +211,14 @@ public class RagMenuController : MonoBehaviour
     /// </summary>
     public void ShowButtonPressedFeedback(string targetObjectId, int zoneIndex)
     {
+        PhysicalTargetPressVisual pressVisual = PhysicalTargetPressVisual.EnsureForStepTarget(targetObjectId, zoneIndex);
+        if (pressVisual != null)
+        {
+            pressVisual.BeginPressPulse();
+            pressVisual.CommitPressedState();
+            return;
+        }
+
         // Flash the target scene object
         GameObject targetGO = FindSceneObject(targetObjectId, zoneIndex);
         if (targetGO != null)
@@ -295,6 +303,9 @@ public class RagMenuController : MonoBehaviour
 
             var metadata = tile.AddComponent<DeclarativeObjectMetadata>();
             metadata.Apply(null, NormalizeBaseId(optionId), FormatOptionLabel(optionId).Replace("\n", " "), "spatial_menu_button", "visible");
+
+            PhysicalTargetInteraction.EnsureOnAny(tile);
+            PhysicalTargetInteraction.RegisterTarget(tile, NormalizeBaseId(optionId), zoneIndex);
 
             AttachForwardLabel(root.transform, optionId, tile.transform.localPosition);
             AddMenuObject(tile);

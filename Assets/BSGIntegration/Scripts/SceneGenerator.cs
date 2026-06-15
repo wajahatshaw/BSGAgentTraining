@@ -492,8 +492,19 @@ public class SceneGenerator : MonoBehaviour
         }
 
         ApplySpatialStaggerToGeneratedToolLabels();
-        
+        RegisterAllToolsWithTargetRegistry();
+
         Debug.Log($"Tool generation complete. Created {generatedTools.Count} tools.");
+    }
+
+    void RegisterAllToolsWithTargetRegistry()
+    {
+        foreach (var kvp in generatedTools)
+        {
+            if (kvp.Value == null)
+                continue;
+            PhysicalTargetInteraction.RegisterTarget(kvp.Value, kvp.Key, ExtractZoneIndex(kvp.Key, 0));
+        }
     }
     
     GameObject CreateToolObject(string toolId, ToolState toolState, int index)
@@ -617,7 +628,32 @@ public class SceneGenerator : MonoBehaviour
             AttachToolObjectNameLabel(toolGO, toolState, toolId);
         }
 
+        if (!isCognitive && !isMenuOption)
+        {
+            string displayName = string.IsNullOrWhiteSpace(toolState?.name) ? toolId : toolState.name;
+            string initialState = toolState?.initialState ?? "unpressed_0";
+            PhysicalTargetPressVisual.EnsureOn(toolGO, displayName, initialState);
+            PhysicalTargetInteraction.EnsureOnAny(toolGO);
+        }
+
+        string registerId = !string.IsNullOrWhiteSpace(toolState?.objectId) ? toolState.objectId : toolId;
+        PhysicalTargetInteraction.RegisterTarget(toolGO, registerId, ExtractZoneIndex(registerId, 0));
+
         return toolGO;
+    }
+
+    static bool IsPressableEquipmentTool(string toolId, ToolState toolState)
+    {
+        string type = (toolState?.type ?? string.Empty).ToLowerInvariant();
+        if (type.Contains("equipment") || type.Contains("input") || type.Contains("control") || type.Contains("device"))
+            return true;
+
+        string name = (toolState?.name ?? toolId ?? string.Empty).ToLowerInvariant();
+        return name.Contains("mouse")
+               || name.Contains("key")
+               || name.Contains("scroll")
+               || name.Contains("button")
+               || name.Contains("wheel");
     }
 
     static bool IsMenuOptionTool(string toolId, ToolState toolState)
@@ -2045,7 +2081,15 @@ public class SceneGenerator : MonoBehaviour
     {
         if (generatedTools.ContainsKey(toolId))
         {
-            UpdateToolVisuals(generatedTools[toolId], newState);
+            GameObject tool = generatedTools[toolId];
+            UpdateToolVisuals(tool, newState);
+            PhysicalTargetPressVisual visual = tool.GetComponent<PhysicalTargetPressVisual>();
+            if (visual != null)
+            {
+                string displayName = newState?.name ?? toolId;
+                string state = newState?.initialState ?? "unpressed_0";
+                visual.RefreshLabels(displayName, state);
+            }
         }
     }
     

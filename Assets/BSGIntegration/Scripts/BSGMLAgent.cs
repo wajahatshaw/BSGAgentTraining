@@ -3828,6 +3828,8 @@ public class BSGMLAgent : Agent
     void ApplyHandReachPose(Vector3 targetPosition, bool press)
     {
         if (agentRole != AgentRole.Physical) return;
+        KleinFrameExecutor klein = GetComponent<KleinFrameExecutor>();
+        if (klein != null && klein.IsHoldingPose) return;
         if (handRotationManager == null)
             handRotationManager = HandRotationManager.EnsureOnAgent(gameObject);
         handRotationManager?.ApplyRightArmReachPose(targetPosition, press);
@@ -3836,6 +3838,8 @@ public class BSGMLAgent : Agent
     void ResetHandReachPose()
     {
         if (agentRole != AgentRole.Physical) return;
+        KleinFrameExecutor klein = GetComponent<KleinFrameExecutor>();
+        if (klein != null && klein.IsHoldingPose) return;
         if (handRotationManager == null)
             handRotationManager = HandRotationManager.EnsureOnAgent(gameObject);
         handRotationManager?.ResetRightArmReachPose();
@@ -3844,9 +3848,12 @@ public class BSGMLAgent : Agent
     void ApplyHandPoseForStep(ActionSequenceStep step, bool execute)
     {
         if (agentRole != AgentRole.Physical) return;
+        KleinFrameExecutor klein = GetComponent<KleinFrameExecutor>();
+        if (klein != null && klein.IsHoldingPose) return;
         if (handRotationManager == null)
             handRotationManager = HandRotationManager.EnsureOnAgent(gameObject);
         if (handRotationManager == null) return;
+        if (handRotationManager.UsesMixamoRig) return;
         handRotationManager.ApplyFingerRotation(
             HandActionLibrary.IndexFinger,
             HandActionLibrary.GetRotationsForStep(step, execute));

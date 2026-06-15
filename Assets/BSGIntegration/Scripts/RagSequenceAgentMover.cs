@@ -177,12 +177,20 @@ public class RagSequenceAgentMover : MonoBehaviour
     private CapsuleCollider agentCapsule;
     private BSGMLAgent mlAgent;
     private HandRotationManager handRotationManager;
+    private KleinFrameExecutor kleinFrameExecutor;
+    private string kleinMotorStepId;
+    private bool kleinMotorCompleted;
 
     // Cached reference to the zone's mental leader mover — avoids repeated GameObject.Find calls.
     private RagSequenceAgentMover _leaderMoverCache;
     private ProximityDetectionSystem _proximitySteeringCache;
     private SkillBasedActionSystem _skillCache;
     private AgentGroundMotor _groundMotor;
+
+    string _cachedInteractionKey;
+    PhysicalTargetInteraction _cachedInteraction;
+    bool _cachedInteractionValid;
+    bool _cachedInteractionMiss;
 
     // Position cache: maps targetObjectId → world position so FindObjectsOfType is never called in Update.
     private Dictionary<string, Vector3> _targetPosCache = new Dictionary<string, Vector3>(32);
@@ -225,7 +233,7 @@ public class RagSequenceAgentMover : MonoBehaviour
     const float MenuDecisionNudgeSeconds = 0.2f;
     const float MenuDemoAssistSeconds = 2.0f;
     const float HostMenuScriptedPressSeconds = 0.38f;
-    const float HostMenuSelectionArriveDistance = 1.45f;
+    const float HostMenuSelectionArriveDistance = 0.42f;
     const float MenuCorrectPressReward = 0.06f;
     const float MenuCorrectSelectionReward = 0.12f;
     const float MenuEarlyPressPenalty = -0.025f;
@@ -238,6 +246,8 @@ public class RagSequenceAgentMover : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         mlAgent = GetComponent<BSGMLAgent>();
         handRotationManager = HandRotationManager.EnsureOnAgent(gameObject);
+        if (hostPlayerMovement)
+            kleinFrameExecutor = KleinFrameExecutor.EnsureOnAgent(gameObject, zoneIndex);
         _playerMovement = hostPlayerMovement ? GetComponent<IRagPlayerMovementHost>() : null;
         _groundMotor = GetComponent<AgentGroundMotor>();
         if (_groundMotor == null && !hostPlayerMovement)
@@ -325,7 +335,10 @@ public class RagSequenceAgentMover : MonoBehaviour
 
         _groundMotor = GetComponent<AgentGroundMotor>();
         if (_groundMotor != null)
+        {
             _groundMotor.clampZoneIndex = zoneIndex;
+            _groundMotor.collisionSkin = 0.03f;
+        }
 
         agentCapsule = GetComponent<CapsuleCollider>();
         if (agentCapsule == null)
@@ -430,6 +443,13 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
 
         string effectiveTargetId = ResolveEffectiveTargetObjectId(step);
+        string interactionKey = effectiveTargetId + "|" + zoneIndex;
+        if (!_cachedInteractionValid || !string.Equals(_cachedInteractionKey, interactionKey, StringComparison.Ordinal))
+        {
+            _cachedInteractionValid = false;
+            _cachedInteraction = null;
+            _cachedInteractionMiss = false;
+        }
 
         Vector3? targetPos = ResolveTargetPosition(effectiveTargetId);
         if (!targetPos.HasValue)
@@ -466,7 +486,7 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
 
         Vector3 stationCenter = targetPos.Value;
-        Vector3 moveGoal = ResolveMoveGoalPosition(effectiveTargetId, stationCenter);
+        Vector3 moveGoal = ResolveMoveGoalPosition(effectiveTargetId, stationCenter, step);
         _navGoalForObstacles = moveGoal;
 
         Vector3 to = moveGoal - transform.position;
@@ -536,6 +556,7 @@ public class RagSequenceAgentMover : MonoBehaviour
             }
 
             Vector3 delta = dir * moveSpeed * speedMult * Time.deltaTime;
+            SyncHostApproachMotorTarget(effectiveTargetId);
             ApplyMovementDelta(delta, effectiveTargetId);
 
             Vector3 faceFlat = stationCenter - transform.position;
@@ -553,7 +574,11 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
 
         ResetNavStuckState();
-        FaceTowardStation(stationCenter);
+        SyncHostApproachMotorTarget(ResolveEffectiveTargetObjectId(step));
+        Vector3 faceTarget = IsPhysicalManualActStep(step)
+            ? ResolveInteractionSurfaceForStep(step, stationCenter)
+            : stationCenter;
+        FaceTowardStation(faceTarget);
 
         if (UsesInferenceCognitiveOnnxLocomotion())
         {
@@ -578,19 +603,29 @@ public class RagSequenceAgentMover : MonoBehaviour
 
         if (RagMenuController.IsMenuStep(step))
         {
+            Vector3 menuTarget = ResolveInteractionSurfaceForStep(step, stationCenter);
             if (!activeMenuPressLatched)
             {
-                if (!TryLatchMenuFingerPress(step, stationCenter))
+                if (!TryLatchMenuFingerPress(step, menuTarget))
                     return;
             }
 
             ApplyMenuHandPose(step, true);
-            ApplyMenuReachPose(stationCenter, true);
+            ApplyMenuReachPose(menuTarget, true);
         }
         else if (IsPhysicalManualActStep(step))
         {
-            ApplyMenuHandPose(step, true);
-            ApplyMenuReachPose(stationCenter, true);
+            Vector3 interactionPoint = ResolveInteractionSurfaceForStep(step, stationCenter);
+            SyncHostApproachMotorTarget(effectiveTargetId);
+            if (TryDriveKleinMotorForStep(step, interactionPoint))
+            {
+                // KleinFrameExecutor drives arm + finger IK.
+            }
+            else
+            {
+                ApplyMenuHandPose(step, true);
+                ApplyMenuReachPose(interactionPoint, true);
+            }
         }
 
         dwellTimer += Time.deltaTime;
@@ -600,9 +635,20 @@ public class RagSequenceAgentMover : MonoBehaviour
         if (RagMenuController.IsMenuStep(step))
             dwellNeed = IsMenuOpenedForStep(step) ? 0.18f : 0.28f;
         else if (IsPhysicalManualActStep(step))
-            dwellNeed = Mathf.Max(dwellNeed, 0.35f);
+        {
+            if (kleinFrameExecutor != null && hostPlayerMovement)
+                dwellNeed = Mathf.Max(dwellNeed, kleinFrameExecutor.GetRequiredDwellSeconds(step));
+            else
+                dwellNeed = Mathf.Max(dwellNeed, 0.35f);
+        }
 
         UpdateImaginalThoughtBubbleWhileDwelling(step);
+
+        if (IsPhysicalManualActStep(step) && kleinFrameExecutor != null && hostPlayerMovement
+            && !string.IsNullOrEmpty(kleinMotorStepId)
+            && string.Equals(kleinMotorStepId, step.stepId, StringComparison.Ordinal)
+            && !kleinMotorCompleted)
+            return;
 
         if (dwellTimer < dwellNeed)
             return;
@@ -636,15 +682,74 @@ public class RagSequenceAgentMover : MonoBehaviour
         return string.Equals(step.actionType, "act", StringComparison.OrdinalIgnoreCase);
     }
 
+    float GetHostInteractionArriveDistance()
+    {
+        return Mathf.Max(0.14f, GetAgentCapsuleRadius() + PhysicalTargetInteraction.HostSurfacePad);
+    }
+
+    void SyncHostApproachMotorTarget(string targetObjectId)
+    {
+        if (!hostPlayerMovement || _groundMotor == null)
+            return;
+
+        _groundMotor.approachTargetObjectId = targetObjectId;
+    }
+
+    bool TryGetCachedStepInteraction(string targetObjectId, out PhysicalTargetInteraction interaction)
+    {
+        string key = (targetObjectId ?? string.Empty) + "|" + zoneIndex;
+        if (_cachedInteractionValid && string.Equals(_cachedInteractionKey, key, StringComparison.Ordinal))
+        {
+            interaction = _cachedInteraction;
+            return !_cachedInteractionMiss;
+        }
+
+        _cachedInteractionKey = key;
+        _cachedInteractionValid = true;
+        if (PhysicalTargetInteraction.TryFindForStepTarget(targetObjectId, zoneIndex, out interaction))
+        {
+            _cachedInteraction = interaction;
+            _cachedInteractionMiss = false;
+            return true;
+        }
+
+        _cachedInteraction = null;
+        _cachedInteractionMiss = true;
+        interaction = null;
+        return false;
+    }
+
     float GetPhysicalManualActArrivalDistance(ActionSequenceStep step)
     {
+        if (step != null
+            && TryGetCachedStepInteraction(step.targetObjectId, out PhysicalTargetInteraction interaction))
+        {
+            return interaction.GetArrivalDistance(GetAgentCapsuleRadius(), hostPlayerMovement);
+        }
+
         float stand = GetInteractionStandDistance();
         float dist = Mathf.Max(reachThreshold, stand + 0.28f);
         if (hostPlayerMovement)
             dist = Mathf.Max(dist, stand + 0.42f);
-        if (IsPhysicalManualActStep(step))
-            dist = Mathf.Max(dist, 1.35f);
         return dist;
+    }
+
+    Vector3 ResolveInteractionSurfaceForStep(ActionSequenceStep step, Vector3 stationCenter)
+    {
+        if (step == null)
+            return stationCenter;
+
+        string targetId = ResolveEffectiveTargetObjectId(step);
+        if (TryGetCachedStepInteraction(targetId, out PhysicalTargetInteraction interaction))
+            return interaction.GetInteractionSurfacePoint();
+
+        if (IsPhysicalManualActStep(step)
+            && TryGetCachedStepInteraction(step.targetObjectId, out interaction))
+        {
+            return interaction.GetInteractionSurfacePoint();
+        }
+
+        return stationCenter;
     }
 
     void FinishStepDwellAndComplete(ActionSequenceStep step)
@@ -672,8 +777,13 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
         else if (IsPhysicalManualActStep(step))
         {
-            ApplyMenuHandPose(step, false);
-            ResetMenuReachPose();
+            CommitPressableTargetVisual(step);
+            ClearKleinMotorSession();
+            if (!(hostPlayerMovement && kleinFrameExecutor != null))
+            {
+                ApplyMenuHandPose(step, false);
+                ResetMenuReachPose();
+            }
         }
 
         active.MarkStepCompleted();
@@ -1485,9 +1595,7 @@ public class RagSequenceAgentMover : MonoBehaviour
 
     GameObject FindStationRoot(string targetObjectId)
     {
-        GameObject target = GameObject.Find($"Tool_{targetObjectId}_zone{zoneIndex}");
-        if (target == null) target = GameObject.Find($"{targetObjectId}_zone{zoneIndex}");
-        if (target == null) target = GameObject.Find($"cognitive_{targetObjectId}_zone{zoneIndex}");
+        GameObject target = PhysicalTargetInteraction.FindStepTargetRoot(targetObjectId, zoneIndex);
         if (target != null && !ZonePlayAreaBounds.WorldPositionInZone(zoneIndex, target.transform.position))
             return null;
         return target;
@@ -1509,6 +1617,12 @@ public class RagSequenceAgentMover : MonoBehaviour
 
     float GetApproachProgressDistance(string targetObjectId, Vector3 stationCenter, float distToMoveGoal)
     {
+        if (hostPlayerMovement
+            && TryGetCachedStepInteraction(targetObjectId, out PhysicalTargetInteraction interaction))
+        {
+            return interaction.GetSurfaceDistance(transform.position);
+        }
+
         if (!IsCognitiveStationTarget(targetObjectId))
             return distToMoveGoal;
 
@@ -1519,8 +1633,20 @@ public class RagSequenceAgentMover : MonoBehaviour
         return EnvironmentSolidCollider.GetHullDistance(root.transform, transform.position);
     }
 
-    Vector3 ResolveMoveGoalPosition(string targetObjectId, Vector3 stationCenter)
+    Vector3 ResolveMoveGoalPosition(string targetObjectId, Vector3 stationCenter, ActionSequenceStep step = null)
     {
+        bool useTightApproach = hostPlayerMovement
+            || (step != null && IsPhysicalManualActStep(step)
+                && StationIdsMatch(step.targetObjectId, targetObjectId));
+
+        if (useTightApproach
+            && TryGetCachedStepInteraction(targetObjectId, out PhysicalTargetInteraction interaction))
+        {
+            Vector3 pressStand = interaction.GetApproachStandPoint(
+                transform.position, GetAgentCapsuleRadius(), hostPlayerMovement);
+            return ZonePlayAreaBounds.ClampPosition(zoneIndex, pressStand);
+        }
+
         GameObject root = FindStationRoot(targetObjectId);
         if (root == null)
             return stationCenter;
@@ -1569,11 +1695,21 @@ public class RagSequenceAgentMover : MonoBehaviour
 
     bool HasArrivedAtStep(ActionSequenceStep step, string targetObjectId, Vector3 stationCenter, float distToMoveGoal)
     {
+        if (hostPlayerMovement
+            && TryGetCachedStepInteraction(targetObjectId, out PhysicalTargetInteraction hostInteraction))
+        {
+            float arriveDist = hostInteraction.GetArrivalDistance(GetAgentCapsuleRadius(), true);
+            if (hostInteraction.GetSurfaceDistance(transform.position) <= arriveDist)
+                return true;
+            return distToMoveGoal <= arriveDist;
+        }
+
         if (RagMenuController.IsMenuStep(step))
         {
             if (IsMenuOpenedForStep(step) && UsesScriptedHostMenuAssist())
             {
-                if (distToMoveGoal <= 0.85f)
+                float hostArrive = GetHostInteractionArriveDistance();
+                if (distToMoveGoal <= hostArrive)
                     return true;
 
                 if (!string.IsNullOrWhiteSpace(step.targetObjectId))
@@ -1583,26 +1719,35 @@ public class RagSequenceAgentMover : MonoBehaviour
                     {
                         Vector3 flat = transform.position - buttonPos.Value;
                         flat.y = 0f;
-                        if (flat.magnitude <= HostMenuSelectionArriveDistance)
+                        if (flat.magnitude <= hostArrive)
                             return true;
                     }
                 }
 
-                return distToMoveGoal <= HostMenuSelectionArriveDistance;
+                return distToMoveGoal <= hostArrive;
             }
 
-            return distToMoveGoal <= (IsMenuOpenedForStep(step) ? 0.65f : 0.85f);
+            return distToMoveGoal <= (IsMenuOpenedForStep(step) ? 0.42f : 0.55f);
         }
 
         if (IsPhysicalManualActStep(step))
         {
             float arriveDist = GetPhysicalManualActArrivalDistance(step);
-            Vector3 a = transform.position;
-            a.y = 0f;
-            Vector3 c = stationCenter;
-            c.y = 0f;
-            if (Vector3.Distance(a, c) <= arriveDist)
-                return true;
+            if (TryGetCachedStepInteraction(targetObjectId, out PhysicalTargetInteraction interaction))
+            {
+                if (interaction.GetSurfaceDistance(transform.position) <= arriveDist)
+                    return true;
+            }
+            else
+            {
+                Vector3 a = transform.position;
+                a.y = 0f;
+                Vector3 c = stationCenter;
+                c.y = 0f;
+                if (Vector3.Distance(a, c) <= arriveDist)
+                    return true;
+            }
+
             return distToMoveGoal <= arriveDist;
         }
 
@@ -1767,9 +1912,11 @@ public class RagSequenceAgentMover : MonoBehaviour
     void ApplyMenuHandPose(ActionSequenceStep step, bool execute)
     {
         if (isMentalAgent) return;
+        if (hostPlayerMovement && kleinFrameExecutor != null && kleinFrameExecutor.IsHoldingPose) return;
         if (handRotationManager == null)
             handRotationManager = HandRotationManager.EnsureOnAgent(gameObject);
         if (handRotationManager == null) return;
+        if (handRotationManager.UsesMixamoRig) return;
 
         handRotationManager.ApplyFingerRotation(
             HandActionLibrary.IndexFinger,
@@ -1779,9 +1926,73 @@ public class RagSequenceAgentMover : MonoBehaviour
     void ApplyMenuReachPose(Vector3 targetPosition, bool press)
     {
         if (isMentalAgent) return;
+        if (hostPlayerMovement && kleinFrameExecutor != null && kleinFrameExecutor.IsHoldingPose) return;
         if (handRotationManager == null)
             handRotationManager = HandRotationManager.EnsureOnAgent(gameObject);
+        if (handRotationManager != null && handRotationManager.UsesMixamoRig && handRotationManager.ManualPoseActive) return;
         handRotationManager?.ApplyRightArmReachPose(targetPosition, press);
+    }
+
+    void CommitPressableTargetVisual(ActionSequenceStep step)
+    {
+        if (step == null)
+            return;
+
+        PhysicalTargetPressVisual visual = PhysicalTargetPressVisual.EnsureForStepTarget(step.targetObjectId, zoneIndex);
+        if (visual == null)
+            return;
+
+        string pressedState = "pressed_1";
+        if (kleinFrameExecutor != null && kleinFrameExecutor.ActiveFrame != null
+            && !string.IsNullOrWhiteSpace(kleinFrameExecutor.ActiveFrame.stateAfter))
+        {
+            pressedState = kleinFrameExecutor.ActiveFrame.stateAfter;
+        }
+
+        visual.CommitPressedState(pressedState);
+    }
+
+    bool TryDriveKleinMotorForStep(ActionSequenceStep step, Vector3 stationCenter)
+    {
+        if (!hostPlayerMovement || kleinFrameExecutor == null || step == null)
+            return false;
+
+        if (!ManualBufferCatalog.IsLoaded)
+            ManualBufferCatalog.TryLoad();
+
+        if (!ManualBufferCatalog.IsLoaded)
+            return false;
+
+        if (!string.Equals(kleinMotorStepId, step.stepId, StringComparison.Ordinal))
+        {
+            kleinMotorStepId = step.stepId;
+            kleinMotorCompleted = false;
+            if (!kleinFrameExecutor.TryExecuteForStep(step, stationCenter, () => kleinMotorCompleted = true))
+            {
+                kleinMotorStepId = null;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    void ClearKleinMotorSession()
+    {
+        kleinMotorStepId = null;
+        kleinMotorCompleted = false;
+        kleinFrameExecutor?.Cancel();
+    }
+
+    /// <summary>Late-bound by <see cref="PlayerRagPhysicalBridge"/> after Photon player bind.</summary>
+    public void BindKleinFrameExecutor(KleinFrameExecutor executor, string ragText = null)
+    {
+        kleinFrameExecutor = executor;
+        hostPlayerMovement = true;
+        handRotationManager = HandRotationManager.EnsureOnAgent(gameObject);
+        handRotationManager?.RefreshRigWire();
+        if (kleinFrameExecutor != null && !string.IsNullOrWhiteSpace(ragText))
+            kleinFrameExecutor.BootstrapFromRagText(ragText);
     }
 
     void ResetMenuReachPose()
@@ -2833,6 +3044,7 @@ public class RagSequenceAgentMover : MonoBehaviour
         active = null;
         runningCognitive = false;
         dwellTimer = 0f;
+        ClearKleinMotorSession();
         activeMenuStepId = null;
         activeMenuOpened = false;
         activeMenuPressLatched = false;

@@ -138,6 +138,11 @@ public static class DesignatedPhysicalPlayerAppearance
         MeshRenderer capsuleRenderer = capsule.GetComponent<MeshRenderer>();
         if (capsuleRenderer != null)
             capsuleRenderer.enabled = false;
+
+        HandRotationManager.EnsureOnAgent(playerRoot.gameObject);
+        HandRotationManager handMgr = playerRoot.GetComponent<HandRotationManager>();
+        if (handMgr != null && !handMgr.ManualPoseActive)
+            handMgr.RefreshRigWire();
     }
 
     static bool IsLegacyProceduralVisual(string childName)

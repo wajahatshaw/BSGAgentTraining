@@ -103,6 +103,8 @@ public static class RagSceneJsonBridge
             return false;
         }
 
+        SceneStateLogBridge.TryParseFromRagText(ragFullText);
+
         RagUnityDataInnerModel model = JsonUtility.FromJson<RagUnityDataInnerModel>(dataJson);
         if (model == null)
         {

@@ -1,0 +1,842 @@
+{
+  "rig_naming": {
+    "convention": "mixamorig:<Side>Hand<Finger><Joint>; Right hand = Left mirrored",
+    "contact_point": "key-press / click contact = fingertip tip = Index4_end",
+    "scope": "hand-only for now; non-hand effectors (torso/eye) get rig_bone null + pending_full_body_rig until full-body rig is provided"
+  },
+  "distinct_effectors": {
+    "torso": null,
+    "right_index_fingertip_pad": "mixamorig:RightHandIndex4_end"
+  },
+  "counts": {
+    "physical_motor_frames": 23,
+    "finger_contact_frames": 22,
+    "pending_full_body": 1
+  },
+  "manual_buffer": [
+    {
+      "klein_frame_id": "KF-1-1",
+      "manual_buffer_command": "manual_buffer issues RESTING command to torso for KF-1-1.",
+      "effector_body_part": "torso",
+      "rig_bone": null,
+      "manual_command": "RESTING",
+      "target_object": "desktop_surface",
+      "coordinates": {
+        "x": 150,
+        "y": 480,
+        "z": 720
+      },
+      "force_newtons": null,
+      "duration_ms": 2000,
+      "state_before": "clear",
+      "state_after": "supporting",
+      "rig_pose": {
+        "solve": "pending_full_body_rig",
+        "end_effector": null,
+        "ik_chain": [],
+        "ik_target": {
+          "x": 150,
+          "y": 480,
+          "z": 720
+        },
+        "approach_angle_deg": null,
+        "contact_force_n": null
+      },
+      "motor_execution": "motor_module executes KF-1-1 by event physical-event support-event rest-event torso-rest desktop_surface with torso, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-5",
+      "manual_buffer_command": "manual_buffer issues PRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-5.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "PRESSING",
+      "target_object": "left_mouse_button",
+      "coordinates": {
+        "x": 290,
+        "y": 515,
+        "z": 736
+      },
+      "force_newtons": 0.25,
+      "duration_ms": 100,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 290,
+          "y": 515,
+          "z": 736
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.25
+      },
+      "motor_execution": "motor_module executes KF-1-5 by event physical-event contact-event press-event mouse-button-press left_mouse_button with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-6",
+      "manual_buffer_command": "manual_buffer issues PRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-6.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "PRESSING",
+      "target_object": "left_mouse_button",
+      "coordinates": {
+        "x": 290,
+        "y": 515,
+        "z": 736
+      },
+      "force_newtons": 0.25,
+      "duration_ms": 100,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 290,
+          "y": 515,
+          "z": 736
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.25
+      },
+      "motor_execution": "motor_module executes KF-1-6 by event physical-event contact-event press-event mouse-button-press left_mouse_button with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-7",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-7.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "tab_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-1-7 by event physical-event contact-event key-press-event keyboard-key-depression tab_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-8",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-8.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "p_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-1-8 by event physical-event contact-event key-press-event keyboard-key-depression p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-9",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-9.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "enter_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 90,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-1-9 by event physical-event contact-event key-press-event keyboard-key-depression enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-11",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-11.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "p_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-1-11 by event physical-event contact-event key-press-event keyboard-key-depression p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-12",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-12.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "enter_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 90,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-1-12 by event physical-event contact-event key-press-event keyboard-key-depression enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-14",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-14.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "p_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-1-14 by event physical-event contact-event key-press-event keyboard-key-depression p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-15",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-15.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "p_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-1-15 by event physical-event contact-event key-press-event keyboard-key-depression p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-16",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-16.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "p_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-1-16 by event physical-event contact-event key-press-event keyboard-key-depression p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-1-17",
+      "manual_buffer_command": "manual_buffer issues PRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-17.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "PRESSING",
+      "target_object": "scroll_wheel",
+      "coordinates": {
+        "x": 290,
+        "y": 515,
+        "z": 736
+      },
+      "force_newtons": 0.25,
+      "duration_ms": 140,
+      "state_before": "stationary",
+      "state_after": "scrolled",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 290,
+          "y": 515,
+          "z": 736
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.25
+      },
+      "motor_execution": "motor_module executes KF-1-17 by event physical-event contact-event scroll-event wheel-press-scroll scroll_wheel with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-20",
+      "manual_buffer_command": "manual_buffer issues PRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-20.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "PRESSING",
+      "target_object": "left_mouse_button",
+      "coordinates": {
+        "x": 290,
+        "y": 515,
+        "z": 736
+      },
+      "force_newtons": 0.25,
+      "duration_ms": 100,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 290,
+          "y": 515,
+          "z": 736
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.25
+      },
+      "motor_execution": "motor_module executes KF-2-20 by event physical-event contact-event press-event mouse-button-press left_mouse_button with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-21",
+      "manual_buffer_command": "manual_buffer issues PRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-21.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "PRESSING",
+      "target_object": "left_mouse_button",
+      "coordinates": {
+        "x": 290,
+        "y": 515,
+        "z": 736
+      },
+      "force_newtons": 0.25,
+      "duration_ms": 100,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 290,
+          "y": 515,
+          "z": 736
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.25
+      },
+      "motor_execution": "motor_module executes KF-2-21 by event physical-event contact-event press-event mouse-button-press left_mouse_button with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-22",
+      "manual_buffer_command": "manual_buffer issues PRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-22.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "PRESSING",
+      "target_object": "left_mouse_button",
+      "coordinates": {
+        "x": 290,
+        "y": 515,
+        "z": 736
+      },
+      "force_newtons": 0.25,
+      "duration_ms": 100,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 290,
+          "y": 515,
+          "z": 736
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.25
+      },
+      "motor_execution": "motor_module executes KF-2-22 by event physical-event contact-event press-event mouse-button-press left_mouse_button with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-23",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-23.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "enter_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 90,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-2-23 by event physical-event contact-event key-press-event keyboard-key-depression enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-25",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-25.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "p_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-2-25 by event physical-event contact-event key-press-event keyboard-key-depression p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-26",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-26.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "enter_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 90,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-2-26 by event physical-event contact-event key-press-event keyboard-key-depression enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-27",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-27.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "p_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-2-27 by event physical-event contact-event key-press-event keyboard-key-depression p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-28",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-28.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "enter_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 90,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-2-28 by event physical-event contact-event key-press-event keyboard-key-depression enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-29",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-29.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "p_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-2-29 by event physical-event contact-event key-press-event keyboard-key-depression p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-30",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-30.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "p_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-2-30 by event physical-event contact-event key-press-event keyboard-key-depression p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    },
+    {
+      "klein_frame_id": "KF-2-31",
+      "manual_buffer_command": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-2-31.",
+      "effector_body_part": "right_index_fingertip_pad",
+      "rig_bone": "mixamorig:RightHandIndex4_end",
+      "manual_command": "DEPRESSING",
+      "target_object": "p_key",
+      "coordinates": {
+        "x": 110,
+        "y": 520,
+        "z": 735
+      },
+      "force_newtons": 0.3,
+      "duration_ms": 80,
+      "state_before": "unpressed",
+      "state_after": "pressed",
+      "rig_pose": {
+        "solve": "unity_ik",
+        "end_effector": "mixamorig:RightHandIndex4_end",
+        "ik_chain": [
+          "mixamorig:RightHand",
+          "mixamorig:RightHandIndex1",
+          "mixamorig:RightHandIndex2",
+          "mixamorig:RightHandIndex3",
+          "mixamorig:RightHandIndex4_end"
+        ],
+        "ik_target": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        },
+        "approach_angle_deg": 90,
+        "contact_force_n": 0.3
+      },
+      "motor_execution": "motor_module executes KF-2-31 by event physical-event contact-event key-press-event keyboard-key-depression p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+    }
+  ]
+}
+
+

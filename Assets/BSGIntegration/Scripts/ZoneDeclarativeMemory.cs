@@ -276,6 +276,18 @@ public class ZoneDeclarativeMemory : MonoBehaviour
         if (stepLog.Count > 128) stepLog.RemoveAt(0);
     }
 
+    public void RecordMotorFrame(string kleinFrameId, string stateBefore, string stateAfter, string stepId)
+    {
+        if (string.IsNullOrWhiteSpace(kleinFrameId)) return;
+
+        string value = $"{kleinFrameId}:{stateBefore}->{stateAfter}";
+        RecordCognitiveStep(stepId ?? kleinFrameId, "stored_frame", value);
+        RecordCognitiveStep(stepId ?? kleinFrameId, $"motor_frame_{kleinFrameId}", value);
+        dataSlots["last_motor_frame"] = kleinFrameId;
+        dataSlots["last_motor_state_before"] = stateBefore ?? string.Empty;
+        dataSlots["last_motor_state_after"] = stateAfter ?? string.Empty;
+    }
+
     public void RecordImaginalTransition(ActionSequenceStep step)
     {
         if (step == null) return;

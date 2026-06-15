@@ -291,8 +291,13 @@ public static class PlayerRagInferenceBridge
         if (playerScale < 1.01f)
             playerScale = DesignatedPhysicalPlayerAppearance.GetScale();
 
-        mover.reachThreshold = Mathf.Max(1.35f, 0.92f * playerScale);
-        mover.cognitiveInteractionStandDistance = Mathf.Max(0.92f, 0.58f * playerScale);
+        float capsuleRadius = 0.28f * playerScale;
+        CapsuleCollider cap = mover.GetComponent<CapsuleCollider>();
+        if (cap != null)
+            capsuleRadius = cap.radius * Mathf.Max(mover.transform.lossyScale.x, mover.transform.lossyScale.z);
+
+        mover.reachThreshold = Mathf.Max(0.42f, capsuleRadius + 0.12f);
+        mover.cognitiveInteractionStandDistance = Mathf.Max(0.38f, 0.36f * playerScale);
         mover.avoidCognitiveObstacles = true;
         mover.useProximityCognitiveSteering = true;
         mover.useProximityEnvironmentSteering = true;
