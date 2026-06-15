@@ -14,7 +14,6 @@ public class KleinFrameExecutor : MonoBehaviour
     HandRotationManager _hand;
     Coroutine _activeRoutine;
     string _activeStepId;
-    string _pressTargetObjectId;
     bool _completed;
     Action _onComplete;
 
@@ -78,7 +77,6 @@ public class KleinFrameExecutor : MonoBehaviour
         }
 
         _activeStepId = step.stepId;
-        _pressTargetObjectId = step.targetObjectId;
         _onComplete = onComplete;
         _completed = false;
 
@@ -134,7 +132,6 @@ public class KleinFrameExecutor : MonoBehaviour
         ReleaseHeldPose();
         _completed = false;
         _activeStepId = null;
-        _pressTargetObjectId = null;
         _onComplete = null;
         ActiveFrame = null;
     }
@@ -177,7 +174,6 @@ public class KleinFrameExecutor : MonoBehaviour
 
     IEnumerator CoPressing(KleinFrame frame, Vector3 sceneWorldTarget)
     {
-        BeginPressTargetVisual(frame);
         float duration = Mathf.Max(0.08f, frame.durationMs / 1000f);
         float force = frame.hasForceNewtons ? frame.forceNewtons : frame.rigPose?.contactForceN ?? 0.25f;
         float elapsed = 0f;
@@ -192,7 +188,6 @@ public class KleinFrameExecutor : MonoBehaviour
         }
 
         BeginHoldPose(frame, sceneWorldTarget, 1f, force);
-        CommitPressTargetVisual(frame);
         if (frame != null)
             RecordMotorFrame(frame, _activeStepId);
         SignalMotorComplete();
@@ -216,7 +211,6 @@ public class KleinFrameExecutor : MonoBehaviour
         }
 
         BeginHoldPose(null, sceneWorldTarget, 0f, 0f);
-        ReleasePressTargetVisual(frame);
         if (frame != null)
             RecordMotorFrame(frame, _activeStepId);
         SignalMotorComplete();
@@ -238,39 +232,6 @@ public class KleinFrameExecutor : MonoBehaviour
             return;
 
         ApplyMotorPose(_holdFrame, _holdTarget, _holdPressAmount, _holdForce);
-    }
-
-    void BeginPressTargetVisual(KleinFrame frame)
-    {
-        string targetId = !string.IsNullOrWhiteSpace(_pressTargetObjectId)
-            ? _pressTargetObjectId
-            : frame?.targetObject;
-        PhysicalTargetPressVisual visual = PhysicalTargetPressVisual.EnsureForStepTarget(targetId, zoneIndex);
-        visual?.BeginPressPulse();
-    }
-
-    void CommitPressTargetVisual(KleinFrame frame)
-    {
-        string targetId = !string.IsNullOrWhiteSpace(_pressTargetObjectId)
-            ? _pressTargetObjectId
-            : frame?.targetObject;
-        PhysicalTargetPressVisual visual = PhysicalTargetPressVisual.EnsureForStepTarget(targetId, zoneIndex);
-        string stateAfter = frame != null && !string.IsNullOrWhiteSpace(frame.stateAfter)
-            ? frame.stateAfter
-            : "pressed_1";
-        visual?.CommitPressedState(stateAfter);
-    }
-
-    void ReleasePressTargetVisual(KleinFrame frame)
-    {
-        string targetId = !string.IsNullOrWhiteSpace(_pressTargetObjectId)
-            ? _pressTargetObjectId
-            : frame?.targetObject;
-        PhysicalTargetPressVisual visual = PhysicalTargetPressVisual.EnsureForStepTarget(targetId, zoneIndex);
-        string stateAfter = frame != null && !string.IsNullOrWhiteSpace(frame.stateAfter)
-            ? frame.stateAfter
-            : "unpressed_0";
-        visual?.ResetToReady(stateAfter);
     }
 
     void ApplyMotorPose(KleinFrame frame, Vector3 sceneWorldTarget, float pressPhase, float forceNewtons)

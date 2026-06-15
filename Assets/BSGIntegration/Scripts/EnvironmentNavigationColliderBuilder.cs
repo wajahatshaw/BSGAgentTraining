@@ -17,11 +17,6 @@ public static class EnvironmentNavigationColliderBuilder
         "ObjectNameLabel",
         "ToolObjectNameLabel",
         "DynamicObjectNameLabel",
-        "PressTargetVisual",
-        "PressTopCap",
-        "PressStatusBadge",
-        "PressAccentRing",
-        "PressTargetNameLabel",
     };
 
     public static void EnsureOnTool(GameObject toolRoot, bool forceRebuild = false)
