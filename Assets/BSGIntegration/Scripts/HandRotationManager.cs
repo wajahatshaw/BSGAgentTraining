@@ -50,6 +50,7 @@ public class HandRotationManager : MonoBehaviour
     bool _rigAnimatorsSuppressed;
     bool _manualPoseActive;
     bool _loggedWireStatus;
+    bool _loggedRegistrySummary;
 
     KleinFrame _manualFrame;
     Vector3 _manualTarget;
@@ -87,6 +88,9 @@ public class HandRotationManager : MonoBehaviour
         RightArmPivot = FindDeepChild(root, HumanBodyBuilder.RightArmPivot);
         RightElbowPivot = FindDeepChild(root, HumanBodyBuilder.RightElbowPivot);
 
+        if (IndexFingerTip == null)
+            IndexFingerTip = TryResolveBoneFromRegistry(root, "right_index_fingertip_pad", preferMixamo: false);
+
         if (j1 == null || j2 == null || j3 == null)
             TryAutoWirePlayerHands(root);
 
@@ -110,6 +114,55 @@ public class HandRotationManager : MonoBehaviour
         fingers.Add(index);
 
         EnsureFingerTipCollider(IndexFingerTip);
+        LogRegistrySummaryOnce();
+    }
+
+    void LogRegistrySummaryOnce()
+    {
+        if (_loggedRegistrySummary)
+            return;
+
+        if (!BodyPartRegistry.IsLoaded && !BodyPartRegistry.TryLoad())
+            return;
+
+        _loggedRegistrySummary = true;
+        if (BodyPartRegistry.TryGetByRagName("torso", out BodyPartEntry torso)
+            && BodyPartRegistry.TryGetByRagName("fovea", out BodyPartEntry fovea)
+            && BodyPartRegistry.TryGetByRagName("right_index_fingertip_pad", out BodyPartEntry fingertip))
+        {
+            Debug.Log($"[HandRotationManager] Body part registry: torso={torso.numericId}, fovea={fovea.numericId}, fingertip={fingertip.numericId}");
+        }
+    }
+
+    Transform TryResolveBoneFromRegistry(Transform root, string ragName, bool preferMixamo)
+    {
+        if (root == null || string.IsNullOrWhiteSpace(ragName))
+            return null;
+
+        if (!BodyPartRegistry.IsLoaded && !BodyPartRegistry.TryLoad())
+            return null;
+
+        if (!BodyPartRegistry.TryResolve(ragName, out BodyPartEntry entry))
+            return null;
+
+        if (preferMixamo && entry.HasMixamoBone)
+        {
+            Transform mixamo = FindDeepChild(root, entry.mixamoBone);
+            if (mixamo != null)
+                return mixamo;
+        }
+
+        if (entry.HasProceduralBone)
+        {
+            Transform procedural = FindDeepChild(root, entry.proceduralBone);
+            if (procedural != null)
+                return procedural;
+        }
+
+        if (!preferMixamo && entry.HasMixamoBone)
+            return FindDeepChild(root, entry.mixamoBone);
+
+        return null;
     }
 
     public void TryAutoWirePlayerHands(Transform root)
@@ -136,6 +189,9 @@ public class HandRotationManager : MonoBehaviour
                          ?? FindDeepChild(searchRoot, "RightHandIndex3")
                          ?? FindDeepChild(searchRoot, "RightIndexTip")
                          ?? hand;
+
+        if (IndexFingerTip == null || IndexFingerTip == hand)
+            IndexFingerTip = TryResolveBoneFromRegistry(searchRoot, "right_index_fingertip_pad", preferMixamo: useYBot) ?? IndexFingerTip;
 
         RightHandRoot = hand;
         RightArmPivot = FindDeepChild(searchRoot, "mixamorig:RightArm")
@@ -173,6 +229,8 @@ public class HandRotationManager : MonoBehaviour
         Transform index2 = FindDeepChild(searchRoot, "mixamorig:RightHandIndex2") ?? FindDeepChild(searchRoot, "RightHandIndex2");
         Transform index3 = FindDeepChild(searchRoot, "mixamorig:RightHandIndex3") ?? FindDeepChild(searchRoot, "RightHandIndex3") ?? IndexFingerTip;
         Transform index4 = FindDeepChild(searchRoot, "mixamorig:RightHandIndex4_end") ?? FindDeepChild(searchRoot, "RightHandIndex4_end");
+        if (index4 == null)
+            index4 = TryResolveBoneFromRegistry(searchRoot, "right_index_fingertip_pad", preferMixamo: useYBot);
 
         fingers.Clear();
         fingers.Add(new FingerData { fingerName = "Thumb" });
@@ -192,6 +250,7 @@ public class HandRotationManager : MonoBehaviour
 
         BuildRightIndexChain(useYBot, RightHandRoot ?? hand, index1, index2, index3, index4);
         EnsureFingerTipCollider(IndexFingerTip);
+        LogRegistrySummaryOnce();
     }
 
     /// <summary>Re-resolve finger/arm bones after Y Bot visual is enabled on the Photon player.</summary>
@@ -214,6 +273,7 @@ public class HandRotationManager : MonoBehaviour
         UsesMixamoRig = false;
         _rigAnimators = null;
         _loggedWireStatus = false;
+        _loggedRegistrySummary = false;
         _hasLockedReachTarget = false;
         _smoothedReachWeight = 0f;
         TryAutoWirePlayerHands(transform);

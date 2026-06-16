@@ -39,6 +39,7 @@ public class KleinFrameExecutor : MonoBehaviour
         exec.zoneIndex = zone;
         exec._hand = HandRotationManager.EnsureOnAgent(agent);
         exec._hand?.RefreshRigWire();
+        BodyPartRegistry.TryLoad();
         ManualBufferCatalog.TryLoad();
         return exec;
     }
@@ -52,7 +53,9 @@ public class KleinFrameExecutor : MonoBehaviour
     {
         if (!string.IsNullOrWhiteSpace(ragText))
             SceneStateLogBridge.TryParseFromRagText(ragText);
+        BodyPartRegistry.TryLoad();
         ManualBufferCatalog.TryLoad();
+        BodyPartRegistryValidator.ValidateAtBootstrap(ragText);
         KleinFrameResolver.ResetSequenceCounters();
         _hand?.RefreshRigWire();
     }

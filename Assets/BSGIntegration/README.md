@@ -61,6 +61,20 @@ Uses `RagInferenceSceneController` + `RagMlBrainDeployer` with 8 ONNX files.
 
 See `PHASE0_VALIDATION.md` and `REGRESSION_CHECKLIST.md`.
 
+## Body part naming & ID standards
+
+Canonical RAG body parts are defined in [`../JsonFile/body_part_registry.json`](../JsonFile/body_part_registry.json). Unity loads this via `BodyPartRegistry` and validates against RAG + `mannualBuffer.json` at bootstrap (`BodyPartRegistryValidator`).
+
+| Numeric ID | RAG scene ID | RAG name | Procedural bone | Mixamo bone | Motor |
+|---:|---|---|---|---|---|
+| 19 | `scene_019` | `torso` | `Torso` | — | pending (`RESTING` wait only) |
+| 20 | `scene_020` | `fovea` | `EyeL` | — | none (visual/cognitive logging) |
+| 21 | `scene_021` | `right_index_fingertip_pad` | `RightIndexTip` | `mixamorig:RightHandIndex4_end` | `unity_ik` (designated player) |
+
+**Taxonomy aliases** (RAG module summaries → canonical name): `eye`/`retina` → `fovea`; `hand`/`finger`/`fingertip_pad` → `right_index_fingertip_pad`.
+
+Editor check: **BSG → Validate Body Part Registry**.
+
 ## Deprecated (do not use)
 
 - `motor_single_zone.json` / `motor_single_zone_training.yaml` — one-zone stub, not the BSG architecture

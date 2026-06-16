@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "canonical": [
+    {
+      "numericId": 19,
+      "ragSceneId": "scene_019",
+      "ragName": "torso",
+      "proceduralBone": "Torso",
+      "mixamoBone": "",
+      "motorSolve": "pending_full_body_rig"
+    },
+    {
+      "numericId": 20,
+      "ragSceneId": "scene_020",
+      "ragName": "fovea",
+      "proceduralBone": "EyeL",
+      "mixamoBone": "",
+      "motorSolve": "none"
+    },
+    {
+      "numericId": 21,
+      "ragSceneId": "scene_021",
+      "ragName": "right_index_fingertip_pad",
+      "proceduralBone": "RightIndexTip",
+      "mixamoBone": "mixamorig:RightHandIndex4_end",
+      "motorSolve": "unity_ik"
+    }
+  ],
+  "aliases": {
+    "eye": "fovea",
+    "retina": "fovea",
+    "hand": "right_index_fingertip_pad",
+    "finger": "right_index_fingertip_pad",
+    "fingertip_pad": "right_index_fingertip_pad"
+  }
+}
