@@ -31,6 +31,9 @@ public class YBotWalkerAgent : Agent
     public int zoneIndex = 0;
     [Tooltip("Hips height above ground (m) below which the agent is considered fallen.")]
     public float fallHeight = 0.6f;
+    [Tooltip("dot(root.up, worldUp) below which the body counts as tipped over and the episode resets. " +
+             "Without this a backward-tipped body keeps its hips above fallHeight and gets stuck, never resetting.")]
+    public float minUprightToSurvive = 0.4f;
     [Tooltip("Hips height above ground (m) at a healthy standing pose, used to normalize height obs.")]
     public float standHeight = 1.0f;
     public float reachTargetDistance = 1.0f;
@@ -49,6 +52,8 @@ public class YBotWalkerAgent : Agent
     float _prevTargetDistance;
     bool _ownsTarget;
     float[] _actionBuffer;
+    int _actionsReceived;        // >0 confirms the Python trainer is sending actions
+    float _nextTrainingLogTime;  // throttle for the clean current-training log
 
     public static int ObservationSize(int totalDof) => 2 * totalDof + 16;
 
@@ -62,6 +67,15 @@ public class YBotWalkerAgent : Agent
     public override void Initialize()
     {
         if (_rig == null) _rig = GetComponent<YBotLocomotionRig>();
+
+        // One-time policy/connection diagnostic — if actionsReceived stays 0 this tells us why.
+        var bp = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
+        bool comms = Academy.IsInitialized && Academy.Instance.IsCommunicatorOn;
+        Debug.Log($"[YBotWalker] Initialize — behavior='{(bp != null ? bp.BehaviorName : "?")}', " +
+                  $"behaviorType={(bp != null ? bp.BehaviorType.ToString() : "?")} (must be Default for trainer), " +
+                  $"obs={(bp != null ? bp.BrainParameters.VectorObservationSize : -1)}, " +
+                  $"actions={(bp != null ? bp.BrainParameters.ActionSpec.NumContinuousActions : -1)}, " +
+                  $"model={(bp != null && bp.Model != null ? bp.Model.name : "none")}, communicatorOn={comms}");
     }
 
     public override void OnEpisodeBegin()
@@ -119,6 +133,8 @@ public class YBotWalkerAgent : Agent
     public override void OnActionReceived(ActionBuffers actions)
     {
         if (_rig == null || !_rig.IsBuilt) return;
+
+        _actionsReceived++;
 
         var cont = actions.ContinuousActions;
         if (_actionBuffer == null || _actionBuffer.Length != _rig.TotalDof)
@@ -178,6 +194,19 @@ public class YBotWalkerAgent : Agent
 
         ArticulationBody root = _rig.Root;
 
+        // Clean CURRENT-training status (replaces the legacy BSG summary spam). Shows whether the
+        // trainer is actually driving the agent and how training is progressing.
+        if (Time.time >= _nextTrainingLogTime)
+        {
+            _nextTrainingLogTime = Time.time + 10f;
+            float gY = SampleGroundY(root.transform.position);
+            float up = Vector3.Dot(root.transform.up, Vector3.up);
+            Debug.Log($"[YBotWalker] TRAINING — completedEpisodes={CompletedEpisodes}, " +
+                      $"actionsReceived={_actionsReceived} ({(_actionsReceived > 0 ? "trainer SENDING actions" : "NO actions — trainer not connected")}), " +
+                      $"stepThisEpisode={StepCount}, episodeReward={GetCumulativeReward():F2}, " +
+                      $"upright={up:F2}, hipHeight={(root.transform.position.y - gY):F2}");
+        }
+
         // Non-finite → reset.
         if (!_rig.HasValidPhysicsState())
         {
@@ -197,8 +226,12 @@ public class YBotWalkerAgent : Agent
         }
 
         // Fall → terminate + reset (returns the body to its in-zone spawn via OnEpisodeBegin).
+        // Two fall conditions: hips dropped too low, OR the body tipped over. The tilt check is
+        // essential — a rigid body that tips backward keeps its hips above fallHeight and would
+        // otherwise stay stuck forever, so the episode never resets and nothing can be learned.
         float groundY = SampleGroundY(pos);
-        if (pos.y - groundY < fallHeight)
+        float upright = Vector3.Dot(root.transform.up, Vector3.up);
+        if (pos.y - groundY < fallHeight || upright < minUprightToSurvive)
         {
             AddReward(-fallPenalty);
             EndEpisode();

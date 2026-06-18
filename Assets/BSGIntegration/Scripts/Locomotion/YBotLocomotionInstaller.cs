@@ -62,21 +62,54 @@ public static class YBotLocomotionInstaller
         bp.BrainParameters.VectorObservationSize = obsSize;
         bp.BrainParameters.NumStackedVectorObservations = 1;
         bp.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(actionSize);
-        // BehaviorType defaults to Default (0) on a freshly added component — that is what training
-        // needs, so we don't set it (the setter is not reliably public in this ML-Agents version).
+        // MUST be Default so the agent uses the remote (trainer) policy. If left unset and it isn't
+        // Default (e.g. InferenceOnly with no model), OnActionReceived never fires and the agent
+        // gets zero actions even with the trainer connected — exactly the "actionsReceived=0" symptom.
+        ForceBehaviorTypeDefault(bp);
 
-        // 4. DecisionRequester.
+        // 4. Agent FIRST. DecisionRequester caches GetComponent<Agent>() in its Awake/OnEnable; if it
+        //    is added before the Agent exists it holds a NULL agent and never calls RequestDecision()
+        //    → no observations are sent, no actions return, OnActionReceived never fires
+        //    (communicatorOn=True but actionsReceived stays 0). The rig (step 1) and BP (step 3) are
+        //    already in place, so the Agent's Initialize sees a fully configured setup.
+        YBotWalkerAgent agent = host.AddComponent<YBotWalkerAgent>();
+        agent.Wire(rig, left, right);
+
+        // 5. DecisionRequester — added AFTER the Agent so it binds to it and drives decision requests.
         DecisionRequester dr = host.GetComponent<DecisionRequester>();
         if (dr == null) dr = host.AddComponent<DecisionRequester>();
         dr.DecisionPeriod = DecisionPeriod;
         dr.TakeActionsBetweenDecisions = true;
 
-        // 5. Agent (added last so OnEnable/Initialize sees a fully configured rig + BP).
-        YBotWalkerAgent agent = host.AddComponent<YBotWalkerAgent>();
-        agent.Wire(rig, left, right);
+        // Silence the legacy BSG "TRAINING SUMMARY / Episodes / Skill Progress" console spam — it is
+        // a different (cognitive RAG) tracker and its "Episodes: 0" is unrelated to PPO locomotion.
+        MLTrainingLogger.SuppressPeriodicSummary = true;
 
         Debug.Log($"[YBotLocomotionInstaller] {BehaviorName} (Y-Bot locomotion) installed on '{host.name}': obs={obsSize}, continuous actions={actionSize}, DecisionPeriod={DecisionPeriod}.");
         return agent;
+    }
+
+    /// <summary>
+    /// Force BehaviorType = Default (remote/trainer policy). Uses the public property if writable,
+    /// else reflection on the serialized field — the property setter is not public in all ML-Agents
+    /// versions, which is why a freshly added component can stay on a non-training BehaviorType.
+    /// </summary>
+    static void ForceBehaviorTypeDefault(BehaviorParameters bp)
+    {
+        try
+        {
+            var prop = typeof(BehaviorParameters).GetProperty("BehaviorType");
+            if (prop != null && prop.CanWrite)
+            {
+                prop.SetValue(bp, BehaviorType.Default);
+                return;
+            }
+        }
+        catch { /* fall through to field */ }
+
+        var field = typeof(BehaviorParameters).GetField("m_BehaviorType",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        field?.SetValue(bp, BehaviorType.Default);
     }
 
     static Transform FindSkeleton(Transform playerRoot)
