@@ -155,6 +155,8 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
     public bool enableMlTrainingForCognitiveAgents = true;
     [Tooltip("Bitmask for ML bootstrap. 1 = zone 0 only (recommended). 0 = all zones.")]
     public int trainZonesMask = 1;
+    [Tooltip("Detach the designated zone-0 player from RAG steps and prep it for ArticulationBody locomotion: forces unit scale, stops RAG autopilot/gait, disables the static Animator. Leave off for normal RAG multiplayer.")]
+    public bool enableZone0LocomotionTraining = false;
 
     [Header("Overlap avoidance")]
     public Bounds excludeOverlapBounds = new Bounds(new Vector3(-2f, 0.5f, 0f), new Vector3(12f, 2f, 14f));

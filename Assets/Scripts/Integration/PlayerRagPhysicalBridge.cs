@@ -162,6 +162,7 @@ public static class PlayerRagPhysicalBridge
         if (mover != null)
             RelocateDesignatedPlayerToPhysicalSpawn(mover.transform, force: true);
 
+        TryPrepareLocomotionForDesignatedPlayer(mover);
         TryAttachMlTrainingForDesignatedPlayer(mover);
         if (mover != null)
         {
@@ -219,9 +220,48 @@ public static class PlayerRagPhysicalBridge
     /// <summary>
     /// SceneGenerator skips P1 in multiplayer — attach PhysicalAgentZone0 after the Photon player binds.
     /// </summary>
+    /// <summary>
+    /// When zone-0 locomotion training is enabled on the scene anchor, detaches the designated
+    /// player from RAG and preps it for ArticulationBody locomotion: forces unit scale (the AB
+    /// solver assumes scale = 1), stops RAG autopilot + procedural gait, and disables the static
+    /// Animator. Camera-safe — the drone camera reads only this transform, which is left intact.
+    /// Runs before ApplyScale so the unit-scale gate is live when the avatar is rescaled.
+    /// </summary>
+    static void TryPrepareLocomotionForDesignatedPlayer(RagSequenceAgentMover mover)
+    {
+        if (mover == null || !RagPhysicalAgentAssignment.IsLocalPlayerRagPhysicalAgent())
+            return;
+
+        MultiplayerRagZone0Anchor anchor = MultiplayerRagZone0Anchor.Instance;
+        if (anchor == null || !anchor.enableZone0LocomotionTraining)
+            return;
+
+        // Unit scale must be active before any scale read / ArticulationBody is added.
+        DesignatedPhysicalPlayerAppearance.LocomotionRigActive = true;
+
+        // Stop RAG from walking/stepping this player — an ML locomotion policy drives it now.
+        mover.DetachForLocomotion();
+
+        // Disable the static Animator on the body. Camera reads transform only, so this is safe.
+        foreach (Animator anim in mover.GetComponentsInChildren<Animator>(true))
+            anim.enabled = false;
+
+        // Build the ArticulationBody locomotion rig + walker agent on the Y-Bot skeleton.
+        YBotWalkerAgent agent = YBotLocomotionInstaller.Install(mover.gameObject);
+        Debug.Log(agent != null
+            ? "[PlayerRagPhysicalBridge] Zone0 locomotion prep: designated player detached from RAG and YBotWalker AB rig installed."
+            : "[PlayerRagPhysicalBridge] Zone0 locomotion prep: designated player detached from RAG, but AB rig install FAILED (see prior error).");
+    }
+
     static void TryAttachMlTrainingForDesignatedPlayer(RagSequenceAgentMover mover)
     {
         if (mover == null || !RagPhysicalAgentAssignment.IsLocalPlayerRagPhysicalAgent())
+            return;
+
+        // Locomotion mode owns the designated player's actions — don't also attach the
+        // RAG cognitive/physical ML brain to the same body.
+        MultiplayerRagZone0Anchor locoAnchor = MultiplayerRagZone0Anchor.Instance;
+        if (locoAnchor != null && locoAnchor.enableZone0LocomotionTraining)
             return;
 
         if (!RagRuntimeMLBootstrap.TryBootstrapPhotonPlayerPhysical(mover))

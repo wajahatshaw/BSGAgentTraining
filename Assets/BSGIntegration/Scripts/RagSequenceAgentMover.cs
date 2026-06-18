@@ -123,6 +123,10 @@ public class RagSequenceAgentMover : MonoBehaviour
     [Tooltip("When true, movement is applied through PlayerMovement instead of transform/Rigidbody kinematic slides.")]
     public bool hostPlayerMovement = false;
 
+    // When set, this mover stops driving the player through RAG steps so an ML-Agents
+    // locomotion policy can take over. Toggled via DetachForLocomotion(); see PlayerRagPhysicalBridge.
+    [System.NonSerialized] public bool locomotionDetached;
+
     IRagPlayerMovementHost _playerMovement;
 
     [Header("Inference scene")]
@@ -354,8 +358,45 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Detaches this designated-player mover from RAG locomotion so an ML-Agents locomotion
+    /// policy can drive the body instead. Stops RAG autopilot and the procedural walk gait.
+    /// The transform and components stay intact, so the Display-3 drone camera (which reads
+    /// BoundMover.transform) keeps following. Idempotent.
+    /// </summary>
+    public void DetachForLocomotion()
+    {
+        locomotionDetached = true;
+        ApplyLocomotionDetach();
+    }
+
+    // Kept off every detached-frame so it holds even if drivers initialize after detach.
+    void ApplyLocomotionDetach()
+    {
+        if (hostPlayerMovement && _playerMovement != null && !isMentalAgent)
+            _playerMovement.SetRagAutopilot(false, zoneIndex);
+        if (walkAnim != null)
+            walkAnim.StopWalking();
+
+        // Drop any orchestrator-activated step and stop the RAG hand/arm IK from posing the body —
+        // these run outside Update() (event callbacks / their own Update) and would otherwise drive
+        // the bones (which now carry ArticulationBody) toward RAG targets.
+        active = null;
+        _currentOrchestratorStepId = null;
+        if (kleinFrameExecutor != null && kleinFrameExecutor.enabled)
+            kleinFrameExecutor.enabled = false;
+        if (handRotationManager != null && handRotationManager.enabled)
+            handRotationManager.enabled = false;
+    }
+
     void Update()
     {
+        if (locomotionDetached)
+        {
+            ApplyLocomotionDetach();
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(agentId))
             return;
 
@@ -2832,6 +2873,7 @@ public class RagSequenceAgentMover : MonoBehaviour
     /// </summary>
     void HandleOrchestratorPhysicalStep(string stepId)
     {
+        if (locomotionDetached) return; // detached for ML locomotion — ignore RAG step dispatches
         if (isMentalAgent || !enabled) return;
 
         ActionSequenceStep step = FindStepById(stepId);

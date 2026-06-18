@@ -12,8 +12,21 @@ public static class DesignatedPhysicalPlayerAppearance
     const string PlayerCapsuleName = "PlayerCapsule";
     const string YBotVisualName = "Y Bot";
 
+    /// <summary>
+    /// Set true while the ArticulationBody locomotion rig drives the designated player.
+    /// Forces unit scale: AB's reduced-coordinate solver assumes scale = 1, so a non-unit
+    /// lossyScale on the bones corrupts joint anchors and the solver diverges (hips integrate
+    /// to ~1e6 and the rig explodes through the floor). The normal 1.55x avatar look is kept
+    /// for every other player/scene. The rig builder must set this true before adding any
+    /// ArticulationBody and clear it on teardown.
+    /// </summary>
+    public static bool LocomotionRigActive { get; set; }
+
     public static float GetScale()
     {
+        if (LocomotionRigActive)
+            return 1f;
+
         MultiplayerRagZone0Anchor anchor = MultiplayerRagZone0Anchor.Instance;
         return anchor != null ? anchor.designatedPhysicalPlayerScale : 1.55f;
     }

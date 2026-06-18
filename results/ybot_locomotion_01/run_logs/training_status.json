@@ -1,0 +1,29 @@
+{
+    "PhysicalAgentZone0": {
+        "checkpoints": [
+            {
+                "steps": 2000,
+                "file_path": "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-2000.onnx",
+                "reward": null,
+                "creation_time": 1781775280.33319,
+                "auxillary_file_paths": [
+                    "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-2000.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 2000,
+            "file_path": "results/ybot_locomotion_01/PhysicalAgentZone0.onnx",
+            "reward": null,
+            "creation_time": 1781775280.33319,
+            "auxillary_file_paths": [
+                "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-2000.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.11.0"
+    }
+}
