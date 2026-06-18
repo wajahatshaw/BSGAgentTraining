@@ -1,5 +1,5 @@
 ﻿{
-    "timestamp": "2026-06-18 14:37:24",
+    "timestamp": "2026-06-18 15:21:36",
     "sceneId": "scene_warehouse_replica_001",
     "mlAgentsRunId": "ybot_locomotion_01",
     "resultsRunLogsRelativePath": "results/ybot_locomotion_01/run_logs/",
@@ -8,9 +8,9 @@
         {
             "agentId": "P1",
             "behaviorName": "PhysicalAgentZone0",
-            "skillLevel": 12.0,
+            "skillLevel": 13.0,
             "desireLevel": 100.0,
-            "skillPercentage": 12.00,
+            "skillPercentage": 13.00,
             "isCompleted": false,
             "learnedSkillsCount": 0,
             "learnedSkillsNames": [],
@@ -317,7 +317,7 @@
             "learnedSkillsNames": [],
             "episodes": 0,
             "totalReward": 0.00,
-            "completedSteps": 12,
+            "completedSteps": 13,
             "totalSteps": 105,
             "cognitiveSequenceCompleted": false,
             "cognitiveCompletedSteps": 0,
@@ -500,8 +500,8 @@
                     "targetObjectName": "Manual Buffer",
                     "description": "Command fingertip contact preparation.",
                     "expectedDuration": 0.10,
-                    "isCompleted": false,
-                    "completionTime": 0.00,
+                    "isCompleted": true,
+                    "completionTime": 0.10,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },

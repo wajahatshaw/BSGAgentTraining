@@ -2,22 +2,31 @@
     "PhysicalAgentZone0": {
         "checkpoints": [
             {
-                "steps": 2000,
-                "file_path": "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-2000.onnx",
+                "steps": 9000,
+                "file_path": "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-9000.onnx",
                 "reward": null,
-                "creation_time": 1781775280.33319,
+                "creation_time": 1781777691.264637,
                 "auxillary_file_paths": [
-                    "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-2000.pt"
+                    "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-9000.pt"
+                ]
+            },
+            {
+                "steps": 10000,
+                "file_path": "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-10000.onnx",
+                "reward": null,
+                "creation_time": 1781777759.0197299,
+                "auxillary_file_paths": [
+                    "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-10000.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 2000,
+            "steps": 10000,
             "file_path": "results/ybot_locomotion_01/PhysicalAgentZone0.onnx",
             "reward": null,
-            "creation_time": 1781775280.33319,
+            "creation_time": 1781777759.0197299,
             "auxillary_file_paths": [
-                "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-2000.pt"
+                "results/ybot_locomotion_01/PhysicalAgentZone0/PhysicalAgentZone0-10000.pt"
             ]
         }
     },

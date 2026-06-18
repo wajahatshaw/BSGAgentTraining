@@ -148,7 +148,51 @@ public class YBotLocomotionRig : MonoBehaviour
         _rootSpawnLocalRot = Root.transform.localRotation;
 
         Debug.Log($"[YBotLocomotionRig] Built AB rig: {_joints.Count} actuated joints, {TotalDof} DOF, {_allBodies.Count} bodies.");
+        WarnIfRigidbodyAncestor();
         return true;
+    }
+
+    /// <summary>
+    /// An ArticulationBody root must NOT live under a Rigidbody — Unity's articulation solver
+    /// destabilizes (links separate / scatter) when it does. The designated player root carries a
+    /// kinematic Rigidbody for RAG movement; in locomotion mode it must be removed/disabled.
+    /// </summary>
+    void WarnIfRigidbodyAncestor()
+    {
+        Transform t = Root.transform.parent;
+        while (t != null)
+        {
+            Rigidbody rb = t.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                Debug.LogError($"[YBotLocomotionRig] ArticulationBody root '{Root.name}' is nested under Rigidbody '{rb.name}'. " +
+                               "This destabilizes the articulation (limbs scatter). Remove/disable that Rigidbody for locomotion.");
+                return;
+            }
+            t = t.parent;
+        }
+    }
+
+    // Deferred one-shot diagnostics: dofCount/isRoot are only valid after the physics system has
+    // processed the articulation (next FixedUpdate), so we log there rather than inside Build().
+    bool _loggedDiagnostics;
+
+    void FixedUpdate()
+    {
+        if (_loggedDiagnostics || !IsBuilt) return;
+        _loggedDiagnostics = true;
+
+        var sb = new System.Text.StringBuilder("[YBotLocomotionRig] DIAGNOSTICS (post-init):\n");
+        foreach (ArticulationBody ab in _allBodies)
+        {
+            ArticulationBody parentAb = null;
+            Transform t = ab.transform.parent;
+            while (t != null) { var p = t.GetComponent<ArticulationBody>(); if (p != null) { parentAb = p; break; } t = t.parent; }
+            Collider col = ab.GetComponent<Collider>();
+            Vector3 size = col != null ? col.bounds.size : Vector3.zero;
+            sb.AppendLine($"  {ab.name}: isRoot={ab.isRoot} dof={ab.dofCount} joint={ab.jointType} mass={ab.mass:0.0} parentAB={(parentAb != null ? parentAb.name : "<NONE>")} colSize={size}");
+        }
+        Debug.Log(sb.ToString());
     }
 
     static ArticulationBody EnsureBody(Transform t)

@@ -162,7 +162,11 @@ public static class PlayerRagPhysicalBridge
         if (mover != null)
             RelocateDesignatedPlayerToPhysicalSpawn(mover.transform, force: true);
 
-        TryPrepareLocomotionForDesignatedPlayer(mover);
+        // Locomotion mode owns scale/visual/hands and strips the player physics — skip the RAG
+        // hand-posing finalize below (it would re-enable HandRotation/Klein and fight the AB rig).
+        if (TryPrepareLocomotionForDesignatedPlayer(mover))
+            yield break;
+
         TryAttachMlTrainingForDesignatedPlayer(mover);
         if (mover != null)
         {
@@ -227,30 +231,73 @@ public static class PlayerRagPhysicalBridge
     /// Animator. Camera-safe — the drone camera reads only this transform, which is left intact.
     /// Runs before ApplyScale so the unit-scale gate is live when the avatar is rescaled.
     /// </summary>
-    static void TryPrepareLocomotionForDesignatedPlayer(RagSequenceAgentMover mover)
+    /// <summary>
+    /// Returns true when locomotion mode handled the designated player (caller must then skip the
+    /// RAG scale/hand-posing finalize steps). Order is important:
+    ///   1. force unit scale + Y-Bot visual (AB solver assumes scale = 1)
+    ///   2. detach from RAG and disable the hand/arm IK (Klein/HandRotation) so nothing poses the bones
+    ///   3. disable the static Animator
+    ///   4. STRIP the Rigidbody chain — an ArticulationBody root must NOT live under a Rigidbody or
+    ///      the articulation destabilizes and the limbs scatter. PlayerMovement/AgentGroundMotor
+    ///      RequireComponent it, so they are removed too (neither is Photon-synced; the drone camera
+    ///      resolves the player via the mover's hostPlayerMovement flag, which survives).
+    ///   5. build the AB rig.
+    /// </summary>
+    static bool TryPrepareLocomotionForDesignatedPlayer(RagSequenceAgentMover mover)
     {
         if (mover == null || !RagPhysicalAgentAssignment.IsLocalPlayerRagPhysicalAgent())
-            return;
+            return false;
 
         MultiplayerRagZone0Anchor anchor = MultiplayerRagZone0Anchor.Instance;
         if (anchor == null || !anchor.enableZone0LocomotionTraining)
-            return;
+            return false;
 
-        // Unit scale must be active before any scale read / ArticulationBody is added.
+        // 1. Unit scale + Y-Bot visual, with the gate active so GetScale() returns 1.
         DesignatedPhysicalPlayerAppearance.LocomotionRigActive = true;
+        DesignatedPhysicalPlayerAppearance.ApplyScale(mover.transform);
 
-        // Stop RAG from walking/stepping this player — an ML locomotion policy drives it now.
+        // 2. Stop RAG driving + the hand/arm IK (DetachForLocomotion disables Klein/HandRotation).
         mover.DetachForLocomotion();
 
-        // Disable the static Animator on the body. Camera reads transform only, so this is safe.
+        // 3. Disable the static Animator (camera reads transform only).
         foreach (Animator anim in mover.GetComponentsInChildren<Animator>(true))
             anim.enabled = false;
 
-        // Build the ArticulationBody locomotion rig + walker agent on the Y-Bot skeleton.
+        // 4. Remove the Rigidbody chain so the AB root is clean.
+        StripPlayerPhysicsForLocomotion(mover.gameObject);
+
+        // 5. Build the ArticulationBody locomotion rig + walker agent on the Y-Bot skeleton.
         YBotWalkerAgent agent = YBotLocomotionInstaller.Install(mover.gameObject);
         Debug.Log(agent != null
-            ? "[PlayerRagPhysicalBridge] Zone0 locomotion prep: designated player detached from RAG and YBotWalker AB rig installed."
-            : "[PlayerRagPhysicalBridge] Zone0 locomotion prep: designated player detached from RAG, but AB rig install FAILED (see prior error).");
+            ? "[PlayerRagPhysicalBridge] Zone0 locomotion: detached from RAG, Rigidbody chain stripped, AB rig installed."
+            : "[PlayerRagPhysicalBridge] Zone0 locomotion: prep done but AB rig install FAILED (see prior error).");
+        return true;
+    }
+
+    /// <summary>
+    /// Removes the player-root Rigidbody and the components that RequireComponent it, so the Hips
+    /// ArticulationBody is not nested under a Rigidbody. DestroyImmediate is used so the Rigidbody is
+    /// gone before the articulation is built this same frame. Dependents are destroyed before the
+    /// Rigidbody to satisfy RequireComponent.
+    /// </summary>
+    static void StripPlayerPhysicsForLocomotion(GameObject root)
+    {
+        if (root == null) return;
+
+        DestroyImmediateIfPresent(root.GetComponent<AgentGroundMotor>());          // requires RB + Capsule
+        DestroyImmediateIfPresent(root.GetComponent<PlayerMovement>());            // requires RB + InputProcessor
+        DestroyImmediateIfPresent(root.GetComponent<PlayerMovementInputProcessor>());
+        DestroyImmediateIfPresent(root.GetComponent<Rigidbody>());                 // now nothing requires it
+
+        CapsuleCollider cap = root.GetComponent<CapsuleCollider>();
+        if (cap != null) cap.enabled = false; // keep, but stop it colliding with the AB rig
+
+        Debug.Log("[PlayerRagPhysicalBridge] Stripped Rigidbody/PlayerMovement/AgentGroundMotor and disabled root CapsuleCollider for clean ArticulationBody root.");
+    }
+
+    static void DestroyImmediateIfPresent(Component c)
+    {
+        if (c != null) Object.DestroyImmediate(c);
     }
 
     static void TryAttachMlTrainingForDesignatedPlayer(RagSequenceAgentMover mover)
