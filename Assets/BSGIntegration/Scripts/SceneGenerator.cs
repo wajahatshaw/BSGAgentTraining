@@ -614,7 +614,15 @@ public class SceneGenerator : MonoBehaviour
 
         if (showDynamicObjectNameLabels && !isCognitive && !isMenuOption)
         {
-            AttachToolObjectNameLabel(toolGO, toolState, toolId);
+            bool isBodyPart = string.Equals(toolState?.type, "body_part", System.StringComparison.OrdinalIgnoreCase);
+            if (!(BsgIntegrationSettings.Zone0LocomotionTrainingActive && isBodyPart))
+                AttachToolObjectNameLabel(toolGO, toolState, toolId);
+        }
+
+        if (BsgIntegrationSettings.Zone0LocomotionTrainingActive
+            && string.Equals(toolState?.type, "body_part", System.StringComparison.OrdinalIgnoreCase))
+        {
+            toolGO.SetActive(false);
         }
 
         return toolGO;

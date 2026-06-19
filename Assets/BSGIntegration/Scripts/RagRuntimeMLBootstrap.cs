@@ -33,6 +33,16 @@ public static class RagRuntimeMLBootstrap
         if (setup == null || !setup.enableMlTrainingInRagMode)
             return;
 
+        if (IsZone0LocomotionTrainingActive())
+        {
+            Debug.Log("ℹ️ RAG ML bootstrap: zone 0 Y-Bot locomotion training active — skipping scene P-agent ML attach (Photon Y Bot owns PhysicalAgentZone0).");
+            MlAgentsRealtimeTimeScaleEnforcer.Configure(setup.maxUnityTimeScaleForMlAgents, setup.clampUnityTimeScaleForMlAgents);
+            if (MLTrainingResultsWriter.Instance != null)
+                MLTrainingResultsWriter.Instance.diskWritesOnlyWhenTrainerConnected = true;
+            MLTrainingLogger.SuppressPeriodicSummary = true;
+            return;
+        }
+
         MlAgentsRealtimeTimeScaleEnforcer.Configure(setup.maxUnityTimeScaleForMlAgents, setup.clampUnityTimeScaleForMlAgents);
 
         ProximityDetectionSystem proxVis = Object.FindObjectOfType<ProximityDetectionSystem>();
@@ -98,6 +108,9 @@ public static class RagRuntimeMLBootstrap
         System.Collections.Generic.Dictionary<string, AgentProfile> profiles = null)
     {
         if (mover == null || mover.isMentalAgent || setup == null || !setup.enableMlTrainingInRagMode)
+            return false;
+
+        if (IsZone0LocomotionTrainingActive())
             return false;
 
         int zoneBit = 1 << Mathf.Clamp(mover.zoneIndex, 0, 3);
@@ -369,4 +382,6 @@ public static class RagRuntimeMLBootstrap
         Debug.Log($"✅ RAG ML bootstrap: attached '{behaviorName}' to M_A zone {zi}.");
         return true;
     }
+
+    static bool IsZone0LocomotionTrainingActive() => BsgIntegrationSettings.Zone0LocomotionTrainingActive;
 }

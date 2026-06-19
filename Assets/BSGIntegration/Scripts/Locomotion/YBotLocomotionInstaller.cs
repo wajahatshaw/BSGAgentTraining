@@ -10,7 +10,7 @@ using UnityEngine;
 /// and configures BehaviorParameters / DecisionRequester in code (obs &amp; action sizes derived
 /// from the rig so they can never drift out of sync).
 ///
-/// Behavior name: <c>YBotWalker</c> — must match the YAML behaviors: key.
+/// Behavior name: <c>PhysicalAgentZone0</c> — sole YAML behavior / single combined ONNX policy.
 /// </summary>
 public static class YBotLocomotionInstaller
 {
@@ -18,7 +18,7 @@ public static class YBotLocomotionInstaller
     // worker_training_config_fixed.yaml pipeline. Must match that YAML's behaviors: key.
     public const string BehaviorName = "PhysicalAgentZone0";
     public const string SkeletonName = "Y Bot";
-    public const int DecisionPeriod = 5;
+    public const int DecisionPeriod = 3;
 
     /// <summary>
     /// Installs (idempotently) the locomotion stack on the designated player root. Returns the
@@ -38,9 +38,8 @@ public static class YBotLocomotionInstaller
 
         GameObject host = skeleton.gameObject;
 
-        YBotWalkerAgent existing = host.GetComponent<YBotWalkerAgent>();
-        if (existing != null)
-            return existing; // already installed
+        // Player root must not also register PhysicalAgentZone0 (default obs size = 1).
+        StripConflictingMlComponentsFromPlayerRoot(playerRoot);
 
         // 1. Build the ArticulationBody rig.
         YBotLocomotionRig rig = host.GetComponent<YBotLocomotionRig>();
@@ -52,34 +51,26 @@ public static class YBotLocomotionInstaller
         YBotFootContact left = AttachFootContact(skeleton, "LeftFoot");
         YBotFootContact right = AttachFootContact(skeleton, "RightFoot");
 
-        // 3. BehaviorParameters — sized from the rig BEFORE the Agent initializes.
         int actionSize = rig.TotalDof;
         int obsSize = YBotWalkerAgent.ObservationSize(actionSize);
 
-        BehaviorParameters bp = host.GetComponent<BehaviorParameters>();
-        if (bp == null) bp = host.AddComponent<BehaviorParameters>();
-        bp.BehaviorName = BehaviorName;
-        bp.BrainParameters.VectorObservationSize = obsSize;
-        bp.BrainParameters.NumStackedVectorObservations = 1;
-        bp.BrainParameters.ActionSpec = ActionSpec.MakeContinuous(actionSize);
-        // MUST be Default so the agent uses the remote (trainer) policy. If left unset and it isn't
-        // Default (e.g. InferenceOnly with no model), OnActionReceived never fires and the agent
-        // gets zero actions even with the trainer connected — exactly the "actionsReceived=0" symptom.
-        ForceBehaviorTypeDefault(bp);
+        // 3. BehaviorParameters must register with the Academy using the final obs/action sizes.
+        // AddComponent<BehaviorParameters> while active registers the default obs size (1) immediately;
+        // recreate while the host is inactive so mlagents-learn sees (58,) not (1,).
+        // Agent is added only after BP is configured so it never handshakes with obs=1.
+        ConfigureBehaviorParameters(host, obsSize, actionSize);
 
-        // 4. Agent FIRST. DecisionRequester caches GetComponent<Agent>() in its Awake/OnEnable; if it
-        //    is added before the Agent exists it holds a NULL agent and never calls RequestDecision()
-        //    → no observations are sent, no actions return, OnActionReceived never fires
-        //    (communicatorOn=True but actionsReceived stays 0). The rig (step 1) and BP (step 3) are
-        //    already in place, so the Agent's Initialize sees a fully configured setup.
-        YBotWalkerAgent agent = host.AddComponent<YBotWalkerAgent>();
+        YBotWalkerAgent agent = host.GetComponent<YBotWalkerAgent>();
+        if (agent == null)
+            agent = host.AddComponent<YBotWalkerAgent>();
         agent.Wire(rig, left, right);
 
-        // 5. DecisionRequester — added AFTER the Agent so it binds to it and drives decision requests.
+        // 4. DecisionRequester — after Agent + BP so it binds correctly.
         DecisionRequester dr = host.GetComponent<DecisionRequester>();
         if (dr == null) dr = host.AddComponent<DecisionRequester>();
         dr.DecisionPeriod = DecisionPeriod;
         dr.TakeActionsBetweenDecisions = true;
+        dr.enabled = true;
 
         // Silence the legacy BSG "TRAINING SUMMARY / Episodes / Skill Progress" console spam — it is
         // a different (cognitive RAG) tracker and its "Episodes: 0" is unrelated to PPO locomotion.
@@ -94,6 +85,83 @@ public static class YBotLocomotionInstaller
     /// else reflection on the serialized field — the property setter is not public in all ML-Agents
     /// versions, which is why a freshly added component can stay on a non-training BehaviorType.
     /// </summary>
+    /// <summary>
+    /// Removes RAG ML components from the Photon player root so only the Y-Bot child registers
+    /// PhysicalAgentZone0 with the walker observation vector.
+    /// </summary>
+    public static void StripConflictingMlComponentsFromPlayerRoot(GameObject playerRoot)
+    {
+        if (playerRoot == null) return;
+
+        DestroyImmediateIfPresent(playerRoot.GetComponent<BSGMLAgent>());
+        DestroyImmediateIfPresent(playerRoot.GetComponent<DecisionRequester>());
+        DestroyImmediateIfPresent(playerRoot.GetComponent<BehaviorParameters>());
+    }
+
+    static void ConfigureBehaviorParameters(GameObject host, int obsSize, int actionSize)
+    {
+        YBotWalkerAgent agent = host.GetComponent<YBotWalkerAgent>();
+        DecisionRequester dr = host.GetComponent<DecisionRequester>();
+        if (dr != null) dr.enabled = false;
+        if (agent != null) agent.enabled = false;
+
+        bool wasActive = host.activeSelf;
+        if (wasActive)
+            host.SetActive(false);
+
+        DestroyImmediateIfPresent(host.GetComponent<BehaviorParameters>());
+
+        BehaviorParameters bp = host.AddComponent<BehaviorParameters>();
+        ForceBrainParameters(bp, obsSize, ActionSpec.MakeContinuous(actionSize));
+        bp.BehaviorName = BehaviorName;
+        bp.BrainParameters.NumStackedVectorObservations = 1;
+        ForceBehaviorTypeDefault(bp);
+
+        if (wasActive)
+            host.SetActive(true);
+
+        if (agent != null) agent.enabled = true;
+
+        Debug.Log($"[YBotLocomotionInstaller] BehaviorParameters registered: obs={obsSize}, continuousActions={actionSize}, behavior={BehaviorName}.");
+    }
+
+    static void ForceBrainParameters(BehaviorParameters bp, int vectorObsSize, ActionSpec actionSpec)
+    {
+        bp.BrainParameters.VectorObservationSize = vectorObsSize;
+        bp.BrainParameters.ActionSpec = actionSpec;
+
+        try
+        {
+            var brainParamsField = typeof(BehaviorParameters).GetField("m_BrainParameters",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (brainParamsField == null)
+                return;
+
+            object brainParams = brainParamsField.GetValue(bp);
+            if (brainParams == null)
+                return;
+
+            var brainParamsType = brainParams.GetType();
+            var vectorObsSizeField = brainParamsType.GetField("m_VectorObservationSize",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            vectorObsSizeField?.SetValue(brainParams, vectorObsSize);
+
+            var actionSpecField = brainParamsType.GetField("m_ActionSpec",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            actionSpecField?.SetValue(brainParams, actionSpec);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[YBotLocomotionInstaller] ForceBrainParameters reflection fallback: {ex.Message}");
+        }
+    }
+
+    static void DestroyImmediateIfPresent(Component c)
+    {
+        if (c != null)
+            Object.DestroyImmediate(c);
+    }
+
     static void ForceBehaviorTypeDefault(BehaviorParameters bp)
     {
         try

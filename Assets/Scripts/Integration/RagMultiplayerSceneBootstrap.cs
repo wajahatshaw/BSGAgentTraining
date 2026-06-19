@@ -68,7 +68,7 @@ public class RagMultiplayerSceneBootstrap : MonoBehaviour
 
         RagSceneFactory.EnsureReplicaSceneManager(options);
 
-        if (enableTaskRagBridge && FindObjectOfType<TaskRagBridge>() == null)
+        if (enableTaskRagBridge && !anchor.enableZone0LocomotionTraining && FindObjectOfType<TaskRagBridge>() == null)
         {
             var bridgeGo = new GameObject("TaskRagBridge");
             bridgeGo.AddComponent<TaskRagBridge>();

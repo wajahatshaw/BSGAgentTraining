@@ -152,6 +152,10 @@ public static class DesignatedPhysicalPlayerAppearance
         if (capsuleRenderer != null)
             capsuleRenderer.enabled = false;
 
+        // Locomotion AB rig owns the skeleton — do not wire Klein/hand IK here.
+        if (LocomotionRigActive)
+            return;
+
         HandRotationManager.EnsureOnAgent(playerRoot.gameObject);
         HandRotationManager handMgr = playerRoot.GetComponent<HandRotationManager>();
         if (handMgr != null && !handMgr.ManualPoseActive)

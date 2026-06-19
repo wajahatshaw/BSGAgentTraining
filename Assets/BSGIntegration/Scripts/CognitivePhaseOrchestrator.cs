@@ -789,6 +789,9 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         }
         else
         {
+            if (zoneIndex == 0 && BsgIntegrationSettings.Zone0LocomotionTrainingActive)
+                return;
+
             Debug.Log($"[CognitivePhaseOrchestrator] ⚙️ Dispatching PHYSICAL step: {step.stepId} → {step.targetObjectId} ({step.actionVerb})");
             OnPhysicalStepDispatched?.Invoke(step.stepId);
         }

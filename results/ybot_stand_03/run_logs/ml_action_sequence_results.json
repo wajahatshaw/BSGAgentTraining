@@ -1,0 +1,2683 @@
+﻿{
+    "timestamp": "2026-06-19 15:19:55",
+    "sceneId": "scene_warehouse_replica_001",
+    "mlAgentsRunId": "ybot_stand_03",
+    "type": "ML_Action_Sequence_Results",
+    "description": "Machine Learning action sequence execution results for each agent",
+    "totalAgents": 2,
+    "agents": [
+        {
+            "agentId": "P1",
+            "behaviorName": "PhysicalAgentZone0",
+            "role": "Physical",
+            "mlPerformance": {
+                "totalEpisodes": 0,
+                "totalReward": 0.00,
+                "averageRewardPerEpisode": 0.00,
+                "completedSteps": 0,
+                "totalSteps": 20,
+                "completionPercentage": 0.00,
+                "sequenceCompleted": false,
+                "currentStepIndex": 0
+            },
+            "skillsSummary": {
+                "skillLevel": 13.0,
+                "desireLevel": 100.0,
+                "skillPercentage": 13.00,
+                "learnedSkillsCount": 0,
+                "learnedSkills": []
+            },
+            "actionSequence": [
+                {
+                    "stepOrder": 14,
+                    "stepId": "t01_phy_s14",
+                    "actionType": "act",
+                    "description": "Press the fingertip into contact preparation.",
+                    "target": {
+                        "id": "scene_021",
+                        "name": "right_index_fingertip_pad",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 19,
+                    "stepId": "t01_phy_s19",
+                    "actionType": "act",
+                    "description": "Press the mouse button to focus campaign objective.",
+                    "target": {
+                        "id": "scene_011",
+                        "name": "left_mouse_button",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 24,
+                    "stepId": "t01_phy_s24",
+                    "actionType": "act",
+                    "description": "Type the campaign objective with the keyboard.",
+                    "target": {
+                        "id": "scene_013",
+                        "name": "letter_keys",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 29,
+                    "stepId": "t01_phy_s29",
+                    "actionType": "act",
+                    "description": "Submit the campaign objective with the enter key.",
+                    "target": {
+                        "id": "scene_014",
+                        "name": "enter_key",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 34,
+                    "stepId": "t01_phy_s34",
+                    "actionType": "act",
+                    "description": "Scroll the CRM segment panel to a structured view.",
+                    "target": {
+                        "id": "scene_012",
+                        "name": "scroll_wheel",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.40,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 39,
+                    "stepId": "t01_phy_s39",
+                    "actionType": "act",
+                    "description": "Press the mouse button to open the audience segment menu.",
+                    "target": {
+                        "id": "scene_011",
+                        "name": "left_mouse_button",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 3.00,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 44,
+                    "stepId": "t01_phy_s44",
+                    "actionType": "act",
+                    "description": "Type the audience segment with the keyboard.",
+                    "target": {
+                        "id": "scene_013",
+                        "name": "letter_keys",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 49,
+                    "stepId": "t01_phy_s49",
+                    "actionType": "act",
+                    "description": "Submit the audience segment with the enter key.",
+                    "target": {
+                        "id": "scene_014",
+                        "name": "enter_key",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 54,
+                    "stepId": "t01_phy_s54",
+                    "actionType": "act",
+                    "description": "Press the mouse button to focus channel mix.",
+                    "target": {
+                        "id": "scene_011",
+                        "name": "left_mouse_button",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 59,
+                    "stepId": "t01_phy_s59",
+                    "actionType": "act",
+                    "description": "Type the channel mix to complete the strategy record.",
+                    "target": {
+                        "id": "scene_013",
+                        "name": "letter_keys",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 72,
+                    "stepId": "t01_phy_s72",
+                    "actionType": "act",
+                    "description": "Press the mouse button to focus slide title.",
+                    "target": {
+                        "id": "scene_011",
+                        "name": "left_mouse_button",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 77,
+                    "stepId": "t01_phy_s77",
+                    "actionType": "act",
+                    "description": "Type the slide title with the keyboard.",
+                    "target": {
+                        "id": "scene_013",
+                        "name": "letter_keys",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 82,
+                    "stepId": "t01_phy_s82",
+                    "actionType": "act",
+                    "description": "Submit the slide title with the enter key.",
+                    "target": {
+                        "id": "scene_014",
+                        "name": "enter_key",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 87,
+                    "stepId": "t01_phy_s87",
+                    "actionType": "act",
+                    "description": "Press the mouse button to focus strategic message.",
+                    "target": {
+                        "id": "scene_011",
+                        "name": "left_mouse_button",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 92,
+                    "stepId": "t01_phy_s92",
+                    "actionType": "act",
+                    "description": "Type the strategic message with the keyboard.",
+                    "target": {
+                        "id": "scene_013",
+                        "name": "letter_keys",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 97,
+                    "stepId": "t01_phy_s97",
+                    "actionType": "act",
+                    "description": "Submit the strategic message with the enter key.",
+                    "target": {
+                        "id": "scene_014",
+                        "name": "enter_key",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 102,
+                    "stepId": "t01_phy_s102",
+                    "actionType": "act",
+                    "description": "Press the mouse button to focus visual summary type.",
+                    "target": {
+                        "id": "scene_011",
+                        "name": "left_mouse_button",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 107,
+                    "stepId": "t01_phy_s107",
+                    "actionType": "act",
+                    "description": "Scroll the comments pane for stakeholder review.",
+                    "target": {
+                        "id": "scene_012",
+                        "name": "scroll_wheel",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.40,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 112,
+                    "stepId": "t01_phy_s112",
+                    "actionType": "act",
+                    "description": "Type the visual summary type with the keyboard.",
+                    "target": {
+                        "id": "scene_013",
+                        "name": "letter_keys",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 117,
+                    "stepId": "t01_phy_s117",
+                    "actionType": "act",
+                    "description": "Submit the visual summary type to complete the presentation.",
+                    "target": {
+                        "id": "scene_014",
+                        "name": "enter_key",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.20,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                }
+            ]
+        },
+        {
+            "agentId": "M1",
+            "behaviorName": "PhysicalAgentZone0",
+            "role": "Mental",
+            "mlPerformance": {
+                "totalEpisodes": 0,
+                "totalReward": 0.00,
+                "averageRewardPerEpisode": 0.00,
+                "completedSteps": 13,
+                "totalSteps": 105,
+                "completionPercentage": 12.38,
+                "sequenceCompleted": false,
+                "currentStepIndex": 0
+            },
+            "skillsSummary": {
+                "skillLevel": 0.0,
+                "desireLevel": 100.0,
+                "skillPercentage": 0.00,
+                "learnedSkillsCount": 0,
+                "learnedSkills": []
+            },
+            "actionSequence": [
+                {
+                    "stepOrder": 1,
+                    "stepId": "t01_cog_s01",
+                    "actionType": "move",
+                    "description": "Form the task intention and prepare to begin work.",
+                    "target": {
+                        "id": "cognitive_001",
+                        "name": "Intentional Module",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 2,
+                    "stepId": "t01_cog_s02",
+                    "actionType": "move",
+                    "description": "Load the task, objective, and first sub-goal into the goal stack.",
+                    "target": {
+                        "id": "cognitive_008",
+                        "name": "Goal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 3,
+                    "stepId": "t01_cog_s03",
+                    "actionType": "move",
+                    "description": "Retrieve the HubSpot interaction schema for the first work phase.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 4,
+                    "stepId": "t01_cog_s04",
+                    "actionType": "move",
+                    "description": "Imagine the full action plan across HubSpot and Google Slides.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 3.00,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 3.00,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 5,
+                    "stepId": "t01_cog_s05",
+                    "actionType": "move",
+                    "description": "Issue the first motor command to rest on the desktop surface.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "Manual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 6,
+                    "stepId": "t01_cog_s06",
+                    "actionType": "move",
+                    "description": "Perceive the audience and campaign input rows on screen.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 7,
+                    "stepId": "t01_cog_s07",
+                    "actionType": "move",
+                    "description": "Decode the visible input rows using the review rule.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 8,
+                    "stepId": "t01_cog_s08",
+                    "actionType": "compare",
+                    "description": "Compare the current input state against the required reviewed state.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 9,
+                    "stepId": "t01_cog_s09",
+                    "actionType": "move",
+                    "description": "Plan the segment and channel selection from the reviewed inputs.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": ["critical_thinking"],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 10,
+                    "stepId": "t01_cog_s10",
+                    "actionType": "move",
+                    "description": "Perceive the fingertip target state before contact.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": ["technology_design"],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 11,
+                    "stepId": "t01_cog_s11",
+                    "actionType": "move",
+                    "description": "Decode the fingertip contact affordance.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 12,
+                    "stepId": "t01_cog_s12",
+                    "actionType": "compare",
+                    "description": "Compare fingertip state against the needed contact state.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 13,
+                    "stepId": "t01_cog_s13",
+                    "actionType": "move",
+                    "description": "Command fingertip contact preparation.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "Manual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 15,
+                    "stepId": "t01_cog_s15",
+                    "actionType": "move",
+                    "description": "Perceive the mouse button for campaign objective focus.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 16,
+                    "stepId": "t01_cog_s16",
+                    "actionType": "move",
+                    "description": "Decode the mouse button affordance for campaign objective focus.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 17,
+                    "stepId": "t01_cog_s17",
+                    "actionType": "compare",
+                    "description": "Compare mouse button state against the needed pressed state.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 18,
+                    "stepId": "t01_cog_s18",
+                    "actionType": "move",
+                    "description": "Dispatch click and focus tracking commands in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 20,
+                    "stepId": "t01_cog_s20",
+                    "actionType": "move",
+                    "description": "Perceive the keyboard for campaign objective typing.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 21,
+                    "stepId": "t01_cog_s21",
+                    "actionType": "move",
+                    "description": "Decode the keyboard affordance for campaign objective typing.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 22,
+                    "stepId": "t01_cog_s22",
+                    "actionType": "compare",
+                    "description": "Compare keyboard state against the needed pressed state.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 23,
+                    "stepId": "t01_cog_s23",
+                    "actionType": "move",
+                    "description": "Dispatch typing and keyboard tracking commands in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 25,
+                    "stepId": "t01_cog_s25",
+                    "actionType": "move",
+                    "description": "Perceive the enter key for campaign objective submit.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 26,
+                    "stepId": "t01_cog_s26",
+                    "actionType": "move",
+                    "description": "Decode the enter key affordance for submit.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 27,
+                    "stepId": "t01_cog_s27",
+                    "actionType": "compare",
+                    "description": "Compare enter key state against the needed pressed state.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 28,
+                    "stepId": "t01_cog_s28",
+                    "actionType": "move",
+                    "description": "Command enter key submit for campaign objective.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "Manual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 30,
+                    "stepId": "t01_cog_s30",
+                    "actionType": "move",
+                    "description": "Perceive the scroll wheel for CRM segment navigation.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 31,
+                    "stepId": "t01_cog_s31",
+                    "actionType": "move",
+                    "description": "Decode the scroll affordance for CRM segment navigation.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 32,
+                    "stepId": "t01_cog_s32",
+                    "actionType": "compare",
+                    "description": "Compare scroll wheel state against the needed rotated state.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 33,
+                    "stepId": "t01_cog_s33",
+                    "actionType": "move",
+                    "description": "Command scroll wheel navigation for the CRM segment panel.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "Manual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 35,
+                    "stepId": "t01_cog_s35",
+                    "actionType": "move",
+                    "description": "Perceive the mouse button for audience segment focus.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 36,
+                    "stepId": "t01_cog_s36",
+                    "actionType": "move",
+                    "description": "Decode the mouse button affordance for audience segment focus.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 37,
+                    "stepId": "t01_cog_s37",
+                    "actionType": "compare",
+                    "description": "Compare mouse button state for audience segment focus.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 38,
+                    "stepId": "t01_cog_s38",
+                    "actionType": "move",
+                    "description": "Dispatch audience segment click and focus tracking in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 40,
+                    "stepId": "t01_cog_s40",
+                    "actionType": "move",
+                    "description": "Perceive the keyboard for audience segment typing.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 41,
+                    "stepId": "t01_cog_s41",
+                    "actionType": "move",
+                    "description": "Decode the keyboard affordance for audience segment typing.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 42,
+                    "stepId": "t01_cog_s42",
+                    "actionType": "compare",
+                    "description": "Compare keyboard state for audience segment typing.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 43,
+                    "stepId": "t01_cog_s43",
+                    "actionType": "move",
+                    "description": "Dispatch audience typing and keyboard tracking in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 45,
+                    "stepId": "t01_cog_s45",
+                    "actionType": "move",
+                    "description": "Perceive the enter key for audience segment submit.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 46,
+                    "stepId": "t01_cog_s46",
+                    "actionType": "move",
+                    "description": "Decode the enter key affordance for audience submit.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 47,
+                    "stepId": "t01_cog_s47",
+                    "actionType": "compare",
+                    "description": "Compare enter key state for audience segment submit.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 48,
+                    "stepId": "t01_cog_s48",
+                    "actionType": "move",
+                    "description": "Command enter key submit for audience segment.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "Manual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 50,
+                    "stepId": "t01_cog_s50",
+                    "actionType": "move",
+                    "description": "Perceive the mouse button for channel mix focus.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 51,
+                    "stepId": "t01_cog_s51",
+                    "actionType": "move",
+                    "description": "Decode the mouse button affordance for channel mix focus.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 52,
+                    "stepId": "t01_cog_s52",
+                    "actionType": "compare",
+                    "description": "Compare mouse button state for channel mix focus.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 53,
+                    "stepId": "t01_cog_s53",
+                    "actionType": "move",
+                    "description": "Dispatch channel mix click and focus tracking in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 55,
+                    "stepId": "t01_cog_s55",
+                    "actionType": "move",
+                    "description": "Perceive the keyboard for channel mix typing.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 56,
+                    "stepId": "t01_cog_s56",
+                    "actionType": "move",
+                    "description": "Decode the keyboard affordance for channel mix typing.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 57,
+                    "stepId": "t01_cog_s57",
+                    "actionType": "compare",
+                    "description": "Compare keyboard state for channel mix typing.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 58,
+                    "stepId": "t01_cog_s58",
+                    "actionType": "move",
+                    "description": "Dispatch channel mix typing and keyboard tracking in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 60,
+                    "stepId": "t01_cog_s60",
+                    "actionType": "move",
+                    "description": "Perceive the strategy record form for validation.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": ["critical_thinking"],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 61,
+                    "stepId": "t01_cog_s61",
+                    "actionType": "move",
+                    "description": "Decode the validation rule for the strategy record form.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 62,
+                    "stepId": "t01_cog_s62",
+                    "actionType": "compare",
+                    "description": "Compare the form state against the required checked state.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 63,
+                    "stepId": "t01_cog_s63",
+                    "actionType": "move",
+                    "description": "Direct stakeholder readiness validation through frontal processing.",
+                    "target": {
+                        "id": "cognitive_001",
+                        "name": "Intentional Module",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": ["critical_thinking"],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 64,
+                    "stepId": "t01_cog_s64",
+                    "actionType": "move",
+                    "description": "Perceive the supporting market analysis visuals.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": ["critical_thinking"],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 65,
+                    "stepId": "t01_cog_s65",
+                    "actionType": "move",
+                    "description": "Decode the supporting visuals evaluation rule.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 66,
+                    "stepId": "t01_cog_s66",
+                    "actionType": "compare",
+                    "description": "Compare the visuals state against the required evaluated state.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 67,
+                    "stepId": "t01_cog_s67",
+                    "actionType": "move",
+                    "description": "Plan evidence selection for the strategic narrative.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": ["critical_thinking"],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 68,
+                    "stepId": "t01_cog_s68",
+                    "actionType": "move",
+                    "description": "Perceive the mouse button for slide title focus.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": ["technology_design"],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 69,
+                    "stepId": "t01_cog_s69",
+                    "actionType": "move",
+                    "description": "Decode the mouse button affordance for slide title focus.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 70,
+                    "stepId": "t01_cog_s70",
+                    "actionType": "compare",
+                    "description": "Compare mouse button state for slide title focus.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 71,
+                    "stepId": "t01_cog_s71",
+                    "actionType": "move",
+                    "description": "Dispatch slide title click and focus tracking in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 73,
+                    "stepId": "t01_cog_s73",
+                    "actionType": "move",
+                    "description": "Perceive the keyboard for slide title typing.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 74,
+                    "stepId": "t01_cog_s74",
+                    "actionType": "move",
+                    "description": "Decode the keyboard affordance for slide title typing.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 75,
+                    "stepId": "t01_cog_s75",
+                    "actionType": "compare",
+                    "description": "Compare keyboard state for slide title typing.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 76,
+                    "stepId": "t01_cog_s76",
+                    "actionType": "move",
+                    "description": "Dispatch slide title typing and keyboard tracking in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 78,
+                    "stepId": "t01_cog_s78",
+                    "actionType": "move",
+                    "description": "Perceive the enter key for slide title submit.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 79,
+                    "stepId": "t01_cog_s79",
+                    "actionType": "move",
+                    "description": "Decode the enter key affordance for slide title submit.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 80,
+                    "stepId": "t01_cog_s80",
+                    "actionType": "compare",
+                    "description": "Compare enter key state for slide title submit.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 81,
+                    "stepId": "t01_cog_s81",
+                    "actionType": "move",
+                    "description": "Command enter key submit for slide title.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "Manual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 83,
+                    "stepId": "t01_cog_s83",
+                    "actionType": "move",
+                    "description": "Perceive the mouse button for strategic message focus.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 84,
+                    "stepId": "t01_cog_s84",
+                    "actionType": "move",
+                    "description": "Decode the mouse button affordance for strategic message focus.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 85,
+                    "stepId": "t01_cog_s85",
+                    "actionType": "compare",
+                    "description": "Compare mouse button state for strategic message focus.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 86,
+                    "stepId": "t01_cog_s86",
+                    "actionType": "move",
+                    "description": "Dispatch strategic message click and focus tracking in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 88,
+                    "stepId": "t01_cog_s88",
+                    "actionType": "move",
+                    "description": "Perceive the keyboard for strategic message typing.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 89,
+                    "stepId": "t01_cog_s89",
+                    "actionType": "move",
+                    "description": "Decode the keyboard affordance for strategic message typing.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 90,
+                    "stepId": "t01_cog_s90",
+                    "actionType": "compare",
+                    "description": "Compare keyboard state for strategic message typing.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 91,
+                    "stepId": "t01_cog_s91",
+                    "actionType": "move",
+                    "description": "Dispatch strategic typing and keyboard tracking in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 93,
+                    "stepId": "t01_cog_s93",
+                    "actionType": "move",
+                    "description": "Perceive the enter key for strategic message submit.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 94,
+                    "stepId": "t01_cog_s94",
+                    "actionType": "move",
+                    "description": "Decode the enter key affordance for strategic message submit.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 95,
+                    "stepId": "t01_cog_s95",
+                    "actionType": "compare",
+                    "description": "Compare enter key state for strategic message submit.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 96,
+                    "stepId": "t01_cog_s96",
+                    "actionType": "move",
+                    "description": "Command enter key submit for strategic message.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "Manual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 98,
+                    "stepId": "t01_cog_s98",
+                    "actionType": "move",
+                    "description": "Perceive the mouse button for visual summary type focus.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 99,
+                    "stepId": "t01_cog_s99",
+                    "actionType": "move",
+                    "description": "Decode the mouse button affordance for visual summary type focus.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 100,
+                    "stepId": "t01_cog_s100",
+                    "actionType": "compare",
+                    "description": "Compare mouse button state for visual summary type focus.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 101,
+                    "stepId": "t01_cog_s101",
+                    "actionType": "move",
+                    "description": "Dispatch visual summary click and focus tracking in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 103,
+                    "stepId": "t01_cog_s103",
+                    "actionType": "move",
+                    "description": "Perceive the scroll wheel for comments navigation.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 104,
+                    "stepId": "t01_cog_s104",
+                    "actionType": "move",
+                    "description": "Decode the scroll affordance for comments navigation.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 105,
+                    "stepId": "t01_cog_s105",
+                    "actionType": "compare",
+                    "description": "Compare scroll wheel state for comments navigation.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 106,
+                    "stepId": "t01_cog_s106",
+                    "actionType": "move",
+                    "description": "Command scroll wheel navigation for comments.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "Manual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 108,
+                    "stepId": "t01_cog_s108",
+                    "actionType": "move",
+                    "description": "Perceive the keyboard for visual summary type typing.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 109,
+                    "stepId": "t01_cog_s109",
+                    "actionType": "move",
+                    "description": "Decode the keyboard affordance for visual summary type typing.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 110,
+                    "stepId": "t01_cog_s110",
+                    "actionType": "compare",
+                    "description": "Compare keyboard state for visual summary type typing.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 111,
+                    "stepId": "t01_cog_s111",
+                    "actionType": "move",
+                    "description": "Dispatch visual summary typing and keyboard tracking in parallel.",
+                    "target": {
+                        "id": "cognitive_003",
+                        "name": "Production Memory",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 113,
+                    "stepId": "t01_cog_s113",
+                    "actionType": "move",
+                    "description": "Perceive the enter key for visual summary type submit.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 114,
+                    "stepId": "t01_cog_s114",
+                    "actionType": "move",
+                    "description": "Decode the enter key affordance for visual summary type submit.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 115,
+                    "stepId": "t01_cog_s115",
+                    "actionType": "compare",
+                    "description": "Compare enter key state for visual summary type submit.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 116,
+                    "stepId": "t01_cog_s116",
+                    "actionType": "move",
+                    "description": "Command enter key submit for visual summary type.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "Manual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 118,
+                    "stepId": "t01_cog_s118",
+                    "actionType": "move",
+                    "description": "Perceive stakeholder comments in the comments pane.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": ["critical_thinking"],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 119,
+                    "stepId": "t01_cog_s119",
+                    "actionType": "move",
+                    "description": "Decode the stakeholder comments revision rule.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 120,
+                    "stepId": "t01_cog_s120",
+                    "actionType": "compare",
+                    "description": "Compare comments state against the required read state.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 121,
+                    "stepId": "t01_cog_s121",
+                    "actionType": "move",
+                    "description": "Direct revision confirmation from stakeholder comments.",
+                    "target": {
+                        "id": "cognitive_001",
+                        "name": "Intentional Module",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": ["critical_thinking"],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 122,
+                    "stepId": "t01_cog_s122",
+                    "actionType": "move",
+                    "description": "Perceive the final reviewed slide canvas.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "Visual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 123,
+                    "stepId": "t01_cog_s123",
+                    "actionType": "move",
+                    "description": "Decode the completion confirmation rule.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 124,
+                    "stepId": "t01_cog_s124",
+                    "actionType": "compare",
+                    "description": "Compare final environment states against expected completion states.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 125,
+                    "stepId": "t01_cog_s125",
+                    "actionType": "confirm",
+                    "description": "Confirm completion and clear working task context.",
+                    "target": {
+                        "id": "cognitive_008",
+                        "name": "Goal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                }
+            ]
+        }
+    ]
+}

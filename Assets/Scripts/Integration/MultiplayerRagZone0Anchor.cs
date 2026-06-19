@@ -250,6 +250,7 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
             PrepareLayoutFromSceneData);
         BsgIntegrationSettings.EnsureDisplay2OverviewCamera = EnsureDisplay2OverviewCamera;
         BsgIntegrationSettings.TryResolveDesignatedPhysicalSpawnWorld = ResolveDesignatedPhysicalSpawnForBridge;
+        BsgIntegrationSettings.Zone0LocomotionTrainingActive = enableZone0LocomotionTraining;
     }
 
     Vector3? ResolveDesignatedPhysicalSpawnForBridge(float worldY)
@@ -336,6 +337,7 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
             BsgIntegrationSettings.MultiplayerEnvironmentScaleMultiplier = 1f;
             BsgIntegrationSettings.ZoneLayoutSpacingOverride = null;
             BsgIntegrationSettings.EnsureDisplay2OverviewCamera = null;
+            BsgIntegrationSettings.Zone0LocomotionTrainingActive = false;
             BsgIntegrationSettings.UnregisterSceneAnchorLayout();
             Instance = null;
         }

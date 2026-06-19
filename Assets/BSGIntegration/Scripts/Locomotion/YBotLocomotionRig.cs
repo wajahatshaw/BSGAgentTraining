@@ -20,10 +20,10 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class YBotLocomotionRig : MonoBehaviour
 {
-    // --- tunables (start conservative per memory; raise in-editor once stable) ---
-    public const float MaxStiffness = 300f;
-    public const float MaxForceLimit = 250f;
-    public const float MinDampingRatio = 0.25f; // damping >= ratio * stiffness
+    // --- tunables (raised for stand/stability curriculum — stiff enough to hold pose, damped to avoid jitter) ---
+    public const float MaxStiffness = 500f;
+    public const float MaxForceLimit = 400f;
+    public const float MinDampingRatio = 0.35f; // damping >= ratio * stiffness
 
     [System.Serializable]
     public class Joint
@@ -53,17 +53,17 @@ public class YBotLocomotionRig : MonoBehaviour
     static readonly BoneSpec[] Specs =
     {
         // suffix,        spherical, swing, stiff,  force,  mass, radius
-        new BoneSpec{ suffix="Spine",     spherical=true,  swingLimit=20f, stiffness=260f, forceLimit=220f, mass=8f,   colliderRadius=0.12f },
-        new BoneSpec{ suffix="LeftUpLeg",  spherical=true,  swingLimit=45f, stiffness=300f, forceLimit=250f, mass=6f,   colliderRadius=0.09f },
-        new BoneSpec{ suffix="RightUpLeg", spherical=true,  swingLimit=45f, stiffness=300f, forceLimit=250f, mass=6f,   colliderRadius=0.09f },
-        new BoneSpec{ suffix="LeftLeg",    spherical=false, swingLimit=80f, stiffness=300f, forceLimit=250f, mass=4f,   colliderRadius=0.07f }, // knee
-        new BoneSpec{ suffix="RightLeg",   spherical=false, swingLimit=80f, stiffness=300f, forceLimit=250f, mass=4f,   colliderRadius=0.07f },
-        new BoneSpec{ suffix="LeftFoot",   spherical=false, swingLimit=35f, stiffness=220f, forceLimit=180f, mass=1.5f, colliderRadius=0.06f }, // ankle
-        new BoneSpec{ suffix="RightFoot",  spherical=false, swingLimit=35f, stiffness=220f, forceLimit=180f, mass=1.5f, colliderRadius=0.06f },
-        new BoneSpec{ suffix="LeftArm",    spherical=true,  swingLimit=45f, stiffness=180f, forceLimit=140f, mass=2f,   colliderRadius=0.06f }, // shoulder
-        new BoneSpec{ suffix="RightArm",   spherical=true,  swingLimit=45f, stiffness=180f, forceLimit=140f, mass=2f,   colliderRadius=0.06f },
-        new BoneSpec{ suffix="LeftForeArm",spherical=false, swingLimit=80f, stiffness=160f, forceLimit=120f, mass=1.5f, colliderRadius=0.05f }, // elbow
-        new BoneSpec{ suffix="RightForeArm",spherical=false,swingLimit=80f, stiffness=160f, forceLimit=120f, mass=1.5f, colliderRadius=0.05f },
+        new BoneSpec{ suffix="Spine",     spherical=true,  swingLimit=20f, stiffness=420f, forceLimit=350f, mass=8f,   colliderRadius=0.12f },
+        new BoneSpec{ suffix="LeftUpLeg",  spherical=true,  swingLimit=45f, stiffness=500f, forceLimit=400f, mass=6f,   colliderRadius=0.09f },
+        new BoneSpec{ suffix="RightUpLeg", spherical=true,  swingLimit=45f, stiffness=500f, forceLimit=400f, mass=6f,   colliderRadius=0.09f },
+        new BoneSpec{ suffix="LeftLeg",    spherical=false, swingLimit=80f, stiffness=500f, forceLimit=400f, mass=4f,   colliderRadius=0.07f }, // knee
+        new BoneSpec{ suffix="RightLeg",   spherical=false, swingLimit=80f, stiffness=500f, forceLimit=400f, mass=4f,   colliderRadius=0.07f },
+        new BoneSpec{ suffix="LeftFoot",   spherical=false, swingLimit=35f, stiffness=380f, forceLimit=320f, mass=1.5f, colliderRadius=0.06f }, // ankle
+        new BoneSpec{ suffix="RightFoot",  spherical=false, swingLimit=35f, stiffness=380f, forceLimit=320f, mass=1.5f, colliderRadius=0.06f },
+        new BoneSpec{ suffix="LeftArm",    spherical=true,  swingLimit=45f, stiffness=280f, forceLimit=220f, mass=2f,   colliderRadius=0.06f }, // shoulder
+        new BoneSpec{ suffix="RightArm",   spherical=true,  swingLimit=45f, stiffness=280f, forceLimit=220f, mass=2f,   colliderRadius=0.06f },
+        new BoneSpec{ suffix="LeftForeArm",spherical=false, swingLimit=80f, stiffness=240f, forceLimit=180f, mass=1.5f, colliderRadius=0.05f }, // elbow
+        new BoneSpec{ suffix="RightForeArm",spherical=false,swingLimit=80f, stiffness=240f, forceLimit=180f, mass=1.5f, colliderRadius=0.05f },
     };
 
     public ArticulationBody Root { get; private set; }       // Hips
@@ -98,8 +98,8 @@ public class YBotLocomotionRig : MonoBehaviour
         }
 
         // Stiffer global solver so stacked joint drives don't diverge (memory gotcha #6).
-        Physics.defaultSolverIterations = Mathf.Max(Physics.defaultSolverIterations, 40);
-        Physics.defaultSolverVelocityIterations = Mathf.Max(Physics.defaultSolverVelocityIterations, 8);
+        Physics.defaultSolverIterations = Mathf.Max(Physics.defaultSolverIterations, 60);
+        Physics.defaultSolverVelocityIterations = Mathf.Max(Physics.defaultSolverVelocityIterations, 12);
 
         // --- root: Hips ---
         Root = EnsureBody(hips);

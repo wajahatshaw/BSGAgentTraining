@@ -76,6 +76,9 @@ public static class BsgIntegrationSettings
     /// <summary>Set by <c>MultiplayerRagZone0Anchor</c> — resolves designated P1 spawn in physical band (Assembly-CSharp bridge).</summary>
     public static System.Func<float, Vector3?> TryResolveDesignatedPhysicalSpawnWorld;
 
+    /// <summary>Set by <c>MultiplayerRagZone0Anchor</c> — zone-0 Y-Bot AB locomotion owns PhysicalAgentZone0 (Assembly-CSharp bridge).</summary>
+    public static bool Zone0LocomotionTrainingActive;
+
     public static bool HasSceneAnchorLayout =>
         MapJsonToWorld != null && GetRagWorldRoot != null;
 
@@ -158,6 +161,7 @@ public static class BsgIntegrationSettings
         for (int i = 0; i < ZoneMlRunComplete.Length; i++)
             ZoneMlRunComplete[i] = false;
         TryResolveDesignatedPhysicalSpawnWorld = null;
+        Zone0LocomotionTrainingActive = false;
     }
 }
 

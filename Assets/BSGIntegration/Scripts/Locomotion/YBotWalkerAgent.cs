@@ -1,12 +1,14 @@
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
 /// <summary>
 /// ML-Agents PPO locomotion agent for the designated Y-Bot. Drives the ArticulationBody rig
 /// (<see cref="YBotLocomotionRig"/>) toward a target while staying upright. Built and wired at
-/// runtime by <see cref="YBotLocomotionInstaller"/>; behavior name <c>YBotWalker</c>.
+/// runtime by <see cref="YBotLocomotionInstaller"/>; registers as behavior <c>PhysicalAgentZone0</c>
+/// (one policy / one ONNX — see Achitecture.md).
 ///
 /// Observation layout (size = 2*TotalDof + 16, set on BehaviorParameters by the installer):
 ///   per DOF: jointPosition, jointVelocity        (2 * TotalDof)
@@ -38,11 +40,17 @@ public class YBotWalkerAgent : Agent
     public float standHeight = 1.0f;
     public float reachTargetDistance = 1.0f;
 
+    [Header("Curriculum")]
+    [Tooltip("Week 1: stand/balance only — no walk-to-target reward; target stays at spawn.")]
+    public bool stabilityOnlyTraining = true;
+
     [Header("Reward weights")]
-    public float uprightWeight = 0.02f;
-    public float progressWeight = 1.0f;
-    public float aliveBonus = 0.005f;
-    public float energyPenalty = 0.0005f;
+    public float uprightWeight = 0.15f;
+    public float heightWeight = 0.05f;
+    public float footGroundedWeight = 0.02f;
+    public float progressWeight = 0f;
+    public float aliveBonus = 0.02f;
+    public float energyPenalty = 0.0002f;
     public float fallPenalty = 1.0f;
     public float reachReward = 2.0f;
 
@@ -90,12 +98,19 @@ public class YBotWalkerAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        int expected = 0;
+        var bp = GetComponent<BehaviorParameters>();
+        if (bp != null)
+            expected = bp.BrainParameters.VectorObservationSize;
+
         int size = _rig != null ? ObservationSize(_rig.TotalDof) : 0;
 
         // Non-finite physics → emit zeros so ML-Agents keeps returning actions (memory gotcha #6).
         if (_rig == null || !_rig.IsBuilt || !_rig.HasValidPhysicsState())
         {
             for (int i = 0; i < size; i++) sensor.AddObservation(0f);
+            if (expected > 0 && expected != size)
+                Debug.LogError($"[YBotWalker] Observation mismatch (invalid physics): BehaviorParameters expects {expected}, rig emits {size}.");
             return;
         }
 
@@ -128,6 +143,9 @@ public class YBotWalkerAgent : Agent
 
         sensor.AddObservation(_leftFoot != null && _leftFoot.IsGrounded ? 1f : 0f);  // 1
         sensor.AddObservation(_rightFoot != null && _rightFoot.IsGrounded ? 1f : 0f);// 1
+
+        if (expected > 0 && expected != size)
+            Debug.LogError($"[YBotWalker] Observation mismatch: BehaviorParameters expects {expected}, CollectObservations emits {size}. Re-enter Play so the Academy re-handshakes.");
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -157,20 +175,32 @@ public class YBotWalkerAgent : Agent
         float upright = Vector3.Dot(root.up, Vector3.up);
         AddReward(uprightWeight * Mathf.Clamp01(upright));
 
-        // Forward progress toward the target (delta distance closed this step).
-        float dist = PlanarDistanceToTarget();
-        float progress = _prevTargetDistance - dist;
-        _prevTargetDistance = dist;
-        AddReward(progressWeight * progress);
+        float normHeight = Mathf.Clamp((height - fallHeight) / (standHeight - fallHeight), 0f, 1f);
+        AddReward(heightWeight * normHeight);
 
-        // Stay-alive shaping + small energy penalty for huge actions.
+        bool leftGrounded = _leftFoot != null && _leftFoot.IsGrounded;
+        bool rightGrounded = _rightFoot != null && _rightFoot.IsGrounded;
+        if (leftGrounded && rightGrounded)
+            AddReward(footGroundedWeight);
+
+        float dist = PlanarDistanceToTarget();
+        if (!stabilityOnlyTraining && progressWeight > 0f)
+        {
+            float progress = _prevTargetDistance - dist;
+            _prevTargetDistance = dist;
+            AddReward(progressWeight * progress);
+        }
+        else
+        {
+            _prevTargetDistance = dist;
+        }
+
         AddReward(aliveBonus);
         float effort = 0f;
         for (int i = 0; i < cont.Length; i++) effort += cont[i] * cont[i];
         AddReward(-energyPenalty * effort);
 
-        // Reached target → bonus + new episode.
-        if (dist < reachTargetDistance)
+        if (!stabilityOnlyTraining && dist < reachTargetDistance)
         {
             AddReward(reachReward);
             EndEpisode();
@@ -261,6 +291,15 @@ public class YBotWalkerAgent : Agent
     void RandomizeTarget()
     {
         if (target == null || _rig == null) return;
+
+        if (stabilityOnlyTraining)
+        {
+            Vector3 standPos = _rig.Root.transform.position;
+            standPos.y = SampleGroundY(standPos);
+            target.position = standPos;
+            return;
+        }
+
         Vector3 origin = _rig.Root.transform.position;
         float ang = Random.value * Mathf.PI * 2f;
         float r = Mathf.Lerp(targetSpawnRadius * 0.4f, targetSpawnRadius, Random.value);
