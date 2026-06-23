@@ -17,12 +17,28 @@ public class YBotFootContact : MonoBehaviour
 
     public bool IsGrounded { get; private set; }
 
+    /// <summary>Planar (xz) speed of this foot in m/s. The agent penalizes this while the foot is
+    /// grounded so a planted foot doesn't skate/moonwalk, giving a more natural-looking stance.</summary>
+    public float HorizontalSpeed
+    {
+        get
+        {
+            if (_body == null) return 0f;
+            Vector3 v = _body.linearVelocity;
+            v.y = 0f;
+            return v.magnitude;
+        }
+    }
+
     int _contactCount;
     Collider _col;
+    ArticulationBody _body;
 
     void Awake()
     {
         _col = GetComponent<Collider>();
+        _body = GetComponent<ArticulationBody>();
+        if (_body == null) _body = GetComponentInParent<ArticulationBody>();
     }
 
     void OnCollisionEnter(Collision c)

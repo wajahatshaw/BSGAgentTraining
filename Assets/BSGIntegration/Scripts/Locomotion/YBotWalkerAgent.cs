@@ -41,15 +41,38 @@ public class YBotWalkerAgent : Agent
     public float reachTargetDistance = 1.0f;
 
     [Header("Curriculum")]
-    [Tooltip("Week 1: stand/balance only — no walk-to-target reward; target stays at spawn.")]
-    public bool stabilityOnlyTraining = true;
+    [Tooltip("Week 1: stand/balance only — no walk-to-target reward; target stays at spawn. " +
+             "Week 2 (walking): set false so progress-to-target + reach rewards activate and the " +
+             "target spawns away from the agent. Agent is runtime-added, so this code default is " +
+             "the source of truth — inspector edits don't persist.")]
+    public bool stabilityOnlyTraining = false;
 
     [Header("Reward weights")]
+    // Week 2 (walking) mix: progress-to-target is dominant, but upright/height/alive are kept so
+    // the warm-started balance from the stand checkpoint isn't forgotten while learning to walk.
     public float uprightWeight = 0.15f;
     public float heightWeight = 0.05f;
     public float footGroundedWeight = 0.02f;
-    public float progressWeight = 0f;
-    public float aliveBonus = 0.02f;
+    [Tooltip("Penalty per (m/s) of horizontal speed of a foot WHILE it is grounded — stops a planted " +
+             "foot from skating/moonwalking so the stance looks natural. No hard gait rhythm is forced.")]
+    public float footSlipWeight = 0.02f;
+    public float progressWeight = 1.0f;
+    [Tooltip("Layer 1 (body direction): per-step reward for the body's forward axis pointing at the " +
+             "target. Positive when facing the target, negative when facing away — so the agent learns " +
+             "to TURN and walk forward toward the goal (realistic) instead of strafing/back-pedalling. " +
+             "Kept small so it nudges heading without overwhelming progress or letting the agent farm " +
+             "reward by standing still and just facing the target.")]
+    public float headingWeight = 0.05f;
+    [Tooltip("Dense per-step reward for the root's velocity TOWARD the target, normalized to " +
+             "desiredWalkSpeed. This is what makes a stand-expert actually start walking: standing " +
+             "still earns 0 here, so idling stops being optimal.")]
+    public float velocityWeight = 0.1f;
+    [Tooltip("Walk speed (m/s) at which the velocity-toward-target reward saturates — prevents lunging/sprinting.")]
+    public float desiredWalkSpeed = 1.5f;
+    [Tooltip("Small per-step time cost (subtracted) so standing idle is never free — discourages the " +
+             "agent from balancing in place instead of walking to the target. Replaces the old alive bonus. " +
+             "Walk mode only (not applied during stabilityOnlyTraining).")]
+    public float existentialPenalty = 0.002f;
     public float energyPenalty = 0.0002f;
     public float fallPenalty = 1.0f;
     public float reachReward = 2.0f;
@@ -178,10 +201,17 @@ public class YBotWalkerAgent : Agent
         float normHeight = Mathf.Clamp((height - fallHeight) / (standHeight - fallHeight), 0f, 1f);
         AddReward(heightWeight * normHeight);
 
+        // Foot-contact shaping for a REALISTIC walking gait. Walking has a single-support phase
+        // (one foot planted while the other swings forward), so we must NOT require both feet down
+        // — that would punish every step. Instead reward "at least one foot grounded" (lets the
+        // agent balance on one foot mid-stride) and only penalize being fully airborne (hopping/
+        // flying). Stepping then emerges naturally from the dominant progress reward + upright.
         bool leftGrounded = _leftFoot != null && _leftFoot.IsGrounded;
         bool rightGrounded = _rightFoot != null && _rightFoot.IsGrounded;
-        if (leftGrounded && rightGrounded)
+        if (leftGrounded || rightGrounded)
             AddReward(footGroundedWeight);
+        else
+            AddReward(-footGroundedWeight); // both feet off the ground = hop/jump, not a walk
 
         float dist = PlanarDistanceToTarget();
         if (!stabilityOnlyTraining && progressWeight > 0f)
@@ -195,7 +225,40 @@ public class YBotWalkerAgent : Agent
             _prevTargetDistance = dist;
         }
 
-        AddReward(aliveBonus);
+        // Layer 1 — body direction. Reward the body's forward axis pointing at the target so the
+        // agent turns to walk FORWARD toward it (realistic) instead of strafing or back-pedalling.
+        // This is a reward only: the agent rotates SMOOTHLY using its own joint drives — we never
+        // snap the transform. Skipped once it's basically on top of the target (heading is undefined
+        // there) and during stability mode. Uses the SAME forward axis as the heading observation
+        // (CollectObservations), so if facing ever looks off, both adjust together.
+        if (!stabilityOnlyTraining && dist > reachTargetDistance)
+        {
+            Vector3 toTarget = PlanarToTarget().normalized;
+            Vector3 fwd = new Vector3(root.forward.x, 0f, root.forward.z).normalized;
+            float facing = Vector3.Dot(fwd, toTarget); // 1 = facing target, -1 = facing away
+            AddReward(headingWeight * facing);
+
+            // Dense velocity-toward-target reward: pays every step the agent actually MOVES toward
+            // the goal, saturating at desiredWalkSpeed. Standing still scores 0 here, so a stand-expert
+            // can no longer farm posture rewards by idling — moving toward the target is what pays.
+            Vector3 planarVel = _rig.Root.linearVelocity; planarVel.y = 0f;
+            float velToward = Vector3.Dot(planarVel, toTarget);
+            AddReward(velocityWeight * Mathf.Clamp01(velToward / desiredWalkSpeed));
+        }
+
+        // Foot-slip penalty: a grounded foot should plant, not skate (moonwalk). Penalize the
+        // horizontal speed of each foot while it's in contact — clamped so a transient spike can't
+        // dominate. Keeps the stance natural without forcing any stepping rhythm.
+        float slip = 0f;
+        if (leftGrounded && _leftFoot != null) slip += Mathf.Min(_leftFoot.HorizontalSpeed, 3f);
+        if (rightGrounded && _rightFoot != null) slip += Mathf.Min(_rightFoot.HorizontalSpeed, 3f);
+        if (slip > 0f) AddReward(-footSlipWeight * slip);
+
+        // Existential cost (walk mode only): small per-step time penalty so idling is never free.
+        // During stability training, standing IS the goal, so no time cost is applied there.
+        if (!stabilityOnlyTraining)
+            AddReward(-existentialPenalty);
+
         float effort = 0f;
         for (int i = 0; i < cont.Length; i++) effort += cont[i] * cont[i];
         AddReward(-energyPenalty * effort);
@@ -282,10 +345,24 @@ public class YBotWalkerAgent : Agent
 
     void EnsureTarget()
     {
-        if (target != null) return;
+        if (target != null) return; 
         var go = new GameObject("YBotWalkerTarget");
         target = go.transform;
         _ownsTarget = true;
+
+        // Visible beacon so you can SEE where the agent is walking. Purely cosmetic: its collider
+        // is removed so it never interferes with physics, foot contacts, or the ground raycast. It
+        // floats above the ground target point — the reward uses only the planar (xz) distance, so
+        // the marker's height is irrelevant to training.
+        var marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        marker.name = "YBotWalkerTargetMarker";
+        var col = marker.GetComponent<Collider>();
+        if (col != null) Destroy(col);
+        marker.transform.SetParent(target, false);
+        marker.transform.localPosition = new Vector3(0f, 1.2f, 0f);
+        marker.transform.localScale = Vector3.one * 0.4f;
+        var rend = marker.GetComponent<Renderer>();
+        if (rend != null) rend.material.color = new Color(0.2f, 0.8f, 1f); // cyan beacon
     }
 
     void RandomizeTarget()

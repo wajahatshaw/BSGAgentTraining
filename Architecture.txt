@@ -1,0 +1,222 @@
+Updated Final Plan — Using PhysicalAgentZone0 Policy
+
+
+Current State
+Training now:
+  PhysicalAgentZone0.onnx   ← THIS is now your designated player Y-Bot locomotion agent
+
+The Solution — One Final Combined ONNX
+One behavior:  PhysicalAgentZone0
+One YAML entry
+One training run with curriculum
+
+Week 1:   Rewards for stability only
+          → learns balance
+
+Week 2:   Add rewards for walking
+          → learns walk while balanced
+
+Week 3:   Add rewards for arm reach
+          → learns arms while walking balanced
+
+Week 4:   Add rewards for hand grasp
+          → learns grasp while doing everything else
+
+Result:   ONE PhysicalAgentZone0.onnx
+          controls ALL joints
+          does ALL skills naturally
+
+Resuming Training
+bash# First run — stability only
+mlagents-learn config/YBotWalker.yaml --run-id=ybot_v1
+
+# Resume — add walking rewards
+mlagents-learn config/YBotWalker.yaml --run-id=ybot_v1 --resume
+
+# Resume — add arm reach rewards
+mlagents-learn config/YBotWalker.yaml --run-id=ybot_v1 --resume
+
+# Resume — add hand + finger rewards
+mlagents-learn config/YBotWalker.yaml --run-id=ybot_v1 --resume
+
+What Happens to the ONNX
+After Week 1 (stability):
+  results/ybot_v1/PhysicalAgentZone0.onnx  ← stands upright
+
+Resume Week 2 (walking):
+  results/ybot_v1/PhysicalAgentZone0.onnx  ← SAME FILE, now walks
+
+Resume Week 3 (arms):
+  results/ybot_v1/PhysicalAgentZone0.onnx  ← SAME FILE, now reaches
+
+Resume Week 4 (hands + fingers):
+  results/ybot_v1/PhysicalAgentZone0.onnx  ← SAME FILE, now grasps
+
+Updated YAML — Remove YBotWalker, Keep PhysicalAgentZone0 Only
+yamldefault_settings:
+  checkpoint_interval: 10000
+  keep_checkpoints: 5
+
+behaviors:
+  PhysicalAgentZone0:        # ← only one behavior now
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 2048
+      buffer_size: 40960
+      learning_rate: 3.0e-4
+      beta: 5.0e-3
+      epsilon: 0.2
+      lambd: 0.95
+      num_epoch: 3
+      learning_rate_schedule: linear
+    network_settings:
+      normalize: true
+      hidden_units: 512
+      num_layers: 3
+    reward_signals:
+      extrinsic:
+        gamma: 0.99
+        strength: 1.0
+    max_steps: 10000000      # Week 1 — increase each resume
+    time_horizon: 1000
+    summary_freq: 30000
+
+checkpoint_settings:
+  run_id: ybot_v1
+  resume: false              # set true on resume sessions
+  force: true
+  train_model: true
+  inference: false
+  results_dir: results
+
+Unity Inspector — Must Match
+YBotWalkerAgent.cs → BehaviorParameters:
+  Behavior Name:  PhysicalAgentZone0   ← must match YAML key exactly
+  Continuous Actions: 21
+  Vector Observations: 58
+  Behavior Type: Default
+  Model: None (during training)
+
+One Critical Warning
+
+Keep YAML clean:
+  ✓  PhysicalAgentZone0  (active)
+  ✗  YBotWalker          (remove or comment out)
+
+Final Deployment in Multiplayer
+results/ybot_v1/PhysicalAgentZone0.onnx
+     ↓
+Copy to Assets/Models/
+     ↓
+Designated Player → BehaviorParameters → Model
+     ↓
+Behavior Type: Inference Only
+     ↓
+Photon syncs position to other players
+RAG targets feed as locomotion targets
+
+One Line Summary
+Same plan, same resume strategy, same one ONNX outcome
+— just replace every mention of YBotWalker.onnx 
+with PhysicalAgentZone0.onnx and match the 
+Behavior Name in Unity Inspector to PhysicalAgentZone0
+
+
+
+
+
+
+
+
+
+How we select the mltraining training process: we are working on Option A which is recommended:
+Option A — Train Everything Together From Start (Recommended) : One Final Combined ONNX
+Option B — Hierarchical Policy (Advanced)
+
+
+
+Check findout these three body type for mlagents so that it will able to train on locomotion:
+Option A — Kinematic Capsule
+Option B — Ragdoll (ConfigurableJoint)
+Option C — ArticulationBody 
+
+
+Details:
+
+Path A — Train Everything Together From Start (Recommended) : One Final Combined ONNX
+
+The Solution — One Final Combined ONNX
+
+One behavior:  PhysicalAgentZone0
+One YAML entry
+One training run with curriculum
+
+Week 1:   Rewards for stability only
+          → learns balance
+
+Week 2:   Add rewards for walking
+          → learns walk while balanced
+
+Week 3:   Add rewards for arm reach
+          → learns arms while walking balanced
+
+Path B — Hierarchical Policy (Advanced)
+
+High level controller (C# script):
+  Decides WHAT to do
+       ↓
+  "walk to target"    → activates YBotWalker.onnx
+  "reach for object"  → activates YBotArm.onnx
+  "grasp tool"        → activates YBotHand.onnx
+
+
+
+
+
+
+
+
+Best full body type for mlagents:
+
+Option A — Kinematic Capsule
+
+Option B — Ragdoll (ConfigurableJoint)
+
+Option C — ArticulationBody
+
+
+
+Details:
+
+Option A — Kinematic Capsule
+
+  Can you train locomotion?   NO
+
+  Reason: no joints, no physics body parts
+
+  Used for: simple Rigidbody movement (your current state)
+
+Option B — Ragdoll (ConfigurableJoint)  
+
+  Can you train locomotion?   TECHNICALLY YES
+
+  Reason: has joints but unstable under ML forces
+
+  Used for: death animations, not training
+
+  
+
+Option C — ArticulationBody
+
+  Can you train locomotion?   YES — this is the right way
+
+  Reason: built specifically for ML-Agents physics training
+
+  Used for: Walker, Crawler, all Unity ML locomotion examples
+
+
+
+
+
+
+  
