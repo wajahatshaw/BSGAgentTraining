@@ -60,7 +60,7 @@ public class KleinFrameExecutor : MonoBehaviour
         _hand?.RefreshRigWire();
     }
 
-    public bool TryExecuteForStep(ActionSequenceStep step, Vector3 sceneWorldTarget, Action onComplete)
+    public bool TryExecuteForStep(ActionSequenceStep step, string agentId, Vector3 sceneWorldTarget, Action onComplete)
     {
         if (step == null)
             return false;
@@ -71,7 +71,7 @@ public class KleinFrameExecutor : MonoBehaviour
         Cancel();
         _hand?.RefreshRigWire();
 
-        LastResolve = KleinFrameResolver.Resolve(step);
+        LastResolve = KleinFrameResolver.Resolve(step, agentId, zoneIndex);
         if (!LastResolve.resolved)
         {
             if (logVerbose)
@@ -103,7 +103,8 @@ public class KleinFrameExecutor : MonoBehaviour
             _activeRoutine = StartCoroutine(CoPressing(ActiveFrame, sceneWorldTarget));
 
         if (logVerbose)
-            Debug.Log($"[KleinFrameExecutor] {step.stepId} → {ActiveFrame.kleinFrameId} ({ActiveFrame.manualCommand} @ {ActiveFrame.targetObject})");
+            Debug.Log($"[KleinFrameExecutor] {step.stepId} → {ActiveFrame.kleinFrameId} ({ActiveFrame.manualCommand} @ {ActiveFrame.targetObject}) " +
+                      $"approach={ActiveFrame.rigPose?.approachAngleDeg}° force={ActiveFrame.rigPose?.contactForceN}N  [read live from mannualBuffer2.json]");
 
         return true;
     }
@@ -286,9 +287,9 @@ public class KleinFrameExecutor : MonoBehaviour
         SignalMotorComplete();
     }
 
-    public float GetRequiredDwellSeconds(ActionSequenceStep step)
+    public float GetRequiredDwellSeconds(ActionSequenceStep step, string agentId)
     {
-        KleinFrameResolveResult resolve = KleinFrameResolver.Peek(step);
+        KleinFrameResolveResult resolve = KleinFrameResolver.Peek(step, agentId, zoneIndex);
         if (!resolve.resolved)
             return 0.35f;
 

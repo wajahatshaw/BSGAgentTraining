@@ -1,125 +1,46 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>Maps RAG physical steps to Klein frames from the manual buffer catalog.</summary>
+/// <summary>
+/// Maps RAG physical steps to Klein frames from the manual buffer catalog.
+/// Resolution is an exact (stepId, agentId, zoneIndex) match against mannualBuffer2.json —
+/// frames are explicitly associated to one physical step, so only steps present in the
+/// buffer resolve; every other step returns unresolved and the caller falls back.
+/// </summary>
 public static class KleinFrameResolver
 {
-    static readonly Dictionary<string, int> _targetCommandSequence = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-
     public static void ResetSequenceCounters()
     {
-        _targetCommandSequence.Clear();
+        // No running sequence counters anymore — frames are addressed by exact step key.
     }
 
-    public static KleinFrameResolveResult Resolve(ActionSequenceStep step)
+    public static KleinFrameResolveResult Resolve(ActionSequenceStep step, string agentId, int zoneIndex)
     {
-        return ResolveInternal(step, consumeSequence: true);
+        return ResolveInternal(step, agentId, zoneIndex);
     }
 
-    public static KleinFrameResolveResult Peek(ActionSequenceStep step)
+    public static KleinFrameResolveResult Peek(ActionSequenceStep step, string agentId, int zoneIndex)
     {
-        return ResolveInternal(step, consumeSequence: false);
+        return ResolveInternal(step, agentId, zoneIndex);
     }
 
-    static KleinFrameResolveResult ResolveInternal(ActionSequenceStep step, bool consumeSequence)
+    static KleinFrameResolveResult ResolveInternal(ActionSequenceStep step, string agentId, int zoneIndex)
     {
         KleinFrameResolveResult result = new KleinFrameResolveResult();
-        if (step == null)
+        if (step == null || string.IsNullOrWhiteSpace(step.stepId))
             return result;
 
         if (!ManualBufferCatalog.IsLoaded && !ManualBufferCatalog.TryLoad())
             return result;
 
-        string manualCommand = string.Empty;
-        string targetObject = step.targetObjectName ?? string.Empty;
-
-        if (SceneStateLogBridge.TryGetForStep(step.stepId, out SceneStateKleinRef sceneRef))
-        {
-            result.sceneRef = sceneRef;
-            if (!string.IsNullOrWhiteSpace(sceneRef.targetObject))
-                targetObject = sceneRef.targetObject;
-            manualCommand = ManualBufferCatalog.ThreadToManualCommand(sceneRef.thread);
-        }
-
-        if (string.IsNullOrWhiteSpace(manualCommand))
-            manualCommand = ManualBufferCatalog.InferManualCommandFromStep(step);
-
-        // Contact-prep step has no dedicated finger frame in the manual buffer.
-        if (IsContactPrepStep(step, targetObject))
-        {
-            result.isReachOnly = true;
-            result.manualCommand = manualCommand;
-            result.targetObject = targetObject;
-            result.resolved = true;
+        if (!ManualBufferCatalog.TryGetForStep(step.stepId, agentId, zoneIndex, out KleinFrame frame) || frame == null)
             return result;
-        }
 
-        string seqKey = ManualBufferCatalog.TargetCommandKey(targetObject, manualCommand);
-        if (!_targetCommandSequence.TryGetValue(seqKey, out int seqIndex))
-            seqIndex = 0;
-
-        if (consumeSequence)
-        {
-            if (ManualBufferCatalog.TryConsumeNextForTargetCommand(targetObject, manualCommand, ref seqIndex, out KleinFrame frame))
-            {
-                _targetCommandSequence[seqKey] = seqIndex;
-                result.frame = frame;
-                result.manualCommand = manualCommand;
-                result.targetObject = targetObject;
-                result.resolved = true;
-                return result;
-            }
-        }
-        else if (ManualBufferCatalog.TryGetNextForTargetCommand(targetObject, manualCommand, ref seqIndex, out KleinFrame peekFrame))
-        {
-            result.frame = peekFrame;
-            result.manualCommand = manualCommand;
-            result.targetObject = targetObject;
-            result.resolved = true;
-            return result;
-        }
-
-        // Fallback: try step target name directly when sceneStateLog object differs.
-        if (!string.IsNullOrWhiteSpace(step.targetObjectName)
-            && !step.targetObjectName.Equals(targetObject, StringComparison.OrdinalIgnoreCase))
-        {
-            string altKey = ManualBufferCatalog.TargetCommandKey(step.targetObjectName, manualCommand);
-            if (!_targetCommandSequence.TryGetValue(altKey, out seqIndex))
-                seqIndex = 0;
-
-            if (consumeSequence)
-            {
-                if (ManualBufferCatalog.TryConsumeNextForTargetCommand(step.targetObjectName, manualCommand, ref seqIndex, out KleinFrame frame))
-                {
-                    _targetCommandSequence[altKey] = seqIndex;
-                    result.frame = frame;
-                    result.manualCommand = manualCommand;
-                    result.targetObject = step.targetObjectName;
-                    result.resolved = true;
-                }
-            }
-            else if (ManualBufferCatalog.TryGetNextForTargetCommand(step.targetObjectName, manualCommand, ref seqIndex, out KleinFrame peekFrame))
-            {
-                result.frame = peekFrame;
-                result.manualCommand = manualCommand;
-                result.targetObject = step.targetObjectName;
-                result.resolved = true;
-            }
-        }
-
+        result.frame = frame;
+        result.manualCommand = frame.manualCommand;
+        result.targetObject = frame.targetObject;
+        result.resolved = true;
         return result;
-    }
-
-    static bool IsContactPrepStep(ActionSequenceStep step, string targetObject)
-    {
-        if (step == null) return false;
-        string name = targetObject ?? string.Empty;
-        if (name.IndexOf("fingertip", StringComparison.OrdinalIgnoreCase) >= 0)
-            return true;
-        if (step.description != null && step.description.IndexOf("contact preparation", StringComparison.OrdinalIgnoreCase) >= 0)
-            return true;
-        return string.Equals(step.stepId, "t01_phy_s14", StringComparison.OrdinalIgnoreCase);
     }
 }
 

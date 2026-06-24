@@ -1,0 +1,66 @@
+{
+    "rig_naming": {
+      "convention": "mixamorig:<Side>Hand<Finger><Joint>; Right hand = Left mirrored",
+      "contact_point": "key-press / click contact = fingertip tip = Index4_end",
+      "scope": "hand-only for now; non-hand effectors (torso/eye) get rig_bone null + pending_full_body_rig until full-body rig is provided"
+    },
+    "distinct_effectors": {
+      "torso": null,
+      "right_index_fingertip_pad": "mixamorig:RightHandIndex4_end"
+    },
+    "counts": {
+      "physical_motor_frames": 23,
+      "finger_contact_frames": 22,
+      "pending_full_body": 1
+    },
+    "manual_buffer": [
+      {
+        "klein_frame_id": "KF-1-5",
+        "stepId": "t01_phy_s19",
+        "agentId": "P1",
+        "zoneIndex": 0,
+        "manual_buffer_command": "manual_buffer issues PRESSING command to right_index_fingertip_pad (rig_bone: mixamorig:RightHandIndex4_end) for KF-1-5.",
+        "effector_body_part": "right_index_fingertip_pad",
+        "rig_bone": "mixamorig:RightHandIndex4_end",
+        "manual_command": "PRESSING",
+        "target_object": "left_mouse_button",
+        "coordinates": {
+          "x": 290,
+          "y": 515,
+          "z": 736
+        },
+        "force_newtons": 0.25,
+        "duration_ms": 100,
+        "state_before": "unpressed",
+        "state_after": "pressed",
+        "rig_pose": {
+          "solve": "unity_ik",
+          "end_effector": "mixamorig:RightHandIndex4_end",
+          "ik_chain": [
+            "mixamorig:RightHand",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4_end"
+          ],
+          "ik_target": {
+            "x": 290,
+            "y": 515,
+            "z": 736
+          },
+          "approach_angle_deg": 90,
+          "contact_force_n": 0.25
+        },
+        "hand_pose": {
+          "gesture": "index_point_press",
+          "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file.",
+          "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+          "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+          "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+          "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+          "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+        },
+        "motor_execution": "motor_module executes KF-1-5 by event physical-event contact-event press-event mouse-button-press left_mouse_button with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
+      }
+    ]
+  }

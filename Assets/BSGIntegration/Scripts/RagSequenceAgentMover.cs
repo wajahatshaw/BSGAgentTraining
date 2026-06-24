@@ -471,7 +471,7 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
 
         Vector3 stationCenter = targetPos.Value;
-        Vector3 moveGoal = ResolveMoveGoalPosition(effectiveTargetId, stationCenter);
+        Vector3 moveGoal = ResolveMoveGoalPosition(effectiveTargetId, stationCenter, step);
         _navGoalForObstacles = moveGoal;
 
         Vector3 to = moveGoal - transform.position;
@@ -594,15 +594,10 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
         else if (IsPhysicalManualActStep(step))
         {
-            if (TryDriveKleinMotorForStep(step, stationCenter))
-            {
-                // KleinFrameExecutor drives arm + finger IK.
-            }
-            else
-            {
-                ApplyMenuHandPose(step, true);
-                ApplyMenuReachPose(stationCenter, true);
-            }
+            // Only steps explicitly defined in mannualBuffer2.json (currently just t01_phy_s19 →
+            // left_mouse_button) drive the hand/finger IK. Any other act step has no buffer frame,
+            // so we intentionally apply NO fallback hand pose — no hand movement at other objects.
+            TryDriveKleinMotorForStep(step, stationCenter);
         }
 
         dwellTimer += Time.deltaTime;
@@ -614,7 +609,7 @@ public class RagSequenceAgentMover : MonoBehaviour
         else if (IsPhysicalManualActStep(step))
         {
             if (kleinFrameExecutor != null && hostPlayerMovement)
-                dwellNeed = Mathf.Max(dwellNeed, kleinFrameExecutor.GetRequiredDwellSeconds(step));
+                dwellNeed = Mathf.Max(dwellNeed, kleinFrameExecutor.GetRequiredDwellSeconds(step, agentId));
             else
                 dwellNeed = Mathf.Max(dwellNeed, 0.35f);
         }
@@ -667,6 +662,13 @@ public class RagSequenceAgentMover : MonoBehaviour
             dist = Mathf.Max(dist, stand + 0.42f);
         if (IsPhysicalManualActStep(step))
             dist = Mathf.Max(dist, 1.35f);
+
+        // Designated host player walks right up to the CORRECT target (one with a Klein frame in
+        // mannualBuffer2.json) so the hand/finger can physically touch it to press. Every other
+        // target keeps the proximity-based stand-off distance computed above.
+        if (IsCorrectKleinPressTarget(step))
+            return Mathf.Max(0.35f, GetInteractionStandDistance());
+
         return dist;
     }
 
@@ -1546,7 +1548,7 @@ public class RagSequenceAgentMover : MonoBehaviour
         return EnvironmentSolidCollider.GetHullDistance(root.transform, transform.position);
     }
 
-    Vector3 ResolveMoveGoalPosition(string targetObjectId, Vector3 stationCenter)
+    Vector3 ResolveMoveGoalPosition(string targetObjectId, Vector3 stationCenter, ActionSequenceStep step = null)
     {
         GameObject root = FindStationRoot(targetObjectId);
         if (root == null)
@@ -1561,8 +1563,22 @@ public class RagSequenceAgentMover : MonoBehaviour
         if (solid != null)
             pad = Mathf.Max(pad, solid.approachPadding);
 
+        // Correct Klein target for the designated host player: stand hard against the hull (no
+        // extra stand-off) so the arm can physically reach onto the object to press it. Every
+        // other target keeps the padded, proximity-safe approach above.
+        if (IsCorrectKleinPressTarget(step))
+            pad = 0f;
+
         Vector3 stand = EnvironmentSolidCollider.GetApproachPosition(root.transform, transform.position, agentR, pad);
         return ZonePlayAreaBounds.ClampPosition(zoneIndex, stand);
+    }
+
+    /// <summary>True only for the designated host player at a physical-act step that has an exact
+    /// (stepId, agentId, zoneIndex) Klein frame in mannualBuffer2.json — i.e. the correct target.</summary>
+    bool IsCorrectKleinPressTarget(ActionSequenceStep step)
+    {
+        return hostPlayerMovement && IsPhysicalManualActStep(step)
+            && ManualBufferCatalog.TryGetForStep(step.stepId, agentId, zoneIndex, out _);
     }
 
     bool HasArrivedAtTarget(string targetObjectId, Vector3 stationCenter, float distToMoveGoal)
@@ -1830,7 +1846,7 @@ public class RagSequenceAgentMover : MonoBehaviour
         {
             kleinMotorStepId = step.stepId;
             kleinMotorCompleted = false;
-            if (!kleinFrameExecutor.TryExecuteForStep(step, stationCenter, () => kleinMotorCompleted = true))
+            if (!kleinFrameExecutor.TryExecuteForStep(step, agentId, stationCenter, () => kleinMotorCompleted = true))
             {
                 kleinMotorStepId = null;
                 return false;

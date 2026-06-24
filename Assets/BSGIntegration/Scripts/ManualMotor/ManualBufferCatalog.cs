@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-/// <summary>Loads and indexes mannualBuffer.json Klein frames.</summary>
+/// <summary>Loads and indexes mannualBuffer2.json Klein frames (keyed by stepId+agentId+zoneIndex).</summary>
 public static class ManualBufferCatalog
 {
-    const string DefaultRelativePath = "Assets/JsonFile/mannualBuffer.json";
+    const string CatalogFileName = "mannualBuffer2.json";
+    const string DefaultRelativePath = "Assets/JsonFile/mannualBuffer2.json";
 
     static string ResolveCatalogPath(string relativePath)
     {
         if (!string.IsNullOrWhiteSpace(relativePath) && File.Exists(relativePath))
             return relativePath;
 
-        string dataPath = Path.Combine(Application.dataPath, "JsonFile", "mannualBuffer.json");
+        string dataPath = Path.Combine(Application.dataPath, "JsonFile", CatalogFileName);
         if (File.Exists(dataPath))
             return dataPath;
 
@@ -23,6 +24,7 @@ public static class ManualBufferCatalog
     static bool _loaded;
     static readonly Dictionary<string, KleinFrame> _byId = new Dictionary<string, KleinFrame>(StringComparer.OrdinalIgnoreCase);
     static readonly Dictionary<string, List<KleinFrame>> _byTargetCommand = new Dictionary<string, List<KleinFrame>>(StringComparer.OrdinalIgnoreCase);
+    static readonly Dictionary<string, KleinFrame> _byStepKey = new Dictionary<string, KleinFrame>(StringComparer.OrdinalIgnoreCase);
     static KleinFrame _restingFrame;
 
     public static bool IsLoaded => _loaded;
@@ -33,6 +35,7 @@ public static class ManualBufferCatalog
     {
         _byId.Clear();
         _byTargetCommand.Clear();
+        _byStepKey.Clear();
         _restingFrame = null;
         _loaded = false;
 
@@ -78,6 +81,9 @@ public static class ManualBufferCatalog
 
         _byId[frame.kleinFrameId] = frame;
 
+        if (!string.IsNullOrWhiteSpace(frame.stepId))
+            _byStepKey[StepKey(frame.stepId, frame.agentId, frame.zoneIndex)] = frame;
+
         if (string.Equals(frame.manualCommand, "RESTING", StringComparison.OrdinalIgnoreCase))
             _restingFrame = frame;
 
@@ -96,6 +102,20 @@ public static class ManualBufferCatalog
         if (!_loaded || string.IsNullOrWhiteSpace(kleinFrameId))
             return false;
         return _byId.TryGetValue(kleinFrameId, out frame);
+    }
+
+    /// <summary>Exact match for a physical step by (stepId, agentId, zoneIndex) — the buffer2 association key.</summary>
+    public static bool TryGetForStep(string stepId, string agentId, int zoneIndex, out KleinFrame frame)
+    {
+        frame = null;
+        if ((!_loaded && !TryLoad()) || string.IsNullOrWhiteSpace(stepId))
+            return false;
+        return _byStepKey.TryGetValue(StepKey(stepId, agentId, zoneIndex), out frame);
+    }
+
+    public static string StepKey(string stepId, string agentId, int zoneIndex)
+    {
+        return $"{(stepId ?? string.Empty).Trim()}|{(agentId ?? string.Empty).Trim()}|{zoneIndex}".ToLowerInvariant();
     }
 
     public static bool TryGetNextForTargetCommand(string targetObject, string manualCommand, ref int sequenceIndex, out KleinFrame frame)
@@ -129,6 +149,9 @@ public static class ManualBufferCatalog
         KleinFrame frame = new KleinFrame
         {
             kleinFrameId = dto.klein_frame_id ?? string.Empty,
+            stepId = dto.stepId ?? string.Empty,
+            agentId = dto.agentId ?? string.Empty,
+            zoneIndex = dto.zoneIndex,
             effectorBodyPart = dto.effector_body_part ?? string.Empty,
             rigBone = dto.rig_bone ?? string.Empty,
             manualCommand = dto.manual_command ?? string.Empty,
@@ -140,8 +163,45 @@ public static class ManualBufferCatalog
             stateBefore = dto.state_before ?? string.Empty,
             stateAfter = dto.state_after ?? string.Empty,
             rigPose = ConvertPose(dto.rig_pose),
+            handPose = ConvertHandPose(dto.hand_pose),
         };
         return frame;
+    }
+
+    static KleinHandPose ConvertHandPose(KleinHandPoseDto dto)
+    {
+        if (dto == null)
+            return null;
+
+        KleinFingerPose index = ConvertFingerPose(dto.index);
+        KleinFingerPose middle = ConvertFingerPose(dto.middle);
+        KleinFingerPose ring = ConvertFingerPose(dto.ring);
+        KleinFingerPose pinky = ConvertFingerPose(dto.pinky);
+        KleinFingerPose thumb = ConvertFingerPose(dto.thumb);
+
+        return new KleinHandPose
+        {
+            gesture = dto.gesture ?? string.Empty,
+            index = index,
+            middle = middle,
+            ring = ring,
+            pinky = pinky,
+            thumb = thumb,
+            hasData = !string.IsNullOrEmpty(dto.gesture)
+                      || HasAngle(middle) || HasAngle(ring) || HasAngle(pinky) || HasAngle(thumb) || HasAngle(index),
+        };
+    }
+
+    static KleinFingerPose ConvertFingerPose(KleinFingerPoseDto dto)
+    {
+        if (dto == null)
+            return new KleinFingerPose();
+        return new KleinFingerPose { mcp = dto.mcp, pip = dto.pip, dip = dto.dip };
+    }
+
+    static bool HasAngle(KleinFingerPose p)
+    {
+        return p != null && (Mathf.Abs(p.mcp) > 0.001f || Mathf.Abs(p.pip) > 0.001f || Mathf.Abs(p.dip) > 0.001f);
     }
 
     static KleinRigPose ConvertPose(KleinRigPoseDto dto)

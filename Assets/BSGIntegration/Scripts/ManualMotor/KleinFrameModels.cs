@@ -6,6 +6,9 @@ using UnityEngine;
 public class KleinFrame
 {
     public string kleinFrameId;
+    public string stepId;
+    public string agentId;
+    public int zoneIndex;
     public string effectorBodyPart;
     public string rigBone;
     public string manualCommand;
@@ -17,6 +20,7 @@ public class KleinFrame
     public string stateBefore;
     public string stateAfter;
     public KleinRigPose rigPose;
+    public KleinHandPose handPose;
 
     public bool UsesUnityIk =>
         rigPose != null && string.Equals(rigPose.solve, "unity_ik", StringComparison.OrdinalIgnoreCase);
@@ -34,6 +38,28 @@ public class KleinRigPose
     public Vector3 ikTarget;
     public float approachAngleDeg;
     public float contactForceN;
+}
+
+/// <summary>Per-joint bend (degrees toward the palm) for one finger: mcp=base knuckle, pip=middle, dip=tip.</summary>
+[Serializable]
+public class KleinFingerPose
+{
+    public float mcp;
+    public float pip;
+    public float dip;
+}
+
+/// <summary>Whole-hand pose: per-finger, per-joint bend angles (degrees) driving the press shape.</summary>
+[Serializable]
+public class KleinHandPose
+{
+    public string gesture;
+    public KleinFingerPose index;
+    public KleinFingerPose middle;
+    public KleinFingerPose ring;
+    public KleinFingerPose pinky;
+    public KleinFingerPose thumb;
+    public bool hasData;
 }
 
 /// <summary>One sceneStateLog entry linking a physical step to Klein metadata.</summary>
@@ -58,6 +84,9 @@ class ManualBufferFileDto
 class KleinFrameDto
 {
     public string klein_frame_id;
+    public string stepId;
+    public string agentId;
+    public int zoneIndex;
     public string effector_body_part;
     public string rig_bone;
     public string manual_command;
@@ -68,6 +97,26 @@ class KleinFrameDto
     public string state_before;
     public string state_after;
     public KleinRigPoseDto rig_pose;
+    public KleinHandPoseDto hand_pose;
+}
+
+[Serializable]
+class KleinFingerPoseDto
+{
+    public float mcp;
+    public float pip;
+    public float dip;
+}
+
+[Serializable]
+class KleinHandPoseDto
+{
+    public string gesture;
+    public KleinFingerPoseDto index;
+    public KleinFingerPoseDto middle;
+    public KleinFingerPoseDto ring;
+    public KleinFingerPoseDto pinky;
+    public KleinFingerPoseDto thumb;
 }
 
 [Serializable]
