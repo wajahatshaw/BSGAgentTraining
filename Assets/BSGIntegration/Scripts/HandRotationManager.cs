@@ -53,12 +53,6 @@ public class HandRotationManager : MonoBehaviour
     bool _loggedWireStatus;
     bool _loggedRegistrySummary;
 
-    // TEMP spin diagnostic — logs which transform changes each frame during a Klein press.
-    public bool logSpinDiagnostic = true;
-    float _dbgNextLog;
-    Vector3 _dbgPrevBodyEuler;
-    Vector3 _dbgPrevHandLocalEuler;
-
     KleinFrame _manualFrame;
     Vector3 _manualTarget;
     float _manualPressPhase;
@@ -571,14 +565,17 @@ public class HandRotationManager : MonoBehaviour
             // comes from hand_pose, so the wrist doesn't need a back/up offset.
             float armLen = Vector3.Distance(upper.position, forearm.position)
                          + Vector3.Distance(forearm.position, hand.position);
-            float maxReach = Mathf.Max(0.1f, armLen * 0.98f);
+            float maxReach = Mathf.Max(0.1f, armLen);   // allow the arm to fully extend to the target
             Vector3 toTarget = _lockedReachTarget - shoulderRef.position;
             if (toTarget.magnitude > maxReach)
                 toTarget = toTarget.normalized * maxReach;
             Vector3 contact = shoulderRef.position + toTarget;
 
-            // Hover slightly above the contact, settle down as the press ramps in.
-            surfacePoint = contact + Vector3.up * (0.04f + 0.05f * (1f - pressW));
+            // The wrist descends onto the contact as the press completes: a small approach hover bleeds
+            // out (pressW→1) and the wrist settles just above the surface, so the downward-pointing
+            // index TIP lands on (and presses lightly into) the top surface instead of stopping in the
+            // air. The residual lift is finger-length sized, not arm-length, so the hand never folds back.
+            surfacePoint = contact + Vector3.up * (0.012f + 0.03f * (1f - pressW));
 
             fingerContact = contact;
             kleinFingerPress = true;
@@ -618,62 +615,6 @@ public class HandRotationManager : MonoBehaviour
         // Curl the non-index fingers per the klein hand_pose so the hand forms a pointing press.
         if (_manualFrame != null && _manualFrame.handPose != null && _manualFrame.handPose.hasData)
             ApplyOtherFingerCurls(_manualFrame.handPose, pressW);
-
-        LogSpinDiagnostic(hand);
-    }
-
-    Vector3 _dbgPrevTipPos;
-    readonly Quaternion[] _dbgPrevJoint = new Quaternion[5];
-
-    void LogSpinDiagnostic(Transform hand)
-    {
-        if (!logSpinDiagnostic || _manualFrame == null)
-            return;
-
-        // Sample every bone the IK touches, plus the fingertip world position. Whatever shows a
-        // nonzero per-frame delta while the others are 0 is the spinner.
-        Transform upper = RightArmPivot;
-        Transform fore = RightElbowPivot;
-        Transform j1 = null, j2 = null, j3 = null;
-        if (fingers.Count > HandActionLibrary.IndexFinger)
-        {
-            FingerData idx = fingers[HandActionLibrary.IndexFinger];
-            if (idx.joints.Count > 0) j1 = idx.joints[0].jointTransform;
-            if (idx.joints.Count > 1) j2 = idx.joints[1].jointTransform;
-            if (idx.joints.Count > 2) j3 = idx.joints[2].jointTransform;
-        }
-
-        float upperD = JointDelta(0, upper);
-        float foreD = JointDelta(1, fore);
-        float handD = JointDelta(2, hand);
-        float j1D = JointDelta(3, j1);
-        float j2D = JointDelta(4, j2);
-
-        Vector3 tipPos = IndexFingerTip != null ? IndexFingerTip.position : Vector3.zero;
-        float tipMove = Vector3.Distance(_dbgPrevTipPos, tipPos);
-        _dbgPrevTipPos = tipPos;
-
-        if (Time.time < _dbgNextLog)
-            return;
-        _dbgNextLog = Time.time + 0.25f;
-
-        int animOn = 0;
-        if (_rigAnimators != null)
-            foreach (Animator a in _rigAnimators)
-                if (a != null && a.enabled) animOn++;
-
-        Debug.Log($"[SpinDiag] Δ°/frame upperArm={upperD:F1} foreArm={foreD:F1} hand={handD:F1} " +
-                  $"idx1={j1D:F1} idx2={j2D:F1} | tipWorldMove={tipMove:F3}m animOn={animOn} press={_manualPressPhase:F2} " +
-                  $"| tip={IndexFingerTip?.name} body.y={transform.eulerAngles.y:F1}");
-    }
-
-    float JointDelta(int slot, Transform t)
-    {
-        if (t == null) return -1f;
-        Quaternion cur = t.localRotation;
-        float d = Quaternion.Angle(_dbgPrevJoint[slot], cur);
-        _dbgPrevJoint[slot] = cur;
-        return d;
     }
 
     void ApplyMixamoHandAim(Vector3 surfaceTarget, float weight)

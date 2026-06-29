@@ -14,6 +14,8 @@ public class KleinFrame
     public string manualCommand;
     public string targetObject;
     public Vector3 coordinates;
+    public Vector3 sceneContactPoint;     // Unity world-space press point (our field; backend coords are UI-space)
+    public bool hasSceneContactPoint;
     public float forceNewtons;
     public bool hasForceNewtons;
     public int durationMs;
@@ -92,6 +94,7 @@ class KleinFrameDto
     public string manual_command;
     public string target_object;
     public KleinVec3Dto coordinates;
+    public KleinVec3Dto scene_contact_point;
     public float force_newtons;
     public int duration_ms;
     public string state_before;

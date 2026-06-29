@@ -23,6 +23,19 @@ public class KleinFrameExecutor : MonoBehaviour
     float _holdPressAmount;
     float _holdForce;
 
+    // Motor-inspired press feedback on the contacted station (correct Klein target only).
+    ButtonPressContact _pressContact;
+    bool _pressFxEngaged;
+
+    [Tooltip("How close (m) the fingertip must get to the target object's top surface to count as a physical press.")]
+    public float pressContactDistance = 0.15f;
+    [Tooltip("The step does NOT complete until the fingertip physically presses the target. This is only a safety cap (seconds) so a genuinely unreachable target can't deadlock the sim.")]
+    public float pressContactTimeout = 10f;
+    Vector3 _contactPoint;
+    bool _pressContacted;
+    Transform _pressTargetRoot;   // the station whose TOP the fingertip must touch (correct Klein target)
+    float _minTipGap;             // closest fingertip-to-target gap achieved this press (diagnostics)
+
     public bool IsExecuting => _activeRoutine != null && !_completed;
     public bool IsHoldingPose => _poseHoldActive;
     public KleinFrame ActiveFrame { get; private set; }
@@ -58,6 +71,35 @@ public class KleinFrameExecutor : MonoBehaviour
         BodyPartRegistryValidator.ValidateAtBootstrap(ragText);
         KleinFrameResolver.ResetSequenceCounters();
         _hand?.RefreshRigWire();
+    }
+
+    /// <summary>Arm (or clear) the physical press feedback on the contacted station. Set by the mover
+    /// for the correct Klein target so the button visibly depresses/highlights when the finger lands.</summary>
+    public void SetPressFeedbackTarget(GameObject station, GameObject presser)
+    {
+        if (_pressContact != null && (station == null || _pressContact.gameObject != station))
+        {
+            _pressContact.Release();
+            _pressFxEngaged = false;
+        }
+        _pressContact = station != null ? ButtonPressContact.EnsureOn(station) : null;
+        _pressTargetRoot = station != null ? station.transform : null;
+    }
+
+    void EngagePressFx()
+    {
+        if (_pressContact == null || _pressFxEngaged)
+            return;
+        _pressContact.Press();
+        _pressFxEngaged = true;
+    }
+
+    void ReleasePressFx()
+    {
+        if (_pressContact == null)
+            return;
+        _pressContact.Release();
+        _pressFxEngaged = false;
     }
 
     public bool TryExecuteForStep(ActionSequenceStep step, string agentId, Vector3 sceneWorldTarget, Action onComplete)
@@ -138,12 +180,14 @@ public class KleinFrameExecutor : MonoBehaviour
         _activeStepId = null;
         _onComplete = null;
         ActiveFrame = null;
+        _pressContacted = false;
     }
 
     void ReleaseHeldPose()
     {
         _poseHoldActive = false;
         _holdFrame = null;
+        ReleasePressFx();
         _hand?.ResetRightArmReachPose();
         _hand?.ResetFingerCurl();
     }
@@ -180,8 +224,13 @@ public class KleinFrameExecutor : MonoBehaviour
     {
         float duration = Mathf.Max(0.08f, frame.durationMs / 1000f);
         float force = frame.hasForceNewtons ? frame.forceNewtons : frame.rigPose?.contactForceN ?? 0.25f;
+        _contactPoint = sceneWorldTarget;
+        _pressContacted = false;
+        _minTipGap = float.MaxValue;
         float elapsed = 0f;
 
+        // Ramp the reach/press in. (Contact is only judged once fully pressed, below, so the resting
+        // hand can't false-trigger while the finger is still on its way to the surface.)
         while (elapsed < duration)
         {
             float phase = Mathf.Clamp01(elapsed / duration);
@@ -191,10 +240,76 @@ public class KleinFrameExecutor : MonoBehaviour
             yield return null;
         }
 
+        // Hold fully pressed and KEEP TRYING until the fingertip PHYSICALLY reaches the surface. The
+        // step does not complete until then: only a real contact turns the button green, records the
+        // unpressed→pressed state, and lets the step finish. The timeout is only a safety cap so a
+        // genuinely unreachable target can't deadlock the sim.
         BeginHoldPose(frame, sceneWorldTarget, 1f, force);
-        if (frame != null)
-            RecordMotorFrame(frame, _activeStepId);
+        float waited = 0f;
+        while (!_pressContacted && waited < pressContactTimeout)
+        {
+            CheckPressContact();
+            waited += Time.deltaTime;
+            yield return null;
+        }
+
+        if (_pressContacted)
+        {
+            if (frame != null)
+                RecordMotorFrame(frame, _activeStepId);
+            if (logVerbose)
+                Debug.Log($"[KleinPress] {_activeStepId} fingertip HIT the target top (gap {_minTipGap:F2}m) → state '{frame?.stateBefore}'→'{frame?.stateAfter}' recorded; button green.");
+        }
+        else
+        {
+            // Safety cap hit without a real press — surface it loudly with the closest gap reached so
+            // the target can be enlarged / pressContactDistance raised (the step was NOT pressed).
+            ReleasePressFx();
+            Vector3 tipPos = _hand != null && _hand.IndexFingerTip != null ? _hand.IndexFingerTip.position : Vector3.zero;
+            Debug.LogError($"[KleinPress] {_activeStepId} fingertip did NOT reach the target top within the {pressContactTimeout:F0}s cap " +
+                           $"(closest gap {_minTipGap:F2}m > {pressContactDistance:F2}m; tip at {tipPos}). Press NOT registered — enlarge the target or raise pressContactDistance.");
+        }
+
         SignalMotorComplete();
+    }
+
+    /// <summary>True once the right index fingertip is physically pressing the TARGET's top surface:
+    /// within <see cref="pressContactDistance"/> of the object's visible bounds AND in its upper half
+    /// (so the resting hand near the base can't false-trigger). Falls back to a point-distance test
+    /// when there is no target object. Latches and turns the button green on the first real contact.</summary>
+    bool CheckPressContact()
+    {
+        if (_pressContacted)
+            return true;
+
+        Transform tip = _hand != null ? _hand.IndexFingerTip : null;
+        if (tip == null)
+            return false;
+        Vector3 p = tip.position;
+
+        float gap;
+        bool onTop;
+        if (_pressTargetRoot != null && EnvironmentSolidCollider.TryGetVisibleBounds(_pressTargetRoot, out Bounds b))
+        {
+            gap = Mathf.Sqrt(b.SqrDistance(p));   // 0 when the fingertip is inside the object's box
+            onTop = p.y >= b.center.y;            // only the top half counts
+        }
+        else
+        {
+            gap = Vector3.Distance(p, _contactPoint);
+            onTop = true;
+        }
+
+        if (gap < _minTipGap)
+            _minTipGap = gap;
+
+        if (gap <= pressContactDistance && onTop)
+        {
+            _pressContacted = true;
+            EngagePressFx();   // button turns green at the moment of real physical contact
+            return true;
+        }
+        return false;
     }
 
     IEnumerator CoDepressing(KleinFrame frame, Vector3 sceneWorldTarget)
@@ -210,10 +325,15 @@ public class KleinFrameExecutor : MonoBehaviour
                 ? Mathf.SmoothStep(0f, 1f, t / 0.45f)
                 : Mathf.SmoothStep(1f, 0f, (t - 0.45f) / 0.55f);
             ApplyMotorPose(frame, sceneWorldTarget, press, force);
+            if (press >= 0.5f)
+                EngagePressFx();   // depress at the peak, then release as the click rises back up
+            else
+                ReleasePressFx();
             elapsed += Time.deltaTime;
             yield return null;
         }
 
+        ReleasePressFx();
         BeginHoldPose(null, sceneWorldTarget, 0f, 0f);
         if (frame != null)
             RecordMotorFrame(frame, _activeStepId);

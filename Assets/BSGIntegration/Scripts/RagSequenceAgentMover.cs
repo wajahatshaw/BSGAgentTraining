@@ -664,10 +664,13 @@ public class RagSequenceAgentMover : MonoBehaviour
             dist = Mathf.Max(dist, 1.35f);
 
         // Designated host player walks right up to the CORRECT target (one with a Klein frame in
-        // mannualBuffer2.json) so the hand/finger can physically touch it to press. Every other
-        // target keeps the proximity-based stand-off distance computed above.
+        // mannualBuffer2.json) so the hand/finger can physically touch it to press. This is NOT
+        // floored by the proximity stand distance (~0.92m) — that floor is what kept the agent
+        // pressing the air half a metre short. Arrival is gated on hull distance in HasArrivedAtStep,
+        // and AgentGroundMotor physically stops the body at the hull. Every other target keeps the
+        // proximity-based stand-off distance computed above.
         if (IsCorrectKleinPressTarget(step))
-            return Mathf.Max(0.35f, GetInteractionStandDistance());
+            return GetPressContactStandDistance();
 
         return dist;
     }
@@ -1536,6 +1539,16 @@ public class RagSequenceAgentMover : MonoBehaviour
         return Mathf.Max(cognitiveInteractionStandDistance, GetAgentCapsuleRadius() + 0.22f);
     }
 
+    /// <summary>Tight contact distance for the correct Klein press target — the agent walks until its
+    /// capsule touches the station hull so the arm can physically reach onto the surface. Measured
+    /// against the hull (not the station centre) in <see cref="HasArrivedAtStep"/>.</summary>
+    float GetPressContactStandDistance()
+    {
+        // Press right up against the hull (capsule essentially touching) so the shoulder is as close
+        // as physics allows and the arm has the most reach onto the surface.
+        return GetAgentCapsuleRadius() + 0.03f;
+    }
+
     float GetApproachProgressDistance(string targetObjectId, Vector3 stationCenter, float distToMoveGoal)
     {
         if (!IsCognitiveStationTarget(targetObjectId))
@@ -1548,9 +1561,34 @@ public class RagSequenceAgentMover : MonoBehaviour
         return EnvironmentSolidCollider.GetHullDistance(root.transform, transform.position);
     }
 
+    // Tiny stand-off (metres) for the correct Klein press target — the designated agent stands right
+    // at the small interactable's visible face (overlapping the padded nav box, which it passes
+    // through) so its arm can physically reach the contact point. NOT based on the fat capsule radius.
+    const float kPressApproachStandDistance = 0.15f;
+
     Vector3 ResolveMoveGoalPosition(string targetObjectId, Vector3 stationCenter, ActionSequenceStep step = null)
     {
         GameObject root = FindStationRoot(targetObjectId);
+
+        // Correct Klein press target: the designated agent's oversized collision capsule + the padded
+        // nav obstacle hold its body ~0.7m out — beyond arm's reach of this small, low button. Let the
+        // capsule PASS THROUGH the target and stand right at the VISIBLE face (tiny stand-off) so the
+        // visual arm can reach the top. The body may overlap the (invisible, inflated) nav box.
+        if (IsCorrectKleinPressTarget(step) && root != null)
+        {
+            if (_groundMotor == null)
+                _groundMotor = GetComponent<AgentGroundMotor>();
+            if (_groundMotor != null)
+                _groundMotor.pressPassThroughRoot = root.transform;
+            Vector3 close = EnvironmentSolidCollider.GetVisibleApproachPosition(
+                root.transform, transform.position, kPressApproachStandDistance);
+            return ZonePlayAreaBounds.ClampPosition(zoneIndex, close);
+        }
+
+        // Any other target: do not pass through anything; keep the proximity-safe padded approach.
+        if (_groundMotor != null)
+            _groundMotor.pressPassThroughRoot = null;
+
         if (root == null)
             return stationCenter;
 
@@ -1562,12 +1600,6 @@ public class RagSequenceAgentMover : MonoBehaviour
         EnvironmentSolidCollider solid = root.GetComponentInChildren<EnvironmentSolidCollider>(true);
         if (solid != null)
             pad = Mathf.Max(pad, solid.approachPadding);
-
-        // Correct Klein target for the designated host player: stand hard against the hull (no
-        // extra stand-off) so the arm can physically reach onto the object to press it. Every
-        // other target keeps the padded, proximity-safe approach above.
-        if (IsCorrectKleinPressTarget(step))
-            pad = 0f;
 
         Vector3 stand = EnvironmentSolidCollider.GetApproachPosition(root.transform, transform.position, agentR, pad);
         return ZonePlayAreaBounds.ClampPosition(zoneIndex, stand);
@@ -1640,6 +1672,12 @@ public class RagSequenceAgentMover : MonoBehaviour
         if (IsPhysicalManualActStep(step))
         {
             float arriveDist = GetPhysicalManualActArrivalDistance(step);
+
+            // Correct Klein target: the move goal sits right at the visible face (the agent passes
+            // through the padded nav box), so arrive when it reaches that close stand point.
+            if (IsCorrectKleinPressTarget(step))
+                return distToMoveGoal <= kPressApproachStandDistance + 0.18f;
+
             Vector3 a = transform.position;
             a.y = 0f;
             Vector3 c = stationCenter;
@@ -1846,7 +1884,34 @@ public class RagSequenceAgentMover : MonoBehaviour
         {
             kleinMotorStepId = step.stepId;
             kleinMotorCompleted = false;
-            if (!kleinFrameExecutor.TryExecuteForStep(step, agentId, stationCenter, () => kleinMotorCompleted = true))
+
+            // Correct Klein target: press the exact contact point — the JSON-authored
+            // scene_contact_point (Unity world space) when set, else the auto-detected TOP of the
+            // station's visible mesh. Arm the Motor-style press feedback on it. Other targets keep the
+            // station centre and no feedback.
+            Vector3 worldTarget = stationCenter;
+            if (IsCorrectKleinPressTarget(step))
+            {
+                GameObject root = FindStationRoot(ResolveEffectiveTargetObjectId(step));
+                ManualBufferCatalog.TryGetForStep(step.stepId, agentId, zoneIndex, out KleinFrame kf);
+                bool fromJson = kf != null && kf.hasSceneContactPoint;
+
+                Vector3 autoTop = root != null
+                    ? EnvironmentSolidCollider.GetTopContactPoint(root.transform, transform.position)
+                    : stationCenter;
+                worldTarget = fromJson ? kf.sceneContactPoint : autoTop;
+
+                kleinFrameExecutor.SetPressFeedbackTarget(root, root != null ? gameObject : null);
+                Debug.Log($"[KleinPress] {step.stepId} press contact = {worldTarget} " +
+                          $"(source: {(fromJson ? "scene_contact_point in mannualBuffer2.json" : "auto visible-top")}). " +
+                          $"Auto visible-top = {autoTop} — set scene_contact_point to this for an exact match.");
+            }
+            else
+            {
+                kleinFrameExecutor.SetPressFeedbackTarget(null, null);
+            }
+
+            if (!kleinFrameExecutor.TryExecuteForStep(step, agentId, worldTarget, () => kleinMotorCompleted = true))
             {
                 kleinMotorStepId = null;
                 return false;
@@ -1861,6 +1926,8 @@ public class RagSequenceAgentMover : MonoBehaviour
         kleinMotorStepId = null;
         kleinMotorCompleted = false;
         kleinFrameExecutor?.Cancel();
+        if (_groundMotor != null)
+            _groundMotor.pressPassThroughRoot = null;   // re-block the target once the press is done
     }
 
     /// <summary>Late-bound by <see cref="PlayerRagPhysicalBridge"/> after Photon player bind.</summary>

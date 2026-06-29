@@ -23,6 +23,9 @@ public class AgentGroundMotor : MonoBehaviour
     [Tooltip("When true, capsule sweeps ignore cognitive-station solid hulls (mental band). Used for the designated Photon physical agent.")]
     public bool skipCognitiveStationSolids;
 
+    [Tooltip("When set, capsule sweeps + depenetration ignore every collider under this root, so the agent can stand right against (and overlap) a small interactable it is physically pressing. Cleared when the press ends.")]
+    public Transform pressPassThroughRoot;
+
     /// <summary>0 = moved fully; 1 = move fully blocked by environment collision.</summary>
     public float LastMoveBlockedFraction { get; private set; }
 
@@ -237,6 +240,11 @@ public class AgentGroundMotor : MonoBehaviour
     bool ShouldIgnoreCollider(Collider c)
     {
         if (c == null || IsSelf(c))
+            return true;
+
+        // Let the designated agent walk right up to (and overlap) the small interactable it presses,
+        // so its oversized capsule does not hold the body out of arm's reach of the contact point.
+        if (pressPassThroughRoot != null && c.transform.IsChildOf(pressPassThroughRoot))
             return true;
 
         if (!skipCognitiveStationSolids)

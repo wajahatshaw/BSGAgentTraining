@@ -157,6 +157,8 @@ public static class ManualBufferCatalog
             manualCommand = dto.manual_command ?? string.Empty,
             targetObject = dto.target_object ?? string.Empty,
             coordinates = ToVec3(dto.coordinates),
+            sceneContactPoint = ToVec3(dto.scene_contact_point),
+            hasSceneContactPoint = ToVec3(dto.scene_contact_point).sqrMagnitude > 0.0001f,
             forceNewtons = dto.force_newtons,
             hasForceNewtons = dto.force_newtons > 0.0001f,
             durationMs = dto.duration_ms > 0 ? dto.duration_ms : 100,

@@ -604,10 +604,14 @@ public class SceneGenerator : MonoBehaviour
                 if (col != null)
                     col.isTrigger = true;
                 ApplyMultiplayerEnvironmentToolPresentation(toolGO, toolState);
+                // Enlarge ONLY left_mouse_button AFTER the presentation sets its scale (so the boost
+                // is not clobbered) and BEFORE the nav collider is fitted (so it matches the new size).
+                ApplyPhysicalPressTargetScale(toolGO, toolId, toolState);
                 EnvironmentNavigationColliderBuilder.EnsureOnTool(toolGO);
             }
             else
             {
+                ApplyPhysicalPressTargetScale(toolGO, toolId, toolState);
                 EnvironmentSolidCollider.EnsureOnObject(toolGO, addBoxIfMissing: true);
             }
         }
@@ -618,6 +622,39 @@ public class SceneGenerator : MonoBehaviour
         }
 
         return toolGO;
+    }
+
+    // left_mouse_button (scene_011) is a small, low cube the tall designated physical agent cannot
+    // comfortably reach. Enlarge ONLY this press target so its top rises toward hand height while its
+    // base stays on the ground. Tune here if the finger still lands short / overshoots.
+    static readonly Vector3 PhysicalPressTargetScale = new Vector3(1.2f, 1.45f, 1.2f);
+
+    void ApplyPhysicalPressTargetScale(GameObject toolGO, string toolId, ToolState toolState)
+    {
+        if (toolGO == null)
+            return;
+
+        bool isPressTarget =
+            string.Equals(toolId, "scene_011", System.StringComparison.OrdinalIgnoreCase)
+            || (toolState != null && !string.IsNullOrWhiteSpace(toolState.name)
+                && string.Equals(toolState.name, "left_mouse_button", System.StringComparison.OrdinalIgnoreCase));
+        if (!isPressTarget)
+            return;
+
+        // Measure the MAIN cube renderer (on the root), not the decorative base-pad child, so the
+        // re-seat keeps the cube's base on the ground after scaling.
+        Renderer before = toolGO.GetComponent<Renderer>() ?? toolGO.GetComponentInChildren<Renderer>();
+        float baseY = before != null ? before.bounds.min.y : toolGO.transform.position.y;
+
+        toolGO.transform.localScale = Vector3.Scale(toolGO.transform.localScale, PhysicalPressTargetScale);
+
+        // Re-seat the base on the ground (scaling about the pivot would otherwise sink/raise it).
+        Renderer after = toolGO.GetComponent<Renderer>() ?? toolGO.GetComponentInChildren<Renderer>();
+        if (after != null)
+            toolGO.transform.position += new Vector3(0f, baseY - after.bounds.min.y, 0f);
+
+        Debug.Log($"[SceneGenerator] Enlarged press target {toolId} (left_mouse_button) to scale " +
+                  $"{toolGO.transform.localScale}; visible top now at y={(after != null ? after.bounds.max.y : 0f):F2}.");
     }
 
     static bool IsMenuOptionTool(string toolId, ToolState toolState)

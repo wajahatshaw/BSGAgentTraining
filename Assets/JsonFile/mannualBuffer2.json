@@ -29,6 +29,12 @@
           "y": 515,
           "z": 736
         },
+        "scene_contact_point_comment": "Unity WORLD-space point the right index fingertip presses (NOT the backend 'coordinates'/'ik_target' above, which are UI-space). left_mouse_button is enlarged at runtime so its top rises to hand height, so this is left at 0,0,0 = AUTO: the finger targets the resized visible TOP automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+        "scene_contact_point": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
         "force_newtons": 0.25,
         "duration_ms": 100,
         "state_before": "unpressed",

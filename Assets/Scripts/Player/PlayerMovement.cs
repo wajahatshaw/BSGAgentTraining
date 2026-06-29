@@ -56,6 +56,9 @@ public class PlayerMovement : MonoBehaviour
     bool _bCanInteract = true;
     bool _bCanLook = true;
 
+    Vector3 _lastRagAutopilotPos;
+    bool _lastRagAutopilotPosInitialized;
+
     public PlayerMovementInputProcessor InputProcessor => _inputProcessor;
 
     public void EnableRagGroundMotorMovement(AgentGroundMotor motor)
@@ -132,7 +135,10 @@ public class PlayerMovement : MonoBehaviour
 
         // RagSequenceAgentMover drives AgentGroundMotor directly during physical autopilot.
         if (_inputProcessor.SuppressesManualMovement)
+        {
+            SyncRagAutopilotWalkPresentation();
             return;
+        }
 
         if (!_bCanMove)
             return;
@@ -210,6 +216,32 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerAnimator != null)
             playerAnimator.SetFloat("WalkSpeed", walkValue);
+    }
+
+    /// <summary>
+    /// RagSequenceAgentMover moves via AgentGroundMotor while autopilot is on, bypassing HandleMovement.
+    /// Drive the Mixamo walk blend from actual ground displacement instead.
+    /// </summary>
+    void SyncRagAutopilotWalkPresentation()
+    {
+        if (!_inputProcessor.RagAutopilotActive)
+        {
+            _lastRagAutopilotPosInitialized = false;
+            UpdateAnimator(0f);
+            return;
+        }
+
+        if (!_lastRagAutopilotPosInitialized)
+        {
+            _lastRagAutopilotPos = transform.position;
+            _lastRagAutopilotPosInitialized = true;
+            UpdateAnimator(0f);
+            return;
+        }
+
+        float moved = Vector3.Distance(transform.position, _lastRagAutopilotPos);
+        _lastRagAutopilotPos = transform.position;
+        UpdateAnimator(moved > 0.003f ? 1f : 0f);
     }
 
     void HandleJump()
