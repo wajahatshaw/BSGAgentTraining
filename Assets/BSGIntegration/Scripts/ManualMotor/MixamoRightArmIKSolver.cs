@@ -19,7 +19,8 @@ public static class MixamoRightArmIKSolver
         Quaternion forearmRest,
         Vector3 targetWorld,
         Vector3 poleWorld,
-        float weight)
+        float weight,
+        float shoulderLiftDeg = 22f)
     {
         weight = Mathf.Clamp01(weight);
         if (upperArm == null || forearm == null || hand == null || weight < 0.001f)
@@ -86,14 +87,16 @@ public static class MixamoRightArmIKSolver
 
         if (clavicle != null)
         {
-            // Slight forward lift of clavicle — positive X raises right arm forward on Mixamo.
-            Quaternion clavGoal = clavicleRest * Quaternion.Euler(22f * weight, 2f * weight, -4f * weight);
+            // Forward lift of clavicle — positive X raises right arm forward on Mixamo. Magnitude is
+            // data-driven (arm_pose.reach.shoulder_lift_deg) so the shoulder rise is authored, not hardcoded.
+            Quaternion clavGoal = clavicleRest * Quaternion.Euler(shoulderLiftDeg * weight, 2f * weight, -4f * weight);
             clavicle.localRotation = Quaternion.Slerp(clavicleRest, clavGoal, weight * 0.85f);
         }
     }
 
     /// <summary>Interaction point in front of the body at desk height.</summary>
-    public static Vector3 BuildDeskReachPoint(Transform body, Transform shoulder, Vector3 rawTarget, float reachPhase)
+    public static Vector3 BuildDeskReachPoint(Transform body, Transform shoulder, Vector3 rawTarget, float reachPhase,
+        float forwardMin = 0.36f, float forwardMax = 0.5f)
     {
         if (body == null || shoulder == null)
             return rawTarget;
@@ -106,7 +109,7 @@ public static class MixamoRightArmIKSolver
 
         Vector3 right = body.right;
         float side = Mathf.Clamp(Vector3.Dot(rawTarget - shoulder.position, right), -0.28f, 0.28f);
-        float forwardDist = Mathf.Lerp(0.36f, 0.5f, reachPhase);
+        float forwardDist = Mathf.Lerp(forwardMin, forwardMax, reachPhase);
 
         float deskY = rawTarget.y;
         if (deskY > shoulder.position.y - 0.08f || deskY < 0.01f)
@@ -119,12 +122,18 @@ public static class MixamoRightArmIKSolver
         return point;
     }
 
-    /// <summary>Right-arm elbow pole — outside the body on the character's right.</summary>
-    public static Vector3 BuildElbowPole(Transform body, Transform shoulder)
+    /// <summary>
+    /// Right-arm elbow pole. The pole is placed in front of, to the right of, and below the shoulder so
+    /// the elbow folds down-and-out and the arm reaches from the FRONT. The forward term (absent in the
+    /// old side+down-only pole) is what stops the elbow folding back through the spine/torso. Offsets are
+    /// in the character's own axes and come from arm_pose.elbow_pole.
+    /// </summary>
+    public static Vector3 BuildElbowPole(Transform body, Transform shoulder,
+        float side = 0.45f, float forward = 0.20f, float down = 0.28f)
     {
         if (body == null || shoulder == null)
             return shoulder != null ? shoulder.position + Vector3.right * 0.4f : Vector3.right;
 
-        return shoulder.position + body.right * 0.48f + Vector3.down * 0.22f;
+        return shoulder.position + body.right * side + body.forward * forward + Vector3.down * down;
     }
 }

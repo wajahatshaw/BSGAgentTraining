@@ -31,12 +31,18 @@ public static class ManualBufferCatalog
     public static IReadOnlyDictionary<string, KleinFrame> ById => _byId;
     public static KleinFrame RestingFrame => _restingFrame;
 
+    /// <summary>The rig binding (side + arm-chain + finger bone names) declared in the buffer, used to
+    /// wire the hand/arm from DATA instead of hardcoded bone names. Taken from the first frame that
+    /// declares it (the rig is the same across frames).</summary>
+    public static KleinRigPose RigBinding { get; private set; }
+
     public static bool TryLoad(string relativePath = null)
     {
         _byId.Clear();
         _byTargetCommand.Clear();
         _byStepKey.Clear();
         _restingFrame = null;
+        RigBinding = null;
         _loaded = false;
 
         string path = ResolveCatalogPath(relativePath);
@@ -83,6 +89,11 @@ public static class ManualBufferCatalog
 
         if (!string.IsNullOrWhiteSpace(frame.stepId))
             _byStepKey[StepKey(frame.stepId, frame.agentId, frame.zoneIndex)] = frame;
+
+        // Capture the rig binding (bone names) from the first frame that declares one.
+        if (RigBinding == null && frame.rigPose != null
+            && (frame.rigPose.armChain != null || frame.rigPose.fingerBones != null))
+            RigBinding = frame.rigPose;
 
         if (string.Equals(frame.manualCommand, "RESTING", StringComparison.OrdinalIgnoreCase))
             _restingFrame = frame;
@@ -166,8 +177,50 @@ public static class ManualBufferCatalog
             stateAfter = dto.state_after ?? string.Empty,
             rigPose = ConvertPose(dto.rig_pose),
             handPose = ConvertHandPose(dto.hand_pose),
+            armPose = ConvertArmPose(dto.arm_pose),
         };
         return frame;
+    }
+
+    /// <summary>Map the per-frame arm_pose block. Defaults match the previous hardcoded reach so frames
+    /// without an arm_pose behave exactly as before — except the elbow pole now carries a forward term so
+    /// the elbow folds in front of the chest instead of behind the spine.</summary>
+    static KleinArmPose ConvertArmPose(KleinArmPoseDto dto)
+    {
+        KleinArmPose pose = new KleinArmPose
+        {
+            poleSide = 0.45f,
+            poleForward = 0.20f,
+            poleDown = 0.28f,
+            reachForwardMin = 0.36f,
+            reachForwardMax = 0.50f,
+            shoulderLiftDeg = 18f,
+            wristHoverM = 0.012f,
+            restForearmBendDeg = 0f,
+            hasData = false,
+        };
+
+        if (dto == null)
+            return pose;
+
+        pose.hasData = true;
+        if (dto.elbow_pole != null)
+        {
+            pose.poleSide = dto.elbow_pole.side;
+            pose.poleForward = dto.elbow_pole.forward;
+            pose.poleDown = dto.elbow_pole.down;
+        }
+        if (dto.reach != null)
+        {
+            if (dto.reach.forward_min_m > 0.0001f) pose.reachForwardMin = dto.reach.forward_min_m;
+            if (dto.reach.forward_max_m > 0.0001f) pose.reachForwardMax = dto.reach.forward_max_m;
+            pose.shoulderLiftDeg = dto.reach.shoulder_lift_deg;
+            if (dto.reach.wrist_hover_m > 0.0001f) pose.wristHoverM = dto.reach.wrist_hover_m;
+        }
+        if (dto.rest != null)
+            pose.restForearmBendDeg = dto.rest.forearm_bend_deg;
+
+        return pose;
     }
 
     static KleinHandPose ConvertHandPose(KleinHandPoseDto dto)
@@ -212,11 +265,39 @@ public static class ManualBufferCatalog
         return new KleinRigPose
         {
             solve = dto.solve ?? string.Empty,
+            side = dto.side ?? string.Empty,
             endEffector = dto.end_effector ?? string.Empty,
             ikChain = dto.ik_chain ?? Array.Empty<string>(),
+            armChain = ConvertArmChain(dto.arm_chain),
+            fingerBones = ConvertFingerBones(dto.finger_bones),
             ikTarget = ToVec3(dto.ik_target),
             approachAngleDeg = dto.approach_angle_deg,
             contactForceN = dto.contact_force_n,
+        };
+    }
+
+    static KleinArmChain ConvertArmChain(KleinArmChainDto dto)
+    {
+        if (dto == null) return null;
+        return new KleinArmChain
+        {
+            shoulder = dto.shoulder,
+            upperArm = dto.upper_arm,
+            forearm = dto.forearm,
+            hand = dto.hand,
+        };
+    }
+
+    static KleinFingerBones ConvertFingerBones(KleinFingerBonesDto dto)
+    {
+        if (dto == null) return null;
+        return new KleinFingerBones
+        {
+            index = dto.index,
+            middle = dto.middle,
+            ring = dto.ring,
+            pinky = dto.pinky,
+            thumb = dto.thumb,
         };
     }
 

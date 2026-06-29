@@ -61,6 +61,7 @@ public class HandRotationManager : MonoBehaviour
     Vector3 _lockedReachTarget;
     bool _hasLockedReachTarget;
     float _smoothedReachWeight;
+    float _measuredTipDrop = 0.08f;   // live wrist→fingertip vertical gap, so the wrist is placed to land the tip exactly on the surface
 
     public bool ManualPoseActive => _manualPoseActive;
 
@@ -166,6 +167,57 @@ public class HandRotationManager : MonoBehaviour
         return null;
     }
 
+    /// <summary>Resolve a bone STRICTLY from its data-declared name (rig_pose in mannualBuffer2.json).
+    /// There is NO hardcoded bone fallback — the JSON is the single source of truth for which bones move.
+    /// The only tolerance is two naming conventions of the SAME bone (optional "mixamorig:" prefix and
+    /// optional "_end" tip suffix). If the declared bone can't be found, it logs a clear error so the
+    /// name gets fixed in the file instead of being silently masked.</summary>
+    static Transform ResolveBoneName(Transform root, string jsonName, string label)
+    {
+        if (string.IsNullOrWhiteSpace(jsonName))
+            return null;   // not declared in the file for this frame
+
+        Transform t = FindBoneFlexible(root, jsonName);
+        if (t == null)
+            Debug.LogError($"[HandRotationManager] Bone '{jsonName}' ({label}) declared in mannualBuffer2.json " +
+                           $"was not found under '{root?.name}'. Fix the name in the file — there is no hardcoded fallback.");
+        return t;
+    }
+
+    /// <summary>Find a bone by its exact name, tolerating only the "mixamorig:" prefix and "_end" tip
+    /// suffix (the SAME bone under two common rig conventions) — never a different bone.</summary>
+    static Transform FindBoneFlexible(Transform root, string name)
+    {
+        if (root == null || string.IsNullOrWhiteSpace(name))
+            return null;
+
+        Transform t = FindDeepChild(root, name);
+        if (t != null) return t;
+
+        string stripped = name;
+        int colon = name.IndexOf(':');
+        if (colon >= 0)
+        {
+            stripped = name.Substring(colon + 1);   // unprefixed rig
+            t = FindDeepChild(root, stripped);
+            if (t != null) return t;
+        }
+
+        // Toggle the "_end" tip suffix (some rigs name the tip "Index4", others "Index4_end").
+        string a = name.EndsWith("_end") ? name.Substring(0, name.Length - 4) : name + "_end";
+        t = FindDeepChild(root, a);
+        if (t != null) return t;
+        if (!ReferenceEquals(stripped, name))
+        {
+            string b = stripped.EndsWith("_end") ? stripped.Substring(0, stripped.Length - 4) : stripped + "_end";
+            t = FindDeepChild(root, b);
+            if (t != null) return t;
+        }
+        return null;
+    }
+
+    static string BoneAt(string[] arr, int i) => arr != null && i >= 0 && i < arr.Length ? arr[i] : null;
+
     public void TryAutoWirePlayerHands(Transform root)
     {
         if (root == null) return;
@@ -174,8 +226,16 @@ public class HandRotationManager : MonoBehaviour
         bool useYBot = yBot != null && yBot.gameObject.activeInHierarchy;
         Transform searchRoot = useYBot ? yBot : root;
 
-        Transform hand = FindDeepChild(searchRoot, "mixamorig:RightHand")
-                         ?? FindDeepChild(searchRoot, "RightHand");
+        // Bone names are the SINGLE SOURCE OF TRUTH in mannualBuffer2.json (rig_pose.arm_chain /
+        // finger_bones / end_effector). Load the buffer so the binding is available at wire time; there
+        // are no hardcoded bone fallbacks — a missing/misnamed bone logs an error from ResolveBoneName.
+        if (!ManualBufferCatalog.IsLoaded)
+            ManualBufferCatalog.TryLoad();
+        KleinRigPose binding = ManualBufferCatalog.RigBinding;
+        KleinArmChain armChain = binding?.armChain;
+        KleinFingerBones fb = binding?.fingerBones;
+
+        Transform hand = ResolveBoneName(searchRoot, armChain?.hand, "arm_chain.hand");
 
         if (!useYBot)
         {
@@ -184,28 +244,15 @@ public class HandRotationManager : MonoBehaviour
                 hand = handGrabRoot.GetChild(0);
         }
 
-        // The klein data names the tip "…Index4_end", but the Y Bot rig bone is "…Index4" (no
-        // _end suffix). Search both so the real fingertip bone is wired instead of falling back to Index3.
-        IndexFingerTip = FindDeepChild(searchRoot, "mixamorig:RightHandIndex4_end")
-                         ?? FindDeepChild(searchRoot, "RightHandIndex4_end")
-                         ?? FindDeepChild(searchRoot, "mixamorig:RightHandIndex4")
-                         ?? FindDeepChild(searchRoot, "RightHandIndex4")
-                         ?? FindDeepChild(searchRoot, "mixamorig:RightHandIndex3")
-                         ?? FindDeepChild(searchRoot, "RightHandIndex3")
-                         ?? FindDeepChild(searchRoot, "RightIndexTip")
-                         ?? hand;
-
-        if (IndexFingerTip == null || IndexFingerTip == hand)
-            IndexFingerTip = TryResolveBoneFromRegistry(searchRoot, "right_index_fingertip_pad", preferMixamo: useYBot) ?? IndexFingerTip;
+        // Tip = last declared index bone (…Index4_end) or rig_pose end_effector. FindBoneFlexible tolerates
+        // the "_end" suffix difference, so a rig that names it "…Index4" still resolves from the same entry.
+        string tipName = BoneAt(fb?.index, (fb?.index?.Length ?? 0) - 1) ?? binding?.endEffector;
+        IndexFingerTip = ResolveBoneName(searchRoot, tipName, "finger_bones.index tip / end_effector") ?? hand;
 
         RightHandRoot = hand;
-        RightArmPivot = FindDeepChild(searchRoot, "mixamorig:RightArm")
-                        ?? FindDeepChild(searchRoot, "RightArm")
-                        ?? hand?.parent;
-        RightShoulderPivot = FindDeepChild(searchRoot, "mixamorig:RightShoulder")
-                             ?? FindDeepChild(searchRoot, "RightShoulder");
-        RightElbowPivot = FindDeepChild(searchRoot, "mixamorig:RightForeArm")
-                          ?? FindDeepChild(searchRoot, "RightForeArm");
+        RightArmPivot = ResolveBoneName(searchRoot, armChain?.upperArm, "arm_chain.upper_arm") ?? hand?.parent;
+        RightShoulderPivot = ResolveBoneName(searchRoot, armChain?.shoulder, "arm_chain.shoulder");
+        RightElbowPivot = ResolveBoneName(searchRoot, armChain?.forearm, "arm_chain.forearm");
 
         UsesMixamoRig = useYBot
                         || RightShoulderPivot != null
@@ -230,13 +277,10 @@ public class HandRotationManager : MonoBehaviour
             handRestCaptured = true;
         }
 
-        Transform index1 = FindDeepChild(searchRoot, "mixamorig:RightHandIndex1") ?? FindDeepChild(searchRoot, "RightHandIndex1");
-        Transform index2 = FindDeepChild(searchRoot, "mixamorig:RightHandIndex2") ?? FindDeepChild(searchRoot, "RightHandIndex2");
-        Transform index3 = FindDeepChild(searchRoot, "mixamorig:RightHandIndex3") ?? FindDeepChild(searchRoot, "RightHandIndex3") ?? IndexFingerTip;
-        Transform index4 = FindDeepChild(searchRoot, "mixamorig:RightHandIndex4_end") ?? FindDeepChild(searchRoot, "RightHandIndex4_end")
-                           ?? FindDeepChild(searchRoot, "mixamorig:RightHandIndex4") ?? FindDeepChild(searchRoot, "RightHandIndex4");
-        if (index4 == null)
-            index4 = TryResolveBoneFromRegistry(searchRoot, "right_index_fingertip_pad", preferMixamo: useYBot);
+        Transform index1 = ResolveBoneName(searchRoot, BoneAt(fb?.index, 0), "finger_bones.index[0]");
+        Transform index2 = ResolveBoneName(searchRoot, BoneAt(fb?.index, 1), "finger_bones.index[1]");
+        Transform index3 = ResolveBoneName(searchRoot, BoneAt(fb?.index, 2), "finger_bones.index[2]") ?? IndexFingerTip;
+        Transform index4 = ResolveBoneName(searchRoot, BoneAt(fb?.index, 3), "finger_bones.index[3] tip");
 
         fingers.Clear();
         fingers.Add(new FingerData { fingerName = "Thumb" });
@@ -277,19 +321,20 @@ public class HandRotationManager : MonoBehaviour
     void WireOtherFingers(Transform searchRoot)
     {
         if (searchRoot == null) return;
-        _middleFinger = WireCurlFinger(searchRoot, "Middle");
-        _ringFinger = WireCurlFinger(searchRoot, "Ring");
-        _pinkyFinger = WireCurlFinger(searchRoot, "Pinky");
-        _thumbFinger = WireCurlFinger(searchRoot, "Thumb");
+        KleinFingerBones fb = ManualBufferCatalog.RigBinding?.fingerBones;
+        _middleFinger = WireCurlFinger(searchRoot, "Middle", fb?.middle);
+        _ringFinger = WireCurlFinger(searchRoot, "Ring", fb?.ring);
+        _pinkyFinger = WireCurlFinger(searchRoot, "Pinky", fb?.pinky);
+        _thumbFinger = WireCurlFinger(searchRoot, "Thumb", fb?.thumb);
         _otherFingersCaptured = true;
     }
 
-    CurlFinger WireCurlFinger(Transform root, string name)
+    CurlFinger WireCurlFinger(Transform root, string name, string[] boneNames)
     {
         CurlFinger f = new CurlFinger();
-        f.j1 = FindDeepChild(root, "mixamorig:RightHand" + name + "1") ?? FindDeepChild(root, "RightHand" + name + "1");
-        f.j2 = FindDeepChild(root, "mixamorig:RightHand" + name + "2") ?? FindDeepChild(root, "RightHand" + name + "2");
-        f.j3 = FindDeepChild(root, "mixamorig:RightHand" + name + "3") ?? FindDeepChild(root, "RightHand" + name + "3");
+        f.j1 = ResolveBoneName(root, BoneAt(boneNames, 0), "finger_bones." + name.ToLowerInvariant() + "[0]");
+        f.j2 = ResolveBoneName(root, BoneAt(boneNames, 1), "finger_bones." + name.ToLowerInvariant() + "[1]");
+        f.j3 = ResolveBoneName(root, BoneAt(boneNames, 2), "finger_bones." + name.ToLowerInvariant() + "[2]");
         // Capture rest ONCE (don't clobber with an already-curled pose on re-wire).
         if (!_otherFingersCaptured)
         {
@@ -386,9 +431,10 @@ public class HandRotationManager : MonoBehaviour
         fingers.Clear();
         _rightIndexChain.Clear();
         _fingerRestRotations.Clear();
-        rightArmRestCaptured = false;
-        shoulderRestCaptured = false;
-        handRestCaptured = false;
+        // Do NOT reset the arm/shoulder/hand rest-captured flags here. RefreshRigWire runs every step
+        // while the locomotion animator is still playing; re-capturing would read a mid-run arm swing as
+        // "rest" and the IK would then reach from behind the back. Keep the first clean capture (the
+        // finger rest flags are already preserved the same way) — the bones re-resolve to the same rig.
         IndexFingerTip = null;
         RightHandRoot = null;
         RightArmPivot = null;
@@ -457,6 +503,7 @@ public class HandRotationManager : MonoBehaviour
         _manualForce = 0f;
         _hasLockedReachTarget = false;
         _smoothedReachWeight = 0f;
+        _measuredTipDrop = 0.08f;
         RestoreRigAnimators();
     }
 
@@ -554,41 +601,60 @@ public class HandRotationManager : MonoBehaviour
         float w = Mathf.Max(weight, goalWeight > 0.02f ? Mathf.Min(goalWeight, 0.3f) : 0f);
         float pressW = Mathf.Clamp01(_manualPressPhase);
 
+        // Right-arm shaping is data-driven from mannualBuffer2.json (arm_pose). When a frame omits it,
+        // these defaults reproduce the previous reach — except the elbow pole now carries a forward term.
+        KleinArmPose armPose = _manualFrame != null ? _manualFrame.armPose : null;
+        float poleSide = armPose != null ? armPose.poleSide : 0.45f;
+        float poleForward = armPose != null ? armPose.poleForward : 0.20f;
+        float poleDown = armPose != null ? armPose.poleDown : 0.28f;
+        float shoulderLiftDeg = armPose != null ? armPose.shoulderLiftDeg : 18f;
+        float wristHover = armPose != null ? armPose.wristHoverM : 0.012f;
+        float reachFwdMin = armPose != null ? armPose.reachForwardMin : 0.36f;
+        float reachFwdMax = armPose != null ? armPose.reachForwardMax : 0.50f;
+
         Transform shoulderRef = shoulder ?? upper;
         Vector3 surfacePoint;
         Vector3 fingerContact = Vector3.zero;
         bool kleinFingerPress = false;
         if (_manualFrame != null && _hasLockedReachTarget)
         {
-            // Klein press. Reach the contact DIRECTLY (clamped to arm length) so the arm extends
-            // forward from the shoulder — not folded back across the chest. The finger angle itself
-            // comes from hand_pose, so the wrist doesn't need a back/up offset.
+            // Klein press onto the TOP surface. The two-bone IK positions the WRIST (hand bone); the
+            // index points DOWN from it. We place the wrist so the FINGERTIP lands exactly where we want:
+            // hovering above the surface during the approach, then settling onto it (with a tiny, force-
+            // scaled press-in) at full press — so it physically touches, never hovers and never sinks deep.
+            Vector3 topContact = _lockedReachTarget;
+
+            float pressForceN = ResolveFrameForce(_manualFrame);
+            float pressDepth = Mathf.Clamp(pressForceN, 0f, 1f) * 0.006f * pressW;   // press in a few mm at full press
+            float approachHover = (wristHover + 0.03f) * (1f - pressW);              // bleeds to 0 as the press completes
+
+            // Where the FINGERTIP should be this frame (world Y), then place the WRIST a measured
+            // finger-drop above it so the down-pointing tip actually arrives there.
+            float desiredTipY = topContact.y + approachHover - pressDepth;
+            Vector3 wristGoal = new Vector3(topContact.x, desiredTipY + _measuredTipDrop, topContact.z);
+
+            // Clamp the WRIST goal to arm length so the shoulder/elbow can physically reach it (the arm
+            // still extends forward from the shoulder, never folding back across the chest).
             float armLen = Vector3.Distance(upper.position, forearm.position)
                          + Vector3.Distance(forearm.position, hand.position);
-            float maxReach = Mathf.Max(0.1f, armLen);   // allow the arm to fully extend to the target
-            Vector3 toTarget = _lockedReachTarget - shoulderRef.position;
-            if (toTarget.magnitude > maxReach)
-                toTarget = toTarget.normalized * maxReach;
-            Vector3 contact = shoulderRef.position + toTarget;
+            float maxReach = Mathf.Max(0.1f, armLen);
+            Vector3 toWrist = wristGoal - shoulderRef.position;
+            if (toWrist.magnitude > maxReach)
+                wristGoal = shoulderRef.position + toWrist.normalized * maxReach;
 
-            // The wrist descends onto the contact as the press completes: a small approach hover bleeds
-            // out (pressW→1) and the wrist settles just above the surface, so the downward-pointing
-            // index TIP lands on (and presses lightly into) the top surface instead of stopping in the
-            // air. The residual lift is finger-length sized, not arm-length, so the hand never folds back.
-            surfacePoint = contact + Vector3.up * (0.012f + 0.03f * (1f - pressW));
-
-            fingerContact = contact;
+            surfacePoint = wristGoal;
+            fingerContact = topContact;   // the hand aims at the real top-surface contact, not the raised wrist
             kleinFingerPress = true;
         }
         else
         {
             surfacePoint = _hasLockedReachTarget
-                ? MixamoRightArmIKSolver.BuildDeskReachPoint(transform, shoulderRef, _lockedReachTarget, w)
-                : MixamoRightArmIKSolver.BuildDeskReachPoint(transform, shoulderRef, upper.position + transform.forward * 0.42f, w);
+                ? MixamoRightArmIKSolver.BuildDeskReachPoint(transform, shoulderRef, _lockedReachTarget, w, reachFwdMin, reachFwdMax)
+                : MixamoRightArmIKSolver.BuildDeskReachPoint(transform, shoulderRef, upper.position + transform.forward * 0.42f, w, reachFwdMin, reachFwdMax);
             surfacePoint += Vector3.down * (pressW * 0.018f);
         }
 
-        Vector3 pole = MixamoRightArmIKSolver.BuildElbowPole(transform, shoulderRef);
+        Vector3 pole = MixamoRightArmIKSolver.BuildElbowPole(transform, shoulderRef, poleSide, poleForward, poleDown);
         MixamoRightArmIKSolver.Apply(
             shoulder,
             upper,
@@ -599,7 +665,8 @@ public class HandRotationManager : MonoBehaviour
             rightElbowRestRotation,
             surfacePoint,
             pole,
-            w);
+            w,
+            shoulderLiftDeg);
 
         // Aim the hand at the real contact (so the palm orients toward the button), not at the
         // raised wrist goal.
@@ -615,6 +682,15 @@ public class HandRotationManager : MonoBehaviour
         // Curl the non-index fingers per the klein hand_pose so the hand forms a pointing press.
         if (_manualFrame != null && _manualFrame.handPose != null && _manualFrame.handPose.hasData)
             ApplyOtherFingerCurls(_manualFrame.handPose, pressW);
+
+        // Measure the live vertical gap from the wrist to the posed fingertip and feed it back next frame.
+        // The wrist goal above uses this so the down-pointing tip converges onto the exact surface point,
+        // regardless of the rig's finger length/angle — so the press physically touches (no hover, no deep sink).
+        if (kleinFingerPress && IndexFingerTip != null && RightHandRoot != null)
+        {
+            float drop = RightHandRoot.position.y - IndexFingerTip.position.y;   // wrist → fingertip vertical gap
+            _measuredTipDrop = Mathf.Clamp(Mathf.Lerp(_measuredTipDrop, drop, 0.5f), 0.02f, 0.25f);
+        }
     }
 
     void ApplyMixamoHandAim(Vector3 surfaceTarget, float weight)
@@ -674,9 +750,29 @@ public class HandRotationManager : MonoBehaviour
 
         float press = Mathf.Clamp01(pressWeight);
         float s = _indexFlexSign;
+
+        // force_newtons adds a little extra fingertip flex as the press completes (pip/dip only, so the
+        // finger keeps pointing). A harder commanded press visibly drives the tip further into the
+        // surface; force is clamped to [0,1] N so the extra bend stays in a gentle, natural range.
+        float pressForceN = ResolveFrameForce(frame);
+        float forceFlex = Mathf.Clamp(pressForceN, 0f, 1f) * press;
+        float pipBend = fp.pip * press + forceFlex * 8f;
+        float dipBend = fp.dip * press + forceFlex * 14f;
+
         j1.localRotation = index1RestRotation * Quaternion.Euler(0f, 0f, s * fp.mcp * press);
-        if (j2 != null) j2.localRotation = index2RestRotation * Quaternion.Euler(0f, 0f, s * fp.pip * press);
-        if (j3 != null) j3.localRotation = index3RestRotation * Quaternion.Euler(0f, 0f, s * fp.dip * press);
+        if (j2 != null) j2.localRotation = index2RestRotation * Quaternion.Euler(0f, 0f, s * pipBend);
+        if (j3 != null) j3.localRotation = index3RestRotation * Quaternion.Euler(0f, 0f, s * dipBend);
+    }
+
+    /// <summary>Resolve a frame's press force in Newtons with the same precedence the motor executor
+    /// uses: top-level force_newtons first, then rig_pose.contact_force_n, else 0.</summary>
+    float ResolveFrameForce(KleinFrame frame)
+    {
+        if (frame == null)
+            return 0f;
+        if (frame.hasForceNewtons)
+            return frame.forceNewtons;
+        return frame.rigPose != null ? frame.rigPose.contactForceN : 0f;
     }
 
     /// <summary>
@@ -778,7 +874,14 @@ public class HandRotationManager : MonoBehaviour
         if (rightArmRestCaptured && RightArmPivot != null)
             RightArmPivot.localRotation = rightArmRestRotation;
         if (RightElbowPivot != null)
-            RightElbowPivot.localRotation = rightElbowRestRotation;
+        {
+            // Slight natural elbow bend at rest (arm_pose.rest.forearm_bend_deg) so the idle arm isn't
+            // ramrod-straight. 0 (no arm_pose) keeps the exact captured rest.
+            float restBend = _manualFrame != null && _manualFrame.armPose != null ? _manualFrame.armPose.restForearmBendDeg : 0f;
+            RightElbowPivot.localRotation = restBend > 0.01f
+                ? rightElbowRestRotation * Quaternion.Euler(restBend, 0f, 0f)
+                : rightElbowRestRotation;
+        }
         if (handRestCaptured && RightHandRoot != null)
             RightHandRoot.localRotation = rightHandRestRotation;
         ResetFingerCurl();

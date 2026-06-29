@@ -2,7 +2,7 @@
     "rig_naming": {
       "convention": "mixamorig:<Side>Hand<Finger><Joint>; Right hand = Left mirrored",
       "contact_point": "key-press / click contact = fingertip tip = Index4_end",
-      "scope": "hand-only for now; non-hand effectors (torso/eye) get rig_bone null + pending_full_body_rig until full-body rig is provided"
+      "scope": "hand + right-arm shaping (shoulder/upper-arm/elbow/wrist via per-frame arm_pose) for now; non-hand effectors (torso/eye) get rig_bone null + pending_full_body_rig until full-body rig is provided"
     },
     "distinct_effectors": {
       "torso": null,
@@ -35,12 +35,14 @@
           "y": 0,
           "z": 0
         },
-        "force_newtons": 0.25,
-        "duration_ms": 100,
+        "force_newtons": 1.0,
+        "duration_ms": 1200,
         "state_before": "unpressed",
         "state_after": "pressed",
         "rig_pose": {
           "solve": "unity_ik",
+          "side": "right",
+          "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
           "end_effector": "mixamorig:RightHandIndex4_end",
           "ik_chain": [
             "mixamorig:RightHand",
@@ -49,6 +51,21 @@
             "mixamorig:RightHandIndex3",
             "mixamorig:RightHandIndex4_end"
           ],
+          "arm_chain": {
+            "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+            "shoulder": "mixamorig:RightShoulder",
+            "upper_arm": "mixamorig:RightArm",
+            "forearm": "mixamorig:RightForeArm",
+            "hand": "mixamorig:RightHand"
+          },
+          "finger_bones": {
+            "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+            "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+            "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+            "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+            "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+            "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+          },
           "ik_target": {
             "x": 290,
             "y": 515,
@@ -65,6 +82,26 @@
           "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
           "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
           "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+        },
+        "arm_pose": {
+          "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the button from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+          "elbow_pole": {
+            "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+            "side": 0.45,
+            "forward": 0.20,
+            "down": 0.28
+          },
+          "reach": {
+            "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+            "forward_min_m": 0.36,
+            "forward_max_m": 0.50,
+            "shoulder_lift_deg": 18,
+            "wrist_hover_m": 0.012
+          },
+          "rest": {
+            "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+            "forearm_bend_deg": 10
+          }
         },
         "motor_execution": "motor_module executes KF-1-5 by event physical-event contact-event press-event mouse-button-press left_mouse_button with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[]."
       }

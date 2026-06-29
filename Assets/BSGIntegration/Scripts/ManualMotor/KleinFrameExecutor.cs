@@ -27,8 +27,8 @@ public class KleinFrameExecutor : MonoBehaviour
     ButtonPressContact _pressContact;
     bool _pressFxEngaged;
 
-    [Tooltip("How close (m) the fingertip must get to the target object's top surface to count as a physical press.")]
-    public float pressContactDistance = 0.15f;
+    [Tooltip("How close (m) the fingertip must get to the target object's top surface to count as a physical press. Tight (~3cm) so a finger still hovering in the air does NOT register as pressed — only a real touch does.")]
+    public float pressContactDistance = 0.03f;
     [Tooltip("The step does NOT complete until the fingertip physically presses the target. This is only a safety cap (seconds) so a genuinely unreachable target can't deadlock the sim.")]
     public float pressContactTimeout = 10f;
     Vector3 _contactPoint;

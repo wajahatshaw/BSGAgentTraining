@@ -594,10 +594,15 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
         else if (IsPhysicalManualActStep(step))
         {
-            // Only steps explicitly defined in mannualBuffer2.json (currently just t01_phy_s19 →
-            // left_mouse_button) drive the hand/finger IK. Any other act step has no buffer frame,
-            // so we intentionally apply NO fallback hand pose — no hand movement at other objects.
-            TryDriveKleinMotorForStep(step, stationCenter);
+            // ONLY the act step with an exact (stepId, agentId, zoneIndex) Klein frame in
+            // mannualBuffer2.json (currently just t01_phy_s19) drives the hand/arm/finger IK. Every other
+            // act step — INCLUDING the many other steps that target the same left_mouse_button (s39, s54,
+            // s72, …) — has no buffer frame, so it gets NO klein pose. We also actively clear any held
+            // pose so the klein press can never bleed from t01_phy_s19 onto a later same-target step.
+            if (IsCorrectKleinPressTarget(step))
+                TryDriveKleinMotorForStep(step, stationCenter);
+            else
+                EnsureKleinPoseCleared();
         }
 
         dwellTimer += Time.deltaTime;
@@ -1928,6 +1933,21 @@ public class RagSequenceAgentMover : MonoBehaviour
         kleinFrameExecutor?.Cancel();
         if (_groundMotor != null)
             _groundMotor.pressPassThroughRoot = null;   // re-block the target once the press is done
+    }
+
+    /// <summary>Guarantees no Klein press pose lingers when the agent is on a non-buffered act step
+    /// (e.g. another left_mouse_button step that is NOT t01_phy_s19). Keeps the klein hand/arm movement
+    /// exclusive to the buffered step even when other steps share the same target object.</summary>
+    void EnsureKleinPoseCleared()
+    {
+        if (!hostPlayerMovement)
+            return;
+        if (kleinFrameExecutor != null && (kleinFrameExecutor.IsExecuting || kleinFrameExecutor.IsHoldingPose))
+            kleinFrameExecutor.Cancel();
+        if (!string.IsNullOrEmpty(kleinMotorStepId))
+            kleinMotorStepId = null;
+        if (handRotationManager != null && handRotationManager.ManualPoseActive)
+            handRotationManager.ResetRightArmReachPose();
     }
 
     /// <summary>Late-bound by <see cref="PlayerRagPhysicalBridge"/> after Photon player bind.</summary>
