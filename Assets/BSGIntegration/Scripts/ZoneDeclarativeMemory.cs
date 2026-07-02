@@ -42,6 +42,55 @@ public class ZoneDeclarativeMemory : MonoBehaviour
     private readonly List<string> stepLog = new List<string>();
     public IReadOnlyList<string> StepLog => stepLog;
 
+    // ── Structured completed-step records (schema: DeclarativeStepRecord) ────
+    // One typed record per completed cognitive step, in completion order. This is the
+    // canonical per-step output the HUD renders; reshape via DeclarativeStepRecord.
+    private readonly List<DeclarativeStepRecord> completedStepRecords = new List<DeclarativeStepRecord>();
+    private readonly Dictionary<string, DeclarativeStepRecord> recordByStepId
+        = new Dictionary<string, DeclarativeStepRecord>();
+    public IReadOnlyList<DeclarativeStepRecord> CompletedStepRecords => completedStepRecords;
+
+    /// <summary>Store (or update) the completion record for a step. Idempotent per stepId.</summary>
+    public void RecordStepCompletion(DeclarativeStepRecord record)
+    {
+        if (record == null || string.IsNullOrWhiteSpace(record.stepId)) return;
+
+        if (recordByStepId.TryGetValue(record.stepId, out DeclarativeStepRecord existing))
+        {
+            int idx = completedStepRecords.IndexOf(existing);
+            if (idx >= 0) completedStepRecords[idx] = record;
+        }
+        else
+        {
+            completedStepRecords.Add(record);
+        }
+        recordByStepId[record.stepId] = record;
+    }
+
+    public bool TryGetStepRecord(string stepId, out DeclarativeStepRecord record)
+        => recordByStepId.TryGetValue(stepId ?? string.Empty, out record);
+
+    // ── Manual buffer (mannualBuffer2.json) stored at game start for reference ──────
+    // Full file text + each manual_buffer[] element as raw JSON. NOT consumed at runtime.
+    [Header("Manual Buffer (stored at start; reference only)")]
+    [TextArea(2, 6)] public string manualBufferJsonRaw = string.Empty;
+    public string manualBufferFileName = string.Empty;
+    public List<string> manualBufferFrameJson = new List<string>();
+    private bool manualBufferStored;
+    public bool ManualBufferStored => manualBufferStored;
+    public IReadOnlyList<string> ManualBufferFrameJson => manualBufferFrameJson;
+
+    /// <summary>Store the whole mannualBuffer2.json (raw file + raw per-frame JSON objects).</summary>
+    public void StoreManualBuffer(string fileName, string rawJson, List<string> frameJson)
+    {
+        manualBufferFileName = fileName ?? string.Empty;
+        manualBufferJsonRaw = rawJson ?? string.Empty;
+        manualBufferFrameJson = frameJson ?? new List<string>();
+        manualBufferStored = true;
+        stepLog.Add($"[Z{zoneIndex}] stored {manualBufferFileName}: {manualBufferFrameJson.Count} frame(s), {manualBufferJsonRaw.Length} chars");
+        if (stepLog.Count > 128) stepLog.RemoveAt(0);
+    }
+
     // Static registry so any code can get a zone's memory without a direct ref
     private static readonly Dictionary<int, ZoneDeclarativeMemory> registry
         = new Dictionary<int, ZoneDeclarativeMemory>();
@@ -49,6 +98,12 @@ public class ZoneDeclarativeMemory : MonoBehaviour
     void Awake()
     {
         RegisterInRegistry();
+    }
+
+    void Start()
+    {
+        // Snapshot mannualBuffer2.json once at game start (reference only).
+        DeclarativeJsonFileStore.EnsureManualBufferStored(this);
     }
 
     void OnEnable()
@@ -146,6 +201,8 @@ public class ZoneDeclarativeMemory : MonoBehaviour
         goalBufferResolvedDesireLevel = 0f;
         goalBufferResolvedDesireSource = string.Empty;
         stepLog.Clear();
+        completedStepRecords.Clear();
+        recordByStepId.Clear();
         dataSlots.Clear();
         payloadSlots.Clear();
         productionCommandSlots.Clear();

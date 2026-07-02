@@ -35,6 +35,7 @@ public static class RagMultiplayerStatsHud
         ui.topPadding = 20f;
 
         TemporalBufferGaugeUI.GetOrCreate(0);
+        DeclarativeMemoryGaugeUI.GetOrCreate(0);
         ui.RebuildGaugesNow();
         ui.ApplyUserHudVisibility();
         RagTrainingHudSwitchController.EnsureInScene();

@@ -129,6 +129,17 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
     private Dictionary<string, string> _subTaskByNarrativeStepId = new Dictionary<string, string>();
     private ZoneDeclarativeMemory _zoneMemory;
 
+    /// <summary>
+    /// When true, the payload / imaginal / production-memory gates self-heal (seed the missing
+    /// payload, advance the imaginal state) instead of stalling. Enabled only for scenes that
+    /// historically ran WITHOUT a ZoneDeclarativeMemory (multiplayer embed / RAG-only inference) —
+    /// where cognitive steps are completed by a path that doesn't record payloads/imaginal side
+    /// effects, so an injected blackboard (e.g. for the Declarative Memory HUD) would otherwise
+    /// re-activate gates the scene was never satisfying. Full-RAG / training leaves this false so
+    /// gate enforcement is unchanged.
+    /// </summary>
+    public bool permissiveGates = false;
+
     // Throttle: only evaluate ready steps every ~1 frame
     private float _evalThrottle;
 
@@ -552,6 +563,15 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
             step.isActivated = false;
         }
 
+        // Store the structured per-step completion record (schema: DeclarativeStepRecord) into the
+        // zone blackboard. Additive read-model — no effect on DAG dispatch.
+        if (step != null)
+        {
+            ZoneDeclarativeMemory recMem = ResolveZoneMemory();
+            if (recMem != null)
+                recMem.RecordStepCompletion(DeclarativeStepRecord.Build(step, recMem));
+        }
+
         Debug.Log($"[CognitivePhaseOrchestrator] ✅ Step completed: {stepId} | completed={_completedSteps.Count} active={_activeSteps.Count}");
 
         _completedStepCountsDirty = true;
@@ -573,6 +593,19 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
     {
         _allSteps.TryGetValue(stepId, out ActionSequenceStep s);
         return s;
+    }
+
+    /// <summary>
+    /// Ordered snapshot of every registered step (cognitive + physical) with its live state
+    /// (isStepCompleted / isActivated / producesPayload / …), for HUD / debug read-out.
+    /// </summary>
+    public List<ActionSequenceStep> GetOrderedStepsSnapshot()
+    {
+        var list = new List<ActionSequenceStep>(_stepOrder.Count);
+        foreach (string id in _stepOrder)
+            if (_allSteps.TryGetValue(id, out ActionSequenceStep s) && s != null)
+                list.Add(s);
+        return list;
     }
 
     /// <summary>Returns true if stepId has been completed.</summary>
@@ -710,7 +743,38 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
             return true;
         }
 
-        return mem.HasPayloads(step.consumesPayload);
+        if (mem.HasPayloads(step.consumesPayload)) return true;
+
+        if (permissiveGates)
+        {
+            // Scene ran without a blackboard historically (producer path never recorded these);
+            // seed the missing payloads so the DAG flows instead of stalling.
+            SeedMissingConsumedPayloads(step, mem);
+            return true;
+        }
+
+        return false;
+    }
+
+    void SeedMissingConsumedPayloads(ActionSequenceStep step, ZoneDeclarativeMemory mem)
+    {
+        if (step == null || mem == null || step.consumesPayload == null) return;
+        foreach (string key in step.consumesPayload)
+        {
+            if (string.IsNullOrWhiteSpace(key) || mem.HasPayload(key)) continue;
+            mem.RecordProducedPayload($"auto_seed_for_{step.stepId}", key, FindProducedPayloadValue(key));
+        }
+    }
+
+    string FindProducedPayloadValue(string payloadKey)
+    {
+        foreach (string sid in _completedSteps)
+        {
+            if (_allSteps.TryGetValue(sid, out ActionSequenceStep s) && s != null
+                && string.Equals(s.producesPayload, payloadKey, StringComparison.OrdinalIgnoreCase))
+                return BuildInferencePayloadValue(s);
+        }
+        return $"{payloadKey} (auto)";
     }
 
     bool IsImaginalStateReady(ActionSequenceStep step)
@@ -726,6 +790,14 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         }
 
         bool ready = mem.CanEnterImaginalState(step.imaginalStateBefore);
+        if (!ready && permissiveGates)
+        {
+            // Prior imaginal transition wasn't recorded (silent-inference / auto-completed producer);
+            // advance the buffer to the required pre-state so the step can enter instead of stalling.
+            Debug.Log($"[CognitivePhaseOrchestrator] Imaginal gate self-heal for {step.stepId}: forcing {step.imaginalStateBefore} (was {mem.imaginalBufferState}).");
+            mem.SetImaginalBufferState(step.stepId, step.imaginalStateBefore, "auto-advance (permissive gate)");
+            return true;
+        }
         if (!ready)
         {
             Debug.Log($"[CognitivePhaseOrchestrator] Imaginal state gate waiting for {step.stepId}: need={step.imaginalStateBefore}, current={mem.imaginalBufferState}");
@@ -747,6 +819,11 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         bool ok = ProductionMemoryRuleEngine.TryEvaluateAndRecord(step, mem, out ProductionMemoryCommandRecord command);
         if (ok && command != null)
             Debug.Log($"[CognitivePhaseOrchestrator] Production Memory command: {step.stepId} → {command.commandType} ({command.payloadKey})");
+        if (!ok && permissiveGates)
+        {
+            Debug.Log($"[CognitivePhaseOrchestrator] Production Memory gate self-heal for {step.stepId}: dispatching without command record.");
+            return true;
+        }
         return ok;
     }
 

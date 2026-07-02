@@ -60,6 +60,13 @@ public static class RagTrainingHudVisibility
                 temporalPanels[i].ApplyUserHudVisibility(_visible);
         }
 
+        DeclarativeMemoryGaugeUI[] declarativePanels = UnityEngine.Object.FindObjectsOfType<DeclarativeMemoryGaugeUI>(true);
+        for (int i = 0; i < declarativePanels.Length; i++)
+        {
+            if (declarativePanels[i] != null)
+                declarativePanels[i].ApplyUserHudVisibility(_visible);
+        }
+
         RagTrainingHudSwitchController switchUi = UnityEngine.Object.FindObjectOfType<RagTrainingHudSwitchController>();
         if (switchUi != null)
             switchUi.SyncToggleFromVisibility();

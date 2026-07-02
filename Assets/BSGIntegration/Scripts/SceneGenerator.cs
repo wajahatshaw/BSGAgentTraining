@@ -1876,6 +1876,7 @@ public class SceneGenerator : MonoBehaviour
 
         TemporalCognitionRuntime.GetOrCreate(0);
         TemporalBufferGaugeUI.GetOrCreate(0);
+        DeclarativeMemoryGaugeUI.GetOrCreate(0);
         EnsureZone0SkillGaugeHud();
 
         bool moduleAttached = false;

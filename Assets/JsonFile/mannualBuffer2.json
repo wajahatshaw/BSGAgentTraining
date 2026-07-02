@@ -36,7 +36,7 @@
           "z": 0
         },
         "force_newtons": 1.0,
-        "duration_ms": 1200,
+        "duration_ms": 1300,
         "state_before": "unpressed",
         "state_after": "pressed",
         "rig_pose": {

@@ -13,6 +13,11 @@ public static class RagTrainingHudSuppressor
             if (temporal != null && temporal.zoneIndex != 0)
                 temporal.enabled = false;
         }
+        foreach (DeclarativeMemoryGaugeUI declarative in Object.FindObjectsOfType<DeclarativeMemoryGaugeUI>(true))
+        {
+            if (declarative != null && declarative.zoneIndex != 0)
+                declarative.enabled = false;
+        }
         DisableBehaviour<TrainingSpeedIndicator>();
         DisableBehaviour<StepEfficiencyIndicator>();
         DisableBehaviour<DistanceToTargetMeter>();
@@ -39,6 +44,9 @@ public static class RagTrainingHudSuppressor
             "Zone1TemporalBufferPanel",
             "Zone2TemporalBufferPanel",
             "Zone3TemporalBufferPanel",
+            "Zone1DeclarativeMemoryPanel",
+            "Zone2DeclarativeMemoryPanel",
+            "Zone3DeclarativeMemoryPanel",
         })
         {
             GameObject panel = GameObject.Find(panelName);
