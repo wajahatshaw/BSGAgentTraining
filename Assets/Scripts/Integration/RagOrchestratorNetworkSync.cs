@@ -306,9 +306,7 @@ public class RagOrchestratorNetworkSync : MonoBehaviourPunCallbacks, IRagOrchest
 
         if (step != null)
         {
-            bool isMental = string.Equals(step.agentRole, "M", System.StringComparison.OrdinalIgnoreCase)
-                            || RagSequenceAgentMover.IsCognitiveStationTargetId(step.targetObjectId);
-            if (isMental)
+            if (RagStepRoleClassifier.IsMentalAgentStep(step))
                 RagCognitiveStepFx.ApplyStepCompletedFx(step, zoneIndex);
             else
                 RagPhysicalStepFx.ApplyStepCompletedFx(step, zoneIndex);

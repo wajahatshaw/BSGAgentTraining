@@ -238,7 +238,7 @@ public class MentalAgentController : MonoBehaviour
             .OrderBy(s => s.stepOrder);
 
         List<ActionSequenceStep> filtered = ordered
-            .Where(s => string.IsNullOrEmpty(s.subTaskId) || string.Equals(s.subTaskId, "st_0", StringComparison.OrdinalIgnoreCase))
+            .Where(s => string.IsNullOrEmpty(s.subTaskId) || MatchesOpeningSubTask(s.subTaskId))
             .ToList();
 
         if (filtered.Count == 0 && !ordered.Any(s => !string.IsNullOrEmpty(s.subTaskId)))
@@ -1286,6 +1286,15 @@ public class MentalAgentController : MonoBehaviour
 
     /// <summary>Returns the P-agent agentId for this zone, used for step indicator + rewards.</summary>
     private string GetZonePAgentId() => ZoneAgentIds.TryResolvePhysicalAgentId(zoneIndex);
+
+    bool MatchesOpeningSubTask(string subTaskId)
+    {
+        if (string.IsNullOrEmpty(subTaskId)) return true;
+        int zi = zoneIndex >= 0 ? zoneIndex : 0;
+        CognitivePhaseOrchestrator orch = CognitivePhaseOrchestrator.GetOrCreateForZone(zi);
+        string opening = orch != null ? orch.OpeningSubTaskId : "st_0";
+        return string.Equals(subTaskId, opening, StringComparison.OrdinalIgnoreCase);
+    }
 
     public string GetZonePAgentIdForBootstrap() => GetZonePAgentId();
 }

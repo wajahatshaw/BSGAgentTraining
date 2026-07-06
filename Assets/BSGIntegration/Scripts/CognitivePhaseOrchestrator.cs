@@ -5,11 +5,11 @@ using UnityEngine;
 /// <summary>
 /// Central DAG executor that drives the three-phase cognitive execution flow for a single zone:
 ///
-///   PHASE 1 — IMAGINE (st_0, all cognitive, no physical)
+///   PHASE 1 — IMAGINE (opening subtask: mental-only, no physical)
 ///     The agent plans and imagines the task before any physical action. Ends at the
-///     barrier step (t01_cog_s06) that closes st_0.
+///     barrier step declared in subTasks[].barrierStepId for the opening subtask.
 ///
-///   PHASE 2 — EXECUTE + VALIDATE LOOP (st_1+, cognitive and physical interleaved)
+///   PHASE 2 — EXECUTE + VALIDATE LOOP (subsequent subtasks; cognitive and physical interleaved)
 ///     Production Memory issues commands; physical actions fire; Visual/Manual modules perceive
 ///     results; Imaginal Buffer decodes and validates; Production Memory issues next command.
 ///     The dependsOn field on every step enforces correct ordering.
@@ -122,6 +122,15 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
     /// <summary>SubTask entries keyed by subTaskId, used for transition detection.</summary>
     private Dictionary<string, SubTaskEntry> _subTasks = new Dictionary<string, SubTaskEntry>();
 
+    /// <summary>SubTask ids in JSON array order (defines barrier opens chain).</summary>
+    private List<string> _subTaskOrder = new List<string>();
+
+    /// <summary>First subtask in pipeline (no dependsOnSubTask) — Phase 1 IMAGINE scope.</summary>
+    private string _openingSubTaskId = "st_0";
+
+    /// <summary>Resolved opening subtask id from JSON subTasks[] (defaults to st_0 until <see cref="Initialize"/>).</summary>
+    public string OpeningSubTaskId => _openingSubTaskId;
+
     /// <summary>For each step in subTasks[].stepIds, stores the immediately previous narrative step.</summary>
     private Dictionary<string, string> _narrativePreviousStepById = new Dictionary<string, string>();
 
@@ -171,9 +180,7 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         {
             ActionSequenceStep step = kvp.Value;
             if (step == null) continue;
-            bool mental = string.Equals(step.agentRole, "M", StringComparison.OrdinalIgnoreCase)
-                       || IsCognitiveStepByTarget(step.targetObjectId);
-            if (mental) _cachedMentalTotal++;
+            if (IsCognitiveStep(step)) _cachedMentalTotal++;
             else _cachedPhysicalTotal++;
         }
         _totalStepCountsDirty = false;
@@ -187,9 +194,7 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         foreach (string stepId in _completedSteps)
         {
             if (!_allSteps.TryGetValue(stepId, out ActionSequenceStep step)) continue;
-            bool mental = string.Equals(step.agentRole, "M", StringComparison.OrdinalIgnoreCase)
-                       || IsCognitiveStepByTarget(step.targetObjectId);
-            if (mental) _cachedMentalCompleted++;
+            if (IsCognitiveStep(step)) _cachedMentalCompleted++;
             else _cachedPhysicalCompleted++;
         }
         _completedStepCountsDirty = false;
@@ -294,8 +299,10 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         _stepOrder.Clear();
         _barriers.Clear();
         _subTasks.Clear();
+        _subTaskOrder.Clear();
         _narrativePreviousStepById.Clear();
         _subTaskByNarrativeStepId.Clear();
+        _openingSubTaskId = "st_0";
         IsCognitivePhaseComplete = false;
         IsAllComplete = false;
         CurrentPhase = PHASE_IMAGINE;
@@ -360,6 +367,9 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         if (_allSteps.Count > 0)
             NormalizeMalformedDependenciesFromNarrativeOrder();
 
+        ResolveOpeningSubTaskFromMetadata();
+        CurrentSubTaskId = _openingSubTaskId;
+
         _zoneMemory = ResolveZoneMemory();
 
         _initialized = true;
@@ -409,7 +419,9 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         if (CurrentPhase == PHASE_IMAGINE)
         {
             SetPhase(PHASE_EXECUTE);
-            CurrentSubTaskId = "st_1";
+            string nextSubTask = FindNextSubTaskId(_openingSubTaskId);
+            if (!string.IsNullOrEmpty(nextSubTask))
+                CurrentSubTaskId = nextSubTask;
         }
 
         SetZoneDeclarativeCognitiveReady(zoneIndex, "leader cognitive complete");
@@ -431,9 +443,7 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
             ActionSequenceStep step = kvp.Value;
             if (step == null || string.IsNullOrEmpty(step.stepId)) continue;
 
-            bool isCognitive = string.Equals(step.agentRole, "M", StringComparison.OrdinalIgnoreCase)
-                               || IsCognitiveStepByTarget(step.targetObjectId);
-            if (!isCognitive) continue;
+            if (!IsCognitiveStep(step)) continue;
 
             if (!_completedSteps.Contains(step.stepId))
             {
@@ -446,7 +456,9 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
 
         IsCognitivePhaseComplete = true;
         SetPhase(PHASE_EXECUTE);
-        CurrentSubTaskId = "st_1";
+        string nextSubTask = FindNextSubTaskId(_openingSubTaskId);
+        if (!string.IsNullOrEmpty(nextSubTask))
+            CurrentSubTaskId = nextSubTask;
         _completedStepCountsDirty = true;
         RebuildCompletedStepCountsIfNeeded();
 
@@ -522,7 +534,7 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         IsAllComplete = false;
         IsCognitivePhaseComplete = false;
         CurrentPhase = PHASE_IMAGINE;
-        CurrentSubTaskId = "st_0";
+        CurrentSubTaskId = _openingSubTaskId;
         _evalThrottle = 0f;
 
         foreach (ActionSequenceStep step in _allSteps.Values)
@@ -654,18 +666,9 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         return false;
     }
 
-    static bool IsPhysicalStep(ActionSequenceStep step)
-    {
-        return string.Equals(step.agentRole, "P", StringComparison.OrdinalIgnoreCase)
-               || (!IsCognitiveStepByTarget(step.targetObjectId)
-                   && !string.Equals(step.agentRole, "M", StringComparison.OrdinalIgnoreCase));
-    }
+    static bool IsPhysicalStep(ActionSequenceStep step) => RagStepRoleClassifier.IsPhysicalAgentStep(step);
 
-    static bool IsCognitiveStep(ActionSequenceStep step)
-    {
-        return string.Equals(step.agentRole, "M", StringComparison.OrdinalIgnoreCase)
-               || IsCognitiveStepByTarget(step.targetObjectId);
-    }
+    static bool IsCognitiveStep(ActionSequenceStep step) => RagStepRoleClassifier.IsMentalAgentStep(step);
 
     /// <summary>
     /// Counts completed mental and physical steps for this orchestrator's zone.
@@ -703,6 +706,9 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
 
             // Only allow Phase 1 cognitive steps until the Phase 1 barrier fires
             if (CurrentPhase == PHASE_IMAGINE && !IsPhase1Step(step)) continue;
+
+            // Physical interleaving starts only after opening subtask barrier / cognitive phase complete
+            if (IsPhysicalStep(step) && !IsCognitivePhaseComplete) continue;
 
             if (!AreAllPayloadsAvailable(step)) continue;
             if (!IsImaginalStateReady(step)) continue;
@@ -846,15 +852,45 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
 
     bool IsPhase1Step(ActionSequenceStep step)
     {
-        return string.Equals(step.subTaskId, "st_0", StringComparison.Ordinal);
+        if (step == null || !IsCognitiveStep(step)) return false;
+
+        if (_subTasks.Count > 0 && !string.IsNullOrEmpty(_openingSubTaskId))
+            return string.Equals(step.subTaskId, _openingSubTaskId, StringComparison.Ordinal);
+
+        // Legacy without subTasks[]: mental-only during IMAGINE until opening barrier fires.
+        return !IsCognitivePhaseComplete;
+    }
+
+    bool IsOpeningSubTaskBarrier(string closesSubTaskId)
+    {
+        return !string.IsNullOrEmpty(_openingSubTaskId)
+               && string.Equals(closesSubTaskId, _openingSubTaskId, StringComparison.Ordinal);
+    }
+
+    void ResolveOpeningSubTaskFromMetadata()
+    {
+        if (_subTaskOrder.Count == 0) return;
+
+        for (int i = 0; i < _subTaskOrder.Count; i++)
+        {
+            string stId = _subTaskOrder[i];
+            if (!_subTasks.TryGetValue(stId, out SubTaskEntry entry))
+                continue;
+            if (string.IsNullOrEmpty(entry.dependsOnSubTask))
+            {
+                _openingSubTaskId = stId;
+                return;
+            }
+        }
+
+        _openingSubTaskId = _subTaskOrder[0];
     }
 
     void DispatchStep(ActionSequenceStep step)
     {
         _activeSteps.Add(step.stepId);
 
-        bool isCognitive = string.Equals(step.agentRole, "M", System.StringComparison.OrdinalIgnoreCase)
-                        || IsCognitiveStepByTarget(step.targetObjectId);
+        bool isCognitive = IsCognitiveStep(step);
 
         // Cognitive steps activate only after the mental agent physically reaches the station.
         step.isActivated = !isCognitive;
@@ -873,20 +909,6 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
             Debug.Log($"[CognitivePhaseOrchestrator] ⚙️ Dispatching PHYSICAL step: {step.stepId} → {physTarget} ({physLabel}, {step.actionType})");
             OnPhysicalStepDispatched?.Invoke(step.stepId);
         }
-    }
-
-    static bool IsCognitiveStepByTarget(string targetId)
-    {
-        if (string.IsNullOrEmpty(targetId)) return false;
-        // cognitive_ prefix or strip zone suffix
-        if (targetId.StartsWith("cognitive_", StringComparison.OrdinalIgnoreCase)) return true;
-        int zIdx = targetId.IndexOf("_zone", StringComparison.OrdinalIgnoreCase);
-        if (zIdx > 0)
-        {
-            string baseId = targetId.Substring(0, zIdx);
-            return baseId.StartsWith("cognitive_", StringComparison.OrdinalIgnoreCase);
-        }
-        return false;
     }
 
     void HandleBarrierIfNeeded(string stepId, ActionSequenceStep completedStep)
@@ -908,15 +930,15 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
 
         Debug.Log($"[CognitivePhaseOrchestrator] 🚧 BARRIER reached: {stepId} | closes={closes} opens={opens}");
 
-        // Phase 1 barrier: the st_0 barrier marks imagination complete
-        if (string.Equals(closes, "st_0", StringComparison.Ordinal))
+        // Phase 1 barrier: opening subtask complete → unlock interleaved execute phase
+        if (IsOpeningSubTaskBarrier(closes))
         {
             IsCognitivePhaseComplete = true;
             SetPhase(PHASE_EXECUTE);
             if (!RagInferenceSceneController.DeferPhysicalUntilLeaderCognitiveDone())
                 SetZoneDeclarativeCognitiveReady(zoneIndex, $"barrier {stepId}");
             else
-                Debug.Log($"[CognitivePhaseOrchestrator] Zone {zoneIndex}: st_0 barrier → execute phase (physical unlock deferred until leader cognitive done).");
+                Debug.Log($"[CognitivePhaseOrchestrator] Zone {zoneIndex}: opening barrier ({closes}) → execute phase (physical unlock deferred until leader cognitive done).");
         }
         else if (!string.IsNullOrEmpty(opens))
         {
@@ -937,8 +959,17 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
     {
         if (string.IsNullOrEmpty(currentSubTaskId)) return "";
 
-        if (string.Equals(currentSubTaskId, "st_0", StringComparison.Ordinal)) return "st_1";
+        if (_subTaskOrder.Count > 0)
+        {
+            for (int i = 0; i < _subTaskOrder.Count; i++)
+            {
+                if (!string.Equals(_subTaskOrder[i], currentSubTaskId, StringComparison.Ordinal))
+                    continue;
+                return i + 1 < _subTaskOrder.Count ? _subTaskOrder[i + 1] : "";
+            }
+        }
 
+        // Legacy fallback when subTasks[] was not parsed
         if (currentSubTaskId.StartsWith("st_", StringComparison.Ordinal)
             && int.TryParse(currentSubTaskId.Substring(3), out int n))
         {
@@ -1049,6 +1080,8 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
             if (!string.IsNullOrEmpty(stId))
             {
                 _subTasks[stId] = new SubTaskEntry { subTaskId = stId, barrierStepId = bStep, dependsOnSubTask = depends };
+                if (!_subTaskOrder.Contains(stId))
+                    _subTaskOrder.Add(stId);
 
                 for (int i = 0; i < stepIds.Length; i++)
                 {
@@ -1072,19 +1105,17 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
             pos = end + 1;
         }
 
-        // Second pass: fill opensSubTaskId for barriers derived from subTasks
-        string[] stIds = new string[_subTasks.Count];
-        _subTasks.Keys.CopyTo(stIds, 0);
-        System.Array.Sort(stIds, StringComparer.Ordinal);
-        for (int i = 0; i < stIds.Length; i++)
+        // Second pass: fill opensSubTaskId for barriers derived from subTasks (JSON array order).
+        for (int i = 0; i < _subTaskOrder.Count; i++)
         {
-            SubTaskEntry st = _subTasks[stIds[i]];
+            string stId = _subTaskOrder[i];
+            if (!_subTasks.TryGetValue(stId, out SubTaskEntry st)) continue;
             if (!string.IsNullOrEmpty(st.barrierStepId) && _barriers.ContainsKey(st.barrierStepId))
             {
                 BarrierEntry b = _barriers[st.barrierStepId];
-                if (string.IsNullOrEmpty(b.opensSubTaskId) && i + 1 < stIds.Length)
+                if (string.IsNullOrEmpty(b.opensSubTaskId) && i + 1 < _subTaskOrder.Count)
                 {
-                    b.opensSubTaskId = stIds[i + 1];
+                    b.opensSubTaskId = _subTaskOrder[i + 1];
                     _barriers[st.barrierStepId] = b;
                 }
             }
@@ -1092,17 +1123,15 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
     }
 
     /// <summary>
-    /// The current RAG file has a few physical steps whose dependency points into the future
-    /// even though subTasks[].stepIds places the physical step earlier in the narrative.
-    /// Example: t01_phy_s45 depends on t01_cog_s54, while t01_cog_s46 depends on t01_phy_s45.
-    /// That creates a hard deadlock. Repair only future-pointing dependencies using the
-    /// canonical narrative predecessor from subTasks[].stepIds.
+    /// Repair subTaskId/barrier flags and dependsOn edges using canonical subTasks[].stepIds order.
+    /// Fills empty dependsOn from the narrative predecessor and fixes future-pointing deps that deadlock interleaving.
     /// </summary>
     void NormalizeMalformedDependenciesFromNarrativeOrder()
     {
         int subTaskRepairs = 0;
         int barrierFlagRepairs = 0;
-        int repairs = 0;
+        int emptyDepRepairs = 0;
+        int futureDepRepairs = 0;
 
         foreach (var kvp in _subTaskByNarrativeStepId)
         {
@@ -1128,9 +1157,16 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         foreach (var kvp in _allSteps)
         {
             ActionSequenceStep step = kvp.Value;
-            if (step == null || step.dependsOn == null || step.dependsOn.Length == 0) continue;
+            if (step == null) continue;
             if (!_narrativePreviousStepById.TryGetValue(step.stepId, out string narrativePrev)) continue;
             if (string.IsNullOrEmpty(narrativePrev)) continue;
+
+            if (step.dependsOn == null || step.dependsOn.Length == 0)
+            {
+                step.dependsOn = new[] { narrativePrev };
+                emptyDepRepairs++;
+                continue;
+            }
 
             bool hasFutureDependency = false;
             foreach (string dep in step.dependsOn)
@@ -1149,11 +1185,13 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
 
             string oldDeps = string.Join(",", step.dependsOn);
             ApplyNarrativeDependencyRepair(step, narrativePrev, oldDeps);
-            repairs++;
+            futureDepRepairs++;
         }
 
-        if (repairs > 0)
-            Debug.LogWarning($"[CognitivePhaseOrchestrator] Applied {repairs} narrative-order dependency repair(s).");
+        if (emptyDepRepairs > 0)
+            Debug.LogWarning($"[CognitivePhaseOrchestrator] Applied {emptyDepRepairs} empty dependsOn repair(s) from narrative order.");
+        if (futureDepRepairs > 0)
+            Debug.LogWarning($"[CognitivePhaseOrchestrator] Applied {futureDepRepairs} future-pointing dependency repair(s).");
         if (subTaskRepairs > 0)
             Debug.LogWarning($"[CognitivePhaseOrchestrator] Applied {subTaskRepairs} narrative subTaskId repair(s).");
         if (barrierFlagRepairs > 0)
@@ -1164,17 +1202,9 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
     {
         if (step == null || step.dependsOn == null || step.dependsOn.Length == 0) return false;
 
-        string narrativePrev = "";
-        if (!_narrativePreviousStepById.TryGetValue(step.stepId, out narrativePrev)
+        if (!_narrativePreviousStepById.TryGetValue(step.stepId, out string narrativePrev)
             || string.IsNullOrEmpty(narrativePrev))
-        {
-            // Known malformed edge in basicUI_ml2.json. Keep this as a last-resort
-            // compatibility fallback in case subTasks[].stepIds was not parsed.
-            if (string.Equals(step.stepId, "t01_phy_s45", StringComparison.Ordinal))
-                narrativePrev = "t01_cog_s44";
-        }
-
-        if (string.IsNullOrEmpty(narrativePrev)) return false;
+            return false;
 
         bool hasFutureDependency = false;
         foreach (string dep in step.dependsOn)

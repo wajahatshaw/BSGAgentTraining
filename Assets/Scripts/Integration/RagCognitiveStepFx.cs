@@ -12,9 +12,6 @@ public static class RagCognitiveStepFx
 
         if (!string.IsNullOrWhiteSpace(step.targetObjectId))
             FlashTarget(step.targetObjectId, zoneIndex, VerbToColor(step.actionVerb), 0.35f);
-
-        RagSequenceAgentMover mentalMover = FindZoneMentalMover(zoneIndex);
-        mentalMover?.PlayNetworkStepCompletionFlash();
     }
 
     public static void ApplyStepCompletedFx(ActionSequenceStep step, int zoneIndex)

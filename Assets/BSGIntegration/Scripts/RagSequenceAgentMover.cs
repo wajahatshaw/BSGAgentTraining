@@ -1454,11 +1454,7 @@ public class RagSequenceAgentMover : MonoBehaviour
 
     public static bool IsCognitiveStationTargetId(string targetObjectId)
     {
-        if (string.IsNullOrWhiteSpace(targetObjectId)) return false;
-        if (SceneGenerator.Instance != null)
-            return SceneGenerator.Instance.IsKnownCognitiveStation(targetObjectId);
-        // Fallback: convention prefix (covers editor preview / scene not yet loaded)
-        return targetObjectId.StartsWith("cognitive_", System.StringComparison.OrdinalIgnoreCase);
+        return RagStepRoleClassifier.IsCognitiveStationTargetId(targetObjectId);
     }
 
     Vector3? ResolveTargetPosition(string targetObjectId)
@@ -2971,9 +2967,11 @@ public class RagSequenceAgentMover : MonoBehaviour
     /// </summary>
     void OnOrchestratorBarrierReached(string barrierStepId, string closesSubTask, string opensSubTask)
     {
-        if (string.Equals(closesSubTask, "st_0", StringComparison.Ordinal)
+        CognitivePhaseOrchestrator orch = CognitivePhaseOrchestrator.GetOrCreateForZone(zoneIndex);
+        string openingSubTask = orch != null ? orch.OpeningSubTaskId : "st_0";
+        if (string.Equals(closesSubTask, openingSubTask, StringComparison.Ordinal)
             && !RagInferenceSceneController.DeferPhysicalUntilLeaderCognitiveDone())
-            TryMarkZoneCognitiveReadyForPhysical($"barrier {barrierStepId} closed st_0");
+            TryMarkZoneCognitiveReadyForPhysical($"barrier {barrierStepId} closed {openingSubTask}");
     }
 
     void OnOrchestratorAllStepsCompleted(int completedZoneIndex)

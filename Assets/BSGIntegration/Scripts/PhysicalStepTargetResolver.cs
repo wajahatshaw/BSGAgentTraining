@@ -11,8 +11,7 @@ public static class PhysicalStepTargetResolver
 {
     public static bool IsPhysicalStep(ActionSequenceStep step)
     {
-        return step != null
-               && string.Equals(step.agentRole, "P", StringComparison.OrdinalIgnoreCase);
+        return RagStepRoleClassifier.IsPhysicalAgentStep(step);
     }
 
     /// <summary>
