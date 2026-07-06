@@ -253,9 +253,9 @@ public class SceneGenerator : MonoBehaviour
             }
         }
 
-        Debug.Log($"[SceneGenerator] Zone 0 RAG spawn counts — modules={modules}/6, buffers={buffers}/10, physical env={sceneEntities}/21, total tools={generatedTools.Count}");
-        if (modules != 6 || buffers != 10 || sceneEntities != 21)
-            Debug.LogWarning("[SceneGenerator] RAG spawn counts do not match basicUI_ml2.json — check layout overlap or zone filter.");
+        Debug.Log($"[SceneGenerator] Zone 0 RAG spawn counts — modules={modules}/6, buffers={buffers}/10, physical env={sceneEntities}, total tools={generatedTools.Count}");
+        if (modules != 6 || buffers != 10)
+            Debug.LogWarning("[SceneGenerator] RAG cognitive spawn counts do not match basicUI_ml2.json — check layout overlap or zone filter.");
     }
 
     bool ShouldSkipEnvironmentGeneration()

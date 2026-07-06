@@ -209,9 +209,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": -0.12,
-                            "y": 1.18,
-                            "z": 0.58
+                            "x": -16.5,
+                            "y": 0.5,
+                            "z": -17.5
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -292,9 +292,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 0.12,
-                            "y": 1.18,
-                            "z": 0.58
+                            "x": -10.75,
+                            "y": 0.5,
+                            "z": -17.5
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -444,9 +444,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": -0.08,
-                            "y": 1.18,
-                            "z": 0.58
+                            "x": -5.0,
+                            "y": 0.5,
+                            "z": -17.5
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -563,9 +563,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 0.08,
-                            "y": 1.18,
-                            "z": 0.58
+                            "x": 0.75,
+                            "y": 0.5,
+                            "z": -17.5
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -673,9 +673,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 0.0,
-                            "y": 0.75,
-                            "z": 0.58
+                            "x": 6.5,
+                            "y": 0.5,
+                            "z": -17.5
                         },
                         "placementRole": "display",
                         "restsOn": "office desk",
@@ -823,9 +823,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 0.0,
+                            "x": 12.25,
                             "y": 0.75,
-                            "z": 0.38
+                            "z": -17.5
                         },
                         "placementRole": "tool",
                         "restsOn": "office desk",
@@ -952,9 +952,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 0.22,
+                            "x": 16.5,
                             "y": 0.75,
-                            "z": 0.4
+                            "z": -17.5
                         },
                         "placementRole": "tool",
                         "restsOn": "office desk",
@@ -1048,9 +1048,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.75
+                            "x": -16.5,
+                            "y": 0.5,
+                            "z": -11.2
                         },
                         "placementRole": "surface",
                         "restsOn": "floor",
@@ -1374,9 +1374,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
+                            "x": -10.75,
+                            "y": 0.5,
+                            "z": -11.2
                         },
                         "placementRole": "worker",
                         "restsOn": "floor",
@@ -1538,7 +1538,7 @@
                         "targetObjects": [
                             {
                                 "id": "scene_001",
-                                "name": "HubSpot software",
+                                "name": "CRM Database",
                                 "shape": "cube",
                                 "position": {
                                     "x": -16.5,
@@ -1548,7 +1548,7 @@
                             },
                             {
                                 "id": "scene_002",
-                                "name": "Google Slides",
+                                "name": "ERP Database",
                                 "shape": "cube",
                                 "position": {
                                     "x": -10.75,
@@ -1558,7 +1558,7 @@
                             },
                             {
                                 "id": "scene_003",
-                                "name": "Audience and campaign performance inputs",
+                                "name": "SAP software",
                                 "shape": "cube",
                                 "position": {
                                     "x": -5.0,
@@ -1568,7 +1568,7 @@
                             },
                             {
                                 "id": "scene_004",
-                                "name": "Marketing strategy record",
+                                "name": "Oracle PeopleSoft",
                                 "shape": "cube",
                                 "position": {
                                     "x": 0.75,
@@ -1578,7 +1578,7 @@
                             },
                             {
                                 "id": "scene_005",
-                                "name": "Supporting market analysis visuals",
+                                "name": "desktop computer",
                                 "shape": "cube",
                                 "position": {
                                     "x": 6.5,
@@ -1588,27 +1588,27 @@
                             },
                             {
                                 "id": "scene_006",
-                                "name": "Marketing strategy presentation",
+                                "name": "computer keyboard",
                                 "shape": "cube",
                                 "position": {
                                     "x": 12.25,
-                                    "y": 0.5,
+                                    "y": 0.75,
                                     "z": -17.5
                                 }
                             },
                             {
                                 "id": "scene_007",
-                                "name": "desktop_surface",
+                                "name": "computer mouse",
                                 "shape": "cube",
                                 "position": {
                                     "x": 16.5,
-                                    "y": 0.5,
+                                    "y": 0.75,
                                     "z": -17.5
                                 }
                             },
                             {
                                 "id": "scene_008",
-                                "name": "display_screen",
+                                "name": "office desk",
                                 "shape": "cube",
                                 "position": {
                                     "x": -16.5,
@@ -1618,132 +1618,12 @@
                             },
                             {
                                 "id": "scene_009",
-                                "name": "table_rows",
-                                "shape": "cube",
-                                "position": {
-                                    "x": -10.75,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_010",
-                                "name": "analytics_dashboard",
-                                "shape": "cube",
-                                "position": {
-                                    "x": -5.0,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_011",
-                                "name": "left_mouse_button",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 0.75,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_012",
-                                "name": "scroll_wheel",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 6.5,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_013",
-                                "name": "letter_keys",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 12.25,
-                                    "y": 0.75,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_014",
-                                "name": "enter_key",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 16.5,
-                                    "y": 0.75,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_015",
-                                "name": "strategy_record_form",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": -16.5,
-                                    "y": 0.75,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_016",
-                                "name": "image_frames",
+                                "name": "Marketing Manager",
                                 "shape": "sphere",
                                 "position": {
                                     "x": -10.75,
                                     "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_017",
-                                "name": "slide_canvas",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": -5.0,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_018",
-                                "name": "comments_pane",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 0.75,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_019",
-                                "name": "torso",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 6.5,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_020",
-                                "name": "fovea",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 12.25,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_021",
-                                "name": "right_index_fingertip_pad",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 16.5,
-                                    "y": 0.5,
-                                    "z": -5.0
+                                    "z": -11.2
                                 }
                             }
                         ]
@@ -1757,7 +1637,7 @@
                         "targetObjects": [
                             {
                                 "id": "scene_001",
-                                "name": "HubSpot software",
+                                "name": "CRM Database",
                                 "shape": "cube",
                                 "position": {
                                     "x": -16.5,
@@ -1767,7 +1647,7 @@
                             },
                             {
                                 "id": "scene_002",
-                                "name": "Google Slides",
+                                "name": "ERP Database",
                                 "shape": "cube",
                                 "position": {
                                     "x": -10.75,
@@ -1777,7 +1657,7 @@
                             },
                             {
                                 "id": "scene_003",
-                                "name": "Audience and campaign performance inputs",
+                                "name": "SAP software",
                                 "shape": "cube",
                                 "position": {
                                     "x": -5.0,
@@ -1787,7 +1667,7 @@
                             },
                             {
                                 "id": "scene_004",
-                                "name": "Marketing strategy record",
+                                "name": "Oracle PeopleSoft",
                                 "shape": "cube",
                                 "position": {
                                     "x": 0.75,
@@ -1797,7 +1677,7 @@
                             },
                             {
                                 "id": "scene_005",
-                                "name": "Supporting market analysis visuals",
+                                "name": "desktop computer",
                                 "shape": "cube",
                                 "position": {
                                     "x": 6.5,
@@ -1807,27 +1687,27 @@
                             },
                             {
                                 "id": "scene_006",
-                                "name": "Marketing strategy presentation",
+                                "name": "computer keyboard",
                                 "shape": "cube",
                                 "position": {
                                     "x": 12.25,
-                                    "y": 0.5,
+                                    "y": 0.75,
                                     "z": -17.5
                                 }
                             },
                             {
                                 "id": "scene_007",
-                                "name": "desktop_surface",
+                                "name": "computer mouse",
                                 "shape": "cube",
                                 "position": {
                                     "x": 16.5,
-                                    "y": 0.5,
+                                    "y": 0.75,
                                     "z": -17.5
                                 }
                             },
                             {
                                 "id": "scene_008",
-                                "name": "display_screen",
+                                "name": "office desk",
                                 "shape": "cube",
                                 "position": {
                                     "x": -16.5,
@@ -1837,132 +1717,12 @@
                             },
                             {
                                 "id": "scene_009",
-                                "name": "table_rows",
-                                "shape": "cube",
-                                "position": {
-                                    "x": -10.75,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_010",
-                                "name": "analytics_dashboard",
-                                "shape": "cube",
-                                "position": {
-                                    "x": -5.0,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_011",
-                                "name": "left_mouse_button",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 0.75,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_012",
-                                "name": "scroll_wheel",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 6.5,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_013",
-                                "name": "letter_keys",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 12.25,
-                                    "y": 0.75,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_014",
-                                "name": "enter_key",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 16.5,
-                                    "y": 0.75,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_015",
-                                "name": "strategy_record_form",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": -16.5,
-                                    "y": 0.75,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_016",
-                                "name": "image_frames",
+                                "name": "Marketing Manager",
                                 "shape": "sphere",
                                 "position": {
                                     "x": -10.75,
                                     "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_017",
-                                "name": "slide_canvas",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": -5.0,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_018",
-                                "name": "comments_pane",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 0.75,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_019",
-                                "name": "torso",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 6.5,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_020",
-                                "name": "fovea",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 12.25,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_021",
-                                "name": "right_index_fingertip_pad",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 16.5,
-                                    "y": 0.5,
-                                    "z": -5.0
+                                    "z": -11.2
                                 }
                             }
                         ]
@@ -1976,7 +1736,7 @@
                         "targetObjects": [
                             {
                                 "id": "scene_001",
-                                "name": "HubSpot software",
+                                "name": "CRM Database",
                                 "shape": "cube",
                                 "position": {
                                     "x": -16.5,
@@ -1986,7 +1746,7 @@
                             },
                             {
                                 "id": "scene_002",
-                                "name": "Google Slides",
+                                "name": "ERP Database",
                                 "shape": "cube",
                                 "position": {
                                     "x": -10.75,
@@ -1996,7 +1756,7 @@
                             },
                             {
                                 "id": "scene_003",
-                                "name": "Audience and campaign performance inputs",
+                                "name": "SAP software",
                                 "shape": "cube",
                                 "position": {
                                     "x": -5.0,
@@ -2006,7 +1766,7 @@
                             },
                             {
                                 "id": "scene_004",
-                                "name": "Marketing strategy record",
+                                "name": "Oracle PeopleSoft",
                                 "shape": "cube",
                                 "position": {
                                     "x": 0.75,
@@ -2016,7 +1776,7 @@
                             },
                             {
                                 "id": "scene_005",
-                                "name": "Supporting market analysis visuals",
+                                "name": "desktop computer",
                                 "shape": "cube",
                                 "position": {
                                     "x": 6.5,
@@ -2026,27 +1786,27 @@
                             },
                             {
                                 "id": "scene_006",
-                                "name": "Marketing strategy presentation",
+                                "name": "computer keyboard",
                                 "shape": "cube",
                                 "position": {
                                     "x": 12.25,
-                                    "y": 0.5,
+                                    "y": 0.75,
                                     "z": -17.5
                                 }
                             },
                             {
                                 "id": "scene_007",
-                                "name": "desktop_surface",
+                                "name": "computer mouse",
                                 "shape": "cube",
                                 "position": {
                                     "x": 16.5,
-                                    "y": 0.5,
+                                    "y": 0.75,
                                     "z": -17.5
                                 }
                             },
                             {
                                 "id": "scene_008",
-                                "name": "display_screen",
+                                "name": "office desk",
                                 "shape": "cube",
                                 "position": {
                                     "x": -16.5,
@@ -2056,132 +1816,12 @@
                             },
                             {
                                 "id": "scene_009",
-                                "name": "table_rows",
-                                "shape": "cube",
-                                "position": {
-                                    "x": -10.75,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_010",
-                                "name": "analytics_dashboard",
-                                "shape": "cube",
-                                "position": {
-                                    "x": -5.0,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_011",
-                                "name": "left_mouse_button",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 0.75,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_012",
-                                "name": "scroll_wheel",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 6.5,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_013",
-                                "name": "letter_keys",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 12.25,
-                                    "y": 0.75,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_014",
-                                "name": "enter_key",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 16.5,
-                                    "y": 0.75,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_015",
-                                "name": "strategy_record_form",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": -16.5,
-                                    "y": 0.75,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_016",
-                                "name": "image_frames",
+                                "name": "Marketing Manager",
                                 "shape": "sphere",
                                 "position": {
                                     "x": -10.75,
                                     "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_017",
-                                "name": "slide_canvas",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": -5.0,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_018",
-                                "name": "comments_pane",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 0.75,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_019",
-                                "name": "torso",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 6.5,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_020",
-                                "name": "fovea",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 12.25,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_021",
-                                "name": "right_index_fingertip_pad",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 16.5,
-                                    "y": 0.5,
-                                    "z": -5.0
+                                    "z": -11.2
                                 }
                             }
                         ]
@@ -2195,7 +1835,7 @@
                         "targetObjects": [
                             {
                                 "id": "scene_001",
-                                "name": "HubSpot software",
+                                "name": "CRM Database",
                                 "shape": "cube",
                                 "position": {
                                     "x": -16.5,
@@ -2205,7 +1845,7 @@
                             },
                             {
                                 "id": "scene_002",
-                                "name": "Google Slides",
+                                "name": "ERP Database",
                                 "shape": "cube",
                                 "position": {
                                     "x": -10.75,
@@ -2215,7 +1855,7 @@
                             },
                             {
                                 "id": "scene_003",
-                                "name": "Audience and campaign performance inputs",
+                                "name": "SAP software",
                                 "shape": "cube",
                                 "position": {
                                     "x": -5.0,
@@ -2225,7 +1865,7 @@
                             },
                             {
                                 "id": "scene_004",
-                                "name": "Marketing strategy record",
+                                "name": "Oracle PeopleSoft",
                                 "shape": "cube",
                                 "position": {
                                     "x": 0.75,
@@ -2235,7 +1875,7 @@
                             },
                             {
                                 "id": "scene_005",
-                                "name": "Supporting market analysis visuals",
+                                "name": "desktop computer",
                                 "shape": "cube",
                                 "position": {
                                     "x": 6.5,
@@ -2245,27 +1885,27 @@
                             },
                             {
                                 "id": "scene_006",
-                                "name": "Marketing strategy presentation",
+                                "name": "computer keyboard",
                                 "shape": "cube",
                                 "position": {
                                     "x": 12.25,
-                                    "y": 0.5,
+                                    "y": 0.75,
                                     "z": -17.5
                                 }
                             },
                             {
                                 "id": "scene_007",
-                                "name": "desktop_surface",
+                                "name": "computer mouse",
                                 "shape": "cube",
                                 "position": {
                                     "x": 16.5,
-                                    "y": 0.5,
+                                    "y": 0.75,
                                     "z": -17.5
                                 }
                             },
                             {
                                 "id": "scene_008",
-                                "name": "display_screen",
+                                "name": "office desk",
                                 "shape": "cube",
                                 "position": {
                                     "x": -16.5,
@@ -2275,132 +1915,12 @@
                             },
                             {
                                 "id": "scene_009",
-                                "name": "table_rows",
-                                "shape": "cube",
-                                "position": {
-                                    "x": -10.75,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_010",
-                                "name": "analytics_dashboard",
-                                "shape": "cube",
-                                "position": {
-                                    "x": -5.0,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_011",
-                                "name": "left_mouse_button",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 0.75,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_012",
-                                "name": "scroll_wheel",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 6.5,
-                                    "y": 0.5,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_013",
-                                "name": "letter_keys",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 12.25,
-                                    "y": 0.75,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_014",
-                                "name": "enter_key",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 16.5,
-                                    "y": 0.75,
-                                    "z": -11.2
-                                }
-                            },
-                            {
-                                "id": "scene_015",
-                                "name": "strategy_record_form",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": -16.5,
-                                    "y": 0.75,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_016",
-                                "name": "image_frames",
+                                "name": "Marketing Manager",
                                 "shape": "sphere",
                                 "position": {
                                     "x": -10.75,
                                     "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_017",
-                                "name": "slide_canvas",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": -5.0,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_018",
-                                "name": "comments_pane",
-                                "shape": "cube",
-                                "position": {
-                                    "x": 0.75,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_019",
-                                "name": "torso",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 6.5,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_020",
-                                "name": "fovea",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 12.25,
-                                    "y": 0.5,
-                                    "z": -5.0
-                                }
-                            },
-                            {
-                                "id": "scene_021",
-                                "name": "right_index_fingertip_pad",
-                                "shape": "sphere",
-                                "position": {
-                                    "x": 16.5,
-                                    "y": 0.5,
-                                    "z": -5.0
+                                    "z": -11.2
                                 }
                             }
                         ]
@@ -2603,7 +2123,7 @@
                                             "process": "marketing planning process: develop to optimise Marketing strategy record and Marketing strategy presentation",
                                             "steps": "30 planned actions",
                                             "what": "WHAT: transition Marketing strategy record from records_partial_18 to records_complete_24 and Marketing strategy presentation from files_partial_5 to files_complete_6",
-                                            "how": "HOW: execute COMMAND \u2192 PHYSICAL \u2192 PERCEIVE \u2192 DECODE \u2192 COMPARE loops for each action",
+                                            "how": "HOW: execute COMMAND → PHYSICAL → PERCEIVE → DECODE → COMPARE loops for each action",
                                             "who": "WHO: torso, fovea, right_index_fingertip_pad",
                                             "where": "WHERE: device coordinates x=0, y=300, z=720; x=0, y=520, z=980; x=120, y=340, z=760; x=210, y=250, z=735; x=0, y=260, z=735; x=180, y=410, z=755"
                                         }
@@ -2842,7 +2362,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-1-3 (Data) \u2014 appends the validated unread to read transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-1-3 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 1.8,
                                 "startTimeSec": 0.45,
                                 "endTimeSec": 2.25,
@@ -3066,7 +2586,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-1-5 (Data) \u2014 appends the validated idle to processing transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-1-5 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 120.0,
                                 "startTimeSec": 2.4,
                                 "endTimeSec": 122.4,
@@ -4301,7 +3821,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-4-13 (Data) \u2014 appends the validated unread to read transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-4-13 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 1.7,
                                 "startTimeSec": 123.63,
                                 "endTimeSec": 125.33,
@@ -4543,7 +4063,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-4-15 (Data) \u2014 appends the validated idle to processing transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-4-15 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 120.0,
                                 "startTimeSec": 125.48,
                                 "endTimeSec": 245.48,
@@ -5356,7 +4876,7 @@
                                             "process": "marketing planning process: develop to optimise Marketing strategy record and Marketing strategy presentation",
                                             "steps": "30 planned actions",
                                             "what": "WHAT: transition Marketing strategy record from records_partial_18 to records_complete_24 and Marketing strategy presentation from files_partial_5 to files_complete_6",
-                                            "how": "HOW: execute COMMAND \u2192 PHYSICAL \u2192 PERCEIVE \u2192 DECODE \u2192 COMPARE loops for each action",
+                                            "how": "HOW: execute COMMAND → PHYSICAL → PERCEIVE → DECODE → COMPARE loops for each action",
                                             "who": "WHO: torso, fovea, right_index_fingertip_pad",
                                             "where": "WHERE: device coordinates x=0, y=300, z=720; x=0, y=520, z=980; x=120, y=340, z=760; x=210, y=250, z=735; x=0, y=260, z=735; x=180, y=410, z=755"
                                         }
@@ -5595,7 +5115,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-1-3 (Data) \u2014 appends the validated unread to read transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-1-3 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 1.8,
                                 "startTimeSec": 0.45,
                                 "endTimeSec": 2.25,
@@ -5819,7 +5339,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-1-5 (Data) \u2014 appends the validated idle to processing transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-1-5 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 120.0,
                                 "startTimeSec": 2.4,
                                 "endTimeSec": 122.4,
@@ -7054,7 +6574,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-4-13 (Data) \u2014 appends the validated unread to read transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-4-13 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 1.7,
                                 "startTimeSec": 123.63,
                                 "endTimeSec": 125.33,
@@ -7296,7 +6816,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-4-15 (Data) \u2014 appends the validated idle to processing transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-4-15 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 120.0,
                                 "startTimeSec": 125.48,
                                 "endTimeSec": 245.48,
@@ -8109,7 +7629,7 @@
                                             "process": "marketing planning process: develop to optimise Marketing strategy record and Marketing strategy presentation",
                                             "steps": "30 planned actions",
                                             "what": "WHAT: transition Marketing strategy record from records_partial_18 to records_complete_24 and Marketing strategy presentation from files_partial_5 to files_complete_6",
-                                            "how": "HOW: execute COMMAND \u2192 PHYSICAL \u2192 PERCEIVE \u2192 DECODE \u2192 COMPARE loops for each action",
+                                            "how": "HOW: execute COMMAND → PHYSICAL → PERCEIVE → DECODE → COMPARE loops for each action",
                                             "who": "WHO: torso, fovea, right_index_fingertip_pad",
                                             "where": "WHERE: device coordinates x=0, y=300, z=720; x=0, y=520, z=980; x=120, y=340, z=760; x=210, y=250, z=735; x=0, y=260, z=735; x=180, y=410, z=755"
                                         }
@@ -8348,7 +7868,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-1-3 (Data) \u2014 appends the validated unread to read transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-1-3 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 1.8,
                                 "startTimeSec": 0.45,
                                 "endTimeSec": 2.25,
@@ -8572,7 +8092,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-1-5 (Data) \u2014 appends the validated idle to processing transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-1-5 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 120.0,
                                 "startTimeSec": 2.4,
                                 "endTimeSec": 122.4,
@@ -9807,7 +9327,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-4-13 (Data) \u2014 appends the validated unread to read transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-4-13 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 1.7,
                                 "startTimeSec": 123.63,
                                 "endTimeSec": 125.33,
@@ -10049,7 +9569,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-4-15 (Data) \u2014 appends the validated idle to processing transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-4-15 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 120.0,
                                 "startTimeSec": 125.48,
                                 "endTimeSec": 245.48,
@@ -10862,7 +10382,7 @@
                                             "process": "marketing planning process: develop to optimise Marketing strategy record and Marketing strategy presentation",
                                             "steps": "30 planned actions",
                                             "what": "WHAT: transition Marketing strategy record from records_partial_18 to records_complete_24 and Marketing strategy presentation from files_partial_5 to files_complete_6",
-                                            "how": "HOW: execute COMMAND \u2192 PHYSICAL \u2192 PERCEIVE \u2192 DECODE \u2192 COMPARE loops for each action",
+                                            "how": "HOW: execute COMMAND → PHYSICAL → PERCEIVE → DECODE → COMPARE loops for each action",
                                             "who": "WHO: torso, fovea, right_index_fingertip_pad",
                                             "where": "WHERE: device coordinates x=0, y=300, z=720; x=0, y=520, z=980; x=120, y=340, z=760; x=210, y=250, z=735; x=0, y=260, z=735; x=180, y=410, z=755"
                                         }
@@ -11101,7 +10621,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-1-3 (Data) \u2014 appends the validated unread to read transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-1-3 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 1.8,
                                 "startTimeSec": 0.45,
                                 "endTimeSec": 2.25,
@@ -11325,7 +10845,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-1-5 (Data) \u2014 appends the validated idle to processing transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-1-5 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 120.0,
                                 "startTimeSec": 2.4,
                                 "endTimeSec": 122.4,
@@ -12560,7 +12080,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-4-13 (Data) \u2014 appends the validated unread to read transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-4-13 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 1.7,
                                 "startTimeSec": 123.63,
                                 "endTimeSec": 125.33,
@@ -12802,7 +12322,7 @@
                                 "isBranch": false,
                                 "targetObjectId": "cognitive_009",
                                 "targetObjectName": "ImaginalBuffer",
-                                "description": "imaginal_module commits KF-4-15 (Data) \u2014 appends the validated idle to processing transition into declarative_module.stored_frames[].",
+                                "description": "imaginal_module commits KF-4-15 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                                 "expectedDuration": 120.0,
                                 "startTimeSec": 125.48,
                                 "endTimeSec": 245.48,
@@ -18047,7 +17567,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -18367,7 +17887,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -18697,7 +18217,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -19027,7 +18547,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -19357,7 +18877,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -19687,7 +19207,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -20017,7 +19537,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -20347,7 +19867,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -20677,7 +20197,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -21007,7 +20527,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -21337,7 +20857,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -21667,7 +21187,7 @@
                                     "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                     "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                     "tolerance": 0.5,
-                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                    "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                 },
                                 "routing_target_buffer": [
                                     "imaginal_buffer",
@@ -28870,7 +28390,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -29143,7 +28663,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -29411,7 +28931,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -29676,7 +29196,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -29942,7 +29462,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -30219,7 +29739,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -30502,7 +30022,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -30785,7 +30305,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -31068,7 +30588,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -31351,7 +30871,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -31634,7 +31154,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -31917,7 +31437,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -32200,7 +31720,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -32465,7 +31985,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -32731,7 +32251,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -33008,7 +32528,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -33291,7 +32811,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -33574,7 +33094,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -33857,7 +33377,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -34140,7 +33660,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -34407,7 +33927,7 @@
                                             "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
                                             "derivation_method": "average Warriner ratings of words describing the post-action moment",
                                             "tolerance": 0.5,
-                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+                                            "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment — not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
                                         },
                                         "routing_target_buffer": [
                                             "imaginal_buffer",
@@ -36345,7 +35865,7 @@
                             },
                             "writeCount": 46,
                             "rigNaming": {
-                                "convention": "mixamorig:<Bone> \u2014 full Mixamo skeleton; Left/Right mirror-identical. Fingers: mixamorig:<Side>Hand<Finger><Joint>",
+                                "convention": "mixamorig:<Bone> — full Mixamo skeleton; Left/Right mirror-identical. Fingers: mixamorig:<Side>Hand<Finger><Joint>",
                                 "contact_point": "key-press / click contact = fingertip tip = Index4_end"
                             },
                             "distinctEffectors": {
@@ -39960,7 +39480,7 @@
                                                     }
                                                 ],
                                                 "what": "WHAT: transition pricing strategy and customer satisfaction artifacts from incomplete states to complete balanced outputs",
-                                                "how": "HOW: execute COMMAND \u2192 PHYSICAL \u2192 PERCEIVE \u2192 DECODE \u2192 COMPARE loops",
+                                                "how": "HOW: execute COMMAND → PHYSICAL → PERCEIVE → DECODE → COMPARE loops",
                                                 "who": "WHO: torso, fovea, right_index_fingertip_pad, frontal_lobe",
                                                 "where": "WHERE: device coordinates x=150..290, y=260..520, z=0..740"
                                             }
@@ -49315,7 +48835,7 @@
                                     }
                                 ],
                                 "what": "WHAT: transition pricing strategy and customer satisfaction artifacts from incomplete states to complete balanced outputs",
-                                "how": "HOW: execute COMMAND \u2192 PHYSICAL \u2192 PERCEIVE \u2192 DECODE \u2192 COMPARE loops",
+                                "how": "HOW: execute COMMAND → PHYSICAL → PERCEIVE → DECODE → COMPARE loops",
                                 "who": "WHO: torso, fovea, right_index_fingertip_pad, frontal_lobe",
                                 "where": "WHERE: device coordinates x=150..290, y=260..520, z=0..740"
                             }
@@ -50608,7 +50128,7 @@
                     }
                 },
                 "operatingParagraph": {
-                    "complete": "Over 2.0 seconds, I rested my torso against the desktop surface at x=150 y=480 z=720, and the desktop surface changed from clear to supporting. Then, over 0.5 seconds at x=120 y=260 z=740, I directed my gaze to the monitor screen, and the monitor screen changed from unfocused to focused. Next, over 1.8 seconds at x=120 y=260 z=740, I changed the customer record table from unread to read by taking in the CRM evidence it contained. After that, over 0.6 seconds at x=120 y=260 z=740, I focused on the SAP pricing dashboard, and the pricing dashboard changed from unfocused to focused. Then, while SAP software at x=120 y=260 z=740 ran for 120.0 seconds, it changed from idle to processing as it computed pricing strategies from CRM inputs and I monitored the generation of pricing strategy output. Next, over 0.1 seconds, I pressed the left mouse button at x=290 y=515 z=736 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. After that, over 0.09 seconds, I depressed the\u2211 enter key at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Then, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over another 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over another 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 0.14 seconds, I pressed the scroll wheel at x=290 y=515 z=736 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled. Then, over 1.7 seconds at x=120 y=260 z=740, I changed the resource planning table from unread to read by taking in the ERP evidence it contained. After that, over 0.6 seconds at x=120 y=260 z=740, I focused on the Oracle PeopleSoft pricing workspace, and the pricing workspace changed from unfocused to focused. Then, while Oracle PeopleSoft at x=120 y=260 z=740 ran for 120.0 seconds, it changed from idle to processing as it computed pricing strategies from ERP inputs and I monitored the imported resource-driven output. Next, over 0.1 seconds, I pressed the left mouse button at x=290 y=515 z=736 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. After that, over 0.09 seconds, I depressed the enter key at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Then, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Finally, over 1.2 seconds at x=120 y=260 z=740, I changed the analytics panel from unread to read by taking in the displayed analysis, and then over the next 2.4 seconds at x=140 y=760 z=0, I processed the final comparison in my frontal lobe so that its decision state changed from undecided to decided.",
+                    "complete": "Over 2.0 seconds, I rested my torso against the desktop surface at x=150 y=480 z=720, and the desktop surface changed from clear to supporting. Then, over 0.5 seconds at x=120 y=260 z=740, I directed my gaze to the monitor screen, and the monitor screen changed from unfocused to focused. Next, over 1.8 seconds at x=120 y=260 z=740, I changed the customer record table from unread to read by taking in the CRM evidence it contained. After that, over 0.6 seconds at x=120 y=260 z=740, I focused on the SAP pricing dashboard, and the pricing dashboard changed from unfocused to focused. Then, while SAP software at x=120 y=260 z=740 ran for 120.0 seconds, it changed from idle to processing as it computed pricing strategies from CRM inputs and I monitored the generation of pricing strategy output. Next, over 0.1 seconds, I pressed the left mouse button at x=290 y=515 z=736 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. After that, over 0.09 seconds, I depressed the∑ enter key at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Then, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over another 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over another 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 0.14 seconds, I pressed the scroll wheel at x=290 y=515 z=736 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled. Then, over 1.7 seconds at x=120 y=260 z=740, I changed the resource planning table from unread to read by taking in the ERP evidence it contained. After that, over 0.6 seconds at x=120 y=260 z=740, I focused on the Oracle PeopleSoft pricing workspace, and the pricing workspace changed from unfocused to focused. Then, while Oracle PeopleSoft at x=120 y=260 z=740 ran for 120.0 seconds, it changed from idle to processing as it computed pricing strategies from ERP inputs and I monitored the imported resource-driven output. Next, over 0.1 seconds, I pressed the left mouse button at x=290 y=515 z=736 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. After that, over 0.09 seconds, I depressed the enter key at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Then, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Finally, over 1.2 seconds at x=120 y=260 z=740, I changed the analytics panel from unread to read by taking in the displayed analysis, and then over the next 2.4 seconds at x=140 y=760 z=0, I processed the final comparison in my frontal lobe so that its decision state changed from undecided to decided.",
                     "chunks": [
                         {
                             "chunk_id": "CHUNK-1",
@@ -51091,7 +50611,7 @@
                     ]
                 },
                 "actionSpace": {
-                    "note": "Per-object and per-body-part action repertoires. The agent selects ONE per step; the correct choice matches the scene's klein frame, every other entry is a negative (wrong action / wrong time). Repertoire is the real affordance set \u2014 not fabricated.",
+                    "note": "Per-object and per-body-part action repertoires. The agent selects ONE per step; the correct choice matches the scene's klein frame, every other entry is a negative (wrong action / wrong time). Repertoire is the real affordance set — not fabricated.",
                     "objectActions": {
                         "customer_record_table": [
                             {

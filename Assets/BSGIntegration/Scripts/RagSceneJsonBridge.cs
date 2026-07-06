@@ -130,7 +130,7 @@ public static class RagSceneJsonBridge
         if (model.cognitiveObjects != null)
             cognitiveObjects.AddRange(model.cognitiveObjects);
 
-        string initialStatesJson = BuildInitialStatesJson(cognitiveObjects, model.zones, model.targetObjects);
+        string initialStatesJson = BuildInitialStatesJson(cognitiveObjects, model.sceneEntities, model.zones, model.targetObjects);
         string stationActionsJson = BuildStationActionsJson(cognitiveObjects, model.zones);
 
         // Read cognitive execution policy to determine leader agent
@@ -287,8 +287,8 @@ public static class RagSceneJsonBridge
                 continue;
             if (tid.StartsWith("cognitive_", StringComparison.OrdinalIgnoreCase))
                 continue;
-            // RAG initialStates use per-zone keys (e.g. json_record_set_zone0) from zones[].targetObjects.
-            // Physical steps still reference the bare id (json_record_set). Do not spawn duplicate ghosts.
+            // RAG initialStates use per-zone keys (e.g. scene_006_zone0) from sceneEntities[].worldPosition.
+            // Physical steps still reference the bare id (scene_006). Do not spawn duplicate ghosts.
             if (InitialStatesHaveZoneQualifiedTarget(sceneData.initialStates, tid))
                 continue;
 
@@ -498,7 +498,11 @@ public static class RagSceneJsonBridge
         }
     }
 
-    static string BuildInitialStatesJson(List<RagCognitiveObject> cognitiveObjects, RagZoneConfig[] zones = null, RagTargetObject[] legacyTargetObjects = null)
+    static string BuildInitialStatesJson(
+        List<RagCognitiveObject> cognitiveObjects,
+        RagSceneEntity[] sceneEntities = null,
+        RagZoneConfig[] zones = null,
+        RagTargetObject[] legacyTargetObjects = null)
     {
         var sb = new StringBuilder();
         sb.Append("{");
@@ -506,6 +510,7 @@ public static class RagSceneJsonBridge
         bool first = true;
         bool hasZones = zones != null && zones.Length > 0;
         int numZones = hasZones ? zones.Length : 1;
+        bool useSceneEntities = sceneEntities != null && sceneEntities.Length > 0;
 
         for (int zoneN = 0; zoneN < numZones; zoneN++)
         {
@@ -515,6 +520,7 @@ public static class RagSceneJsonBridge
 
             RagTargetObject[] zoneTargets = hasZones ? zones[zoneN].targetObjects : legacyTargetObjects;
             HashSet<string> cognitiveObjectIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> sceneEntityIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             for (int i = 0; i < cognitiveObjects.Count; i++)
             {
@@ -588,7 +594,23 @@ public static class RagSceneJsonBridge
                 AppendSceneEntityInitialState(sb, ref first, c, placement, baseId, hasZones, zoneIndex, offset, i);
             }
 
-            if (zoneTargets != null)
+            // Physical environment: prefer sceneEntities (zone 0 layout) over zones[].targetObjects meronym cubes.
+            if (useSceneEntities && zoneIndex == 0)
+            {
+                for (int s = 0; s < sceneEntities.Length; s++)
+                {
+                    RagSceneEntity entity = sceneEntities[s];
+                    if (!ShouldSpawnSceneEntity(entity))
+                        continue;
+
+                    string baseId = entity.id.Trim();
+                    if (!sceneEntityIds.Add(baseId))
+                        continue;
+
+                    AppendRagSceneEntityInitialState(sb, ref first, entity, baseId, hasZones, zoneIndex, offset, s);
+                }
+            }
+            else if (!useSceneEntities && zoneTargets != null)
             {
                 for (int t = 0; t < zoneTargets.Length; t++)
                 {
@@ -768,6 +790,85 @@ public static class RagSceneJsonBridge
         sb.Append(",");
         sb.Append("\n      \"requiredSkills\": []");
         sb.Append("\n    }");
+    }
+
+    static bool ShouldSpawnSceneEntity(RagSceneEntity entity)
+    {
+        if (entity == null || string.IsNullOrWhiteSpace(entity.id))
+            return false;
+        return entity.visible;
+    }
+
+    static void AppendRagSceneEntityInitialState(
+        StringBuilder sb,
+        ref bool first,
+        RagSceneEntity entity,
+        string baseId,
+        bool hasZones,
+        int zoneIndex,
+        Vector3 offset,
+        int fallbackIndex)
+    {
+        string toolKey = hasZones ? $"{baseId}_zone{zoneIndex}" : baseId;
+
+        float lx = entity.worldPosition != null ? entity.worldPosition.x
+            : entity.position != null ? entity.position.x
+            : FallbackSceneEntityX(fallbackIndex);
+        float ly = entity.worldPosition != null ? entity.worldPosition.y
+            : entity.position != null ? entity.position.y
+            : 0.5f;
+        float lz = entity.worldPosition != null ? entity.worldPosition.z
+            : entity.position != null ? entity.position.z
+            : FallbackSceneEntityZ(fallbackIndex);
+
+        float wx = lx + offset.x;
+        float wz = lz + offset.z;
+        if (hasZones) ClampWorldPositionToZone(offset, ref wx, ref wz);
+
+        string displayName = string.IsNullOrWhiteSpace(entity.name) ? baseId : entity.name;
+        string type = string.IsNullOrWhiteSpace(entity.type) ? "tool" : entity.type.Trim().ToLowerInvariant();
+        string shape = entity.geometry != null && !string.IsNullOrWhiteSpace(entity.geometry.shape)
+            ? entity.geometry.shape.Trim().ToLowerInvariant()
+            : DefaultSceneEntityShape(type);
+        string color = DefaultSceneEntityColor(type);
+        string state = string.IsNullOrWhiteSpace(entity.initialState) ? string.Empty : entity.initialState;
+        RagCognitiveObject metadataSource = ToCognitiveObjectAdapter(entity);
+
+        if (!first) sb.Append(",");
+        first = false;
+        sb.Append("\n    \"").Append(EscapeJson(toolKey)).Append("\": {");
+        sb.Append("\n      \"objectId\": \"").Append(EscapeJson(toolKey)).Append("\",");
+        sb.Append("\n      \"name\": \"").Append(EscapeJson(displayName)).Append("\",");
+        sb.Append("\n      \"type\": \"").Append(EscapeJson(type)).Append("\",");
+        sb.Append("\n      \"shape\": \"").Append(EscapeJson(shape)).Append("\",");
+        sb.Append("\n      \"initialState\": \"").Append(EscapeJson(state)).Append("\",");
+        sb.Append("\n      \"visible\": ").Append(entity.visible ? "true" : "false").Append(",");
+        sb.Append("\n      \"isCognitiveStation\": false,");
+        sb.Append("\n      \"isAvailable\": true,");
+        sb.Append("\n      \"isActive\": false,");
+        sb.Append("\n      \"currentUser\": null,");
+        sb.Append("\n      \"position\": { \"x\": ").Append(ToJsonNumber(wx)).Append(", \"y\": ").Append(ToJsonNumber(ly)).Append(", \"z\": ").Append(ToJsonNumber(wz)).Append(" },");
+        sb.Append("\n      \"color\": \"").Append(EscapeJson(color)).Append("\",");
+        sb.Append("\n      \"properties\": { \"isCognitiveStation\": false },");
+        AppendDeclarativeMetadataJson(sb, toolKey, displayName, type, state, metadataSource, null);
+        sb.Append(",");
+        sb.Append("\n      \"requiredSkills\": []");
+        sb.Append("\n    }");
+    }
+
+    static RagCognitiveObject ToCognitiveObjectAdapter(RagSceneEntity entity)
+    {
+        if (entity == null)
+            return new RagCognitiveObject();
+
+        return new RagCognitiveObject
+        {
+            id = entity.id,
+            type = entity.type,
+            name = entity.name,
+            initialState = entity.initialState,
+            visible = entity.visible
+        };
     }
 
     static void AppendDeclarativeMetadataJson(
@@ -1657,6 +1758,7 @@ public class RagUnityDataInnerModel
     public string sceneId;
     public RagTaskContextLite taskContext;
     public RagCognitiveObject[] cognitiveObjects;
+    public RagSceneEntity[] sceneEntities;
     public RagMentalAgentLite[] mentalAgents;
     public RagZoneConfig[] zones;
     public RagTargetObject[] targetObjects;
@@ -1704,6 +1806,27 @@ public class RagVector3Json
     public float x;
     public float y;
     public float z;
+}
+
+[Serializable]
+public class RagSceneEntityGeometryLite
+{
+    public string type;
+    public string shape;
+}
+
+[Serializable]
+public class RagSceneEntity
+{
+    public string id;
+    public string type;
+    public string name;
+    public bool visible = true;
+    public RagSceneEntityGeometryLite geometry;
+    public RagVector3Json position;
+    public RagVector3Json worldPosition;
+    public string initialState;
+    public string placementRole;
 }
 
 [Serializable]
