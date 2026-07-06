@@ -87,6 +87,10 @@ public class ActionSequenceStep
     public string preposition;
     public string targetObjectId;
     public string targetObjectName;
+    /// <summary>Physical-agent step: meronym / scene object name (RAG <c>target</c>).</summary>
+    public string physicalTarget;
+    /// <summary>Physical-agent step: root sceneEntities[] id containing <see cref="physicalTarget"/> meronym (RAG <c>target_id</c>).</summary>
+    public string physicalTargetId;
     /// <summary>Optional RAG subtype for physical/manual actions, e.g. menu_open.</summary>
     public string actionSubType;
     /// <summary>Menu group shown by this physical action, if any.</summary>
@@ -806,12 +810,60 @@ public class AgentSequenceManager : MonoBehaviour
         try
         {
             int physStart = json.IndexOf("\"physicalAgents\":");
-            if (physStart == -1)
+            if (physStart >= 0)
             {
-                Debug.Log("ℹ️ AgentSequenceManager: No physicalAgents section found in JSON.");
+                ParsePhysicalAgentsArray(json, physStart);
                 return;
             }
 
+            int legacyStart = IndexOfSingularPhysicalAgentKey(json);
+            if (legacyStart >= 0)
+            {
+                ParseSingularPhysicalAgent(json, legacyStart);
+                return;
+            }
+
+            Debug.Log("ℹ️ AgentSequenceManager: No physicalAgents / physicalAgent section found in JSON.");
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"❌ AgentSequenceManager: Error parsing physicalAgents steps: {e.Message}");
+        }
+    }
+
+    static int IndexOfSingularPhysicalAgentKey(string json)
+    {
+        const string tok = "\"physicalAgent\"";
+        int pos = 0;
+        while (pos < json.Length)
+        {
+            int idx = json.IndexOf(tok, pos, StringComparison.Ordinal);
+            if (idx < 0) return -1;
+            int after = idx + tok.Length;
+            while (after < json.Length && char.IsWhiteSpace(json[after])) after++;
+            if (after < json.Length && json[after] == ':')
+                return idx;
+            pos = idx + tok.Length;
+        }
+        return -1;
+    }
+
+    void ParseSingularPhysicalAgent(string json, int keyIdx)
+    {
+        int objStart = json.IndexOf("{", keyIdx);
+        if (objStart < 0) return;
+
+        int objEnd = FindMatchingBrace(json, objStart);
+        if (objEnd < 0) return;
+
+        string agentJson = json.Substring(objStart, objEnd - objStart + 1);
+        string agentId = ExtractStringValue(agentJson, "agentId");
+        if (string.IsNullOrEmpty(agentId)) agentId = "P1";
+        ParsePhysicalAgentStepsObject(agentJson, agentId);
+    }
+
+    void ParsePhysicalAgentsArray(string json, int physStart)
+    {
             int arrayStart = json.IndexOf("[", physStart);
             if (arrayStart == -1) return;
 
@@ -834,40 +886,34 @@ public class AgentSequenceManager : MonoBehaviour
                 string agentJson = physArrayJson.Substring(agentStart, agentEnd - agentStart + 1);
                 string agentId = ExtractStringValue(agentJson, "agentId");
                 if (string.IsNullOrEmpty(agentId)) agentId = "PhysicalAgent";
-
-                int stepsStart = agentJson.IndexOf("\"steps\":");
-                if (stepsStart != -1)
-                {
-                    int stepsArrStart = agentJson.IndexOf("[", stepsStart);
-                    if (stepsArrStart != -1)
-                    {
-                        int stepsArrEnd = FindMatchingBracket(agentJson, stepsArrStart);
-                        if (stepsArrEnd != -1)
-                        {
-                            string stepsArrayJson = agentJson.Substring(stepsArrStart, stepsArrEnd - stepsArrStart + 1);
-                            AgentSequenceData physData = new AgentSequenceData(agentId);
-                            ParseStepsFromArrayImproved(physData, stepsArrayJson);
-
-                            if (physData.actionSequence.Count > 0)
-                            {
-                                // Stamp agentRole = "P" on each step if not set by JSON
-                                foreach (var step in physData.actionSequence)
-                                    if (string.IsNullOrEmpty(step.agentRole)) step.agentRole = "P";
-
-                                physicalAgentSequences[agentId] = physData;
-                                Debug.Log($"⚙️ AgentSequenceManager: Loaded physicalAgents steps for {agentId}: {physData.actionSequence.Count} steps");
-                            }
-                        }
-                    }
-                }
-
+                ParsePhysicalAgentStepsObject(agentJson, agentId);
                 pos = agentEnd + 1;
             }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"❌ AgentSequenceManager: Error parsing physicalAgents steps: {e.Message}");
-        }
+    }
+
+    void ParsePhysicalAgentStepsObject(string agentJson, string agentId)
+    {
+                int stepsStart = agentJson.IndexOf("\"steps\":");
+                if (stepsStart == -1) return;
+
+                int stepsArrStart = agentJson.IndexOf("[", stepsStart);
+                if (stepsArrStart == -1) return;
+
+                int stepsArrEnd = FindMatchingBracket(agentJson, stepsArrStart);
+                if (stepsArrEnd == -1) return;
+
+                string stepsArrayJson = agentJson.Substring(stepsArrStart, stepsArrEnd - stepsArrStart + 1);
+                AgentSequenceData physData = new AgentSequenceData(agentId);
+                ParseStepsFromArrayImproved(physData, stepsArrayJson);
+
+                if (physData.actionSequence.Count > 0)
+                {
+                    foreach (var step in physData.actionSequence)
+                        if (string.IsNullOrEmpty(step.agentRole)) step.agentRole = "P";
+
+                    physicalAgentSequences[agentId] = physData;
+                    Debug.Log($"⚙️ AgentSequenceManager: Loaded physical agent steps for {agentId}: {physData.actionSequence.Count} steps");
+                }
     }
     
     /// <summary>
@@ -982,6 +1028,8 @@ public class AgentSequenceManager : MonoBehaviour
             step.preposition = ExtractStringValue(stepJson, "preposition");
             step.targetObjectId = ExtractStringValue(stepJson, "targetObjectId");
             step.targetObjectName = ExtractStringValue(stepJson, "targetObjectName");
+            step.physicalTarget = ExtractStringValue(stepJson, "target");
+            step.physicalTargetId = ExtractStringValue(stepJson, "target_id");
             step.actionSubType = ExtractStringValue(stepJson, "actionSubType");
             step.menuId = ExtractStringValue(stepJson, "menuId");
             step.menuOptions = ExtractStringArray(stepJson, "menuOptions");
@@ -1665,7 +1713,9 @@ public class AgentSequenceManager : MonoBehaviour
         ActionSequenceStep currentStep = sequence.GetCurrentStep();
         if (currentStep == null) return null;
         
-        string targetId = currentStep.targetObjectId;
+        string targetId = PhysicalStepTargetResolver.IsPhysicalStep(currentStep)
+            ? PhysicalStepTargetResolver.ResolveObjectId(currentStep, zoneIndex)
+            : currentStep.targetObjectId;
         if (string.IsNullOrEmpty(targetId)) return null;
 
         if (zoneIndex >= 0)

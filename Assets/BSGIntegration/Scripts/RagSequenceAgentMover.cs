@@ -640,7 +640,8 @@ public class RagSequenceAgentMover : MonoBehaviour
             dwellTimer = 0f;
             _targetPosCache.Remove(RagMenuController.GetSelectedOptionTargetId(step));
             _targetMissingUntil.Remove(RagMenuController.GetSelectedOptionTargetId(step));
-            RagMenuController.EnsureInScene()?.ShowButtonPressedFeedback(step.targetObjectId, zoneIndex);
+            RagMenuController.EnsureInScene()?.ShowButtonPressedFeedback(
+                PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex), zoneIndex);
             RagMenuController.EnsureInScene()?.ShowMenuForStep(step, zoneIndex);
             Debug.Log($"[RagMover] {agentId} opened menu for {step.stepId}; selecting {RagMenuController.GetSelectedOptionTargetId(step)}");
             return;
@@ -1697,14 +1698,24 @@ public class RagSequenceAgentMover : MonoBehaviour
 
     string ResolveEffectiveTargetObjectId(ActionSequenceStep step)
     {
-        if (!RagMenuController.IsMenuStep(step))
-            return step != null ? step.targetObjectId : "";
+        if (step == null)
+            return string.Empty;
 
-        if (!IsMenuOpenedForStep(step))
-            return step.targetObjectId;
+        if (RagMenuController.IsMenuStep(step))
+        {
+            if (!IsMenuOpenedForStep(step))
+                return PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
 
-        string selected = RagMenuController.GetSelectedOptionTargetId(step);
-        return !string.IsNullOrWhiteSpace(selected) ? selected : step.targetObjectId;
+            string selected = RagMenuController.GetSelectedOptionTargetId(step);
+            return !string.IsNullOrWhiteSpace(selected)
+                ? selected
+                : PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
+        }
+
+        if (!isMentalAgent && PhysicalStepTargetResolver.IsPhysicalStep(step))
+            return PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
+
+        return step.targetObjectId ?? string.Empty;
     }
 
     bool IsMenuOpenedForStep(ActionSequenceStep step)

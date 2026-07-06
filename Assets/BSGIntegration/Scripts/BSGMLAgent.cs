@@ -3564,20 +3564,20 @@ public class BSGMLAgent : Agent
         Vector3? pos = ResolvePhysicalTargetPosition(targetId);
 
         // If cognitive target not found in scene, fall back to JSON target.
-        if (!pos.HasValue && !string.IsNullOrWhiteSpace(cognitiveTarget) && targetId != currentStep.targetObjectId)
+        if (!pos.HasValue && !string.IsNullOrWhiteSpace(cognitiveTarget) && targetId != PhysicalStepTargetResolver.ResolveObjectId(currentStep, zoneIndex))
         {
-            Debug.LogWarning($"[{agentId}] Cognitive target '{targetId}' not found in scene — falling back to JSON target '{currentStep.targetObjectId}'");
-            targetId = currentStep.targetObjectId;
+            string jsonFallback = PhysicalStepTargetResolver.ResolveObjectId(currentStep, zoneIndex);
+            Debug.LogWarning($"[{agentId}] Cognitive target '{targetId}' not found in scene — falling back to physical target '{jsonFallback}'");
+            targetId = jsonFallback;
             pos = ResolvePhysicalTargetPosition(targetId);
         }
 
         if (pos.HasValue)
         {
-            // Register so sequenceManager helpers (GetDirectionToTarget etc.) use the correct position.
             sequenceManager.RegisterToolPosition(targetId, pos.Value);
-            // Also register under the original JSON ID so GetCurrentTargetPosition() finds it.
-            if (targetId != currentStep.targetObjectId)
-                sequenceManager.RegisterToolPosition(currentStep.targetObjectId, pos.Value);
+            string aliasId = PhysicalStepTargetResolver.ResolveObjectId(currentStep, zoneIndex);
+            if (!string.IsNullOrWhiteSpace(aliasId) && !string.Equals(aliasId, targetId, StringComparison.OrdinalIgnoreCase))
+                sequenceManager.RegisterToolPosition(aliasId, pos.Value);
         }
         else
         {
@@ -3710,16 +3710,18 @@ public class BSGMLAgent : Agent
     string ResolvePhysicalStepTargetId(ActionSequenceStep step)
     {
         if (step == null) return "";
+
         if (RagMenuController.IsMenuStep(step))
         {
             if (!IsMenuOpenedForStep(step))
-                return step.targetObjectId;
+                return PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
 
             string selected = RagMenuController.GetSelectedOptionTargetId(step);
             if (!string.IsNullOrWhiteSpace(selected))
                 return selected;
         }
-        return step.targetObjectId;
+
+        return PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
     }
 
     void ResetMenuSubActionState(ActionSequenceStep step)

@@ -405,7 +405,9 @@ public class PhysicalObservationLoop : MonoBehaviour
             AgentSequenceData seq = AgentSequenceManager.Instance.GetSequence(pAgentId);
             if (seq?.actionSequence != null && seq.actionSequence.Count > 0)
             {
-                string intended = $"{seq.actionSequence[0].targetObjectId}_zone{zoneIndex}";
+                ActionSequenceStep first = seq.actionSequence[0];
+                string baseTarget = PhysicalStepTargetResolver.ResolveObjectId(first, zoneIndex);
+                string intended = $"{baseTarget}_zone{zoneIndex}";
                 foreach (var e in observations)
                 {
                     if (e.toolId == intended)

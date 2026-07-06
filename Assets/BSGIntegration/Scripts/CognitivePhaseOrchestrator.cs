@@ -866,7 +866,11 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         }
         else
         {
-            Debug.Log($"[CognitivePhaseOrchestrator] ⚙️ Dispatching PHYSICAL step: {step.stepId} → {step.targetObjectId} ({step.actionVerb})");
+            string physTarget = PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
+            string physLabel = !string.IsNullOrWhiteSpace(step.physicalTarget)
+                ? step.physicalTarget
+                : step.targetObjectName;
+            Debug.Log($"[CognitivePhaseOrchestrator] ⚙️ Dispatching PHYSICAL step: {step.stepId} → {physTarget} ({physLabel}, {step.actionType})");
             OnPhysicalStepDispatched?.Invoke(step.stepId);
         }
     }

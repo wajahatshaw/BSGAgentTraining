@@ -2078,6 +2078,12 @@ public class SceneGenerator : MonoBehaviour
             Debug.LogWarning($"[SceneGenerator] GetTargetPositionById: '{objectId}' not found (zone={zoneIndex}) — further misses for this key are silent.");
         return Vector3.zero;
     }
+
+    /// <summary>Resolve a physical-step target name to a spawned tool id in <see cref="sceneData"/>.</summary>
+    public string ResolveObjectIdByName(string objectName, int zoneIndex = -1)
+    {
+        return PhysicalStepTargetResolver.ResolveObjectIdByTargetName(objectName, zoneIndex);
+    }
     
     public void UpdateToolState(string toolId, ToolState newState)
     {

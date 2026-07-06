@@ -361,6 +361,22 @@ public static class RagSceneJsonBridge
             if (!string.IsNullOrEmpty(id)) into.Add(id);
             pos = q2 + 1;
         }
+
+        pos = 0;
+        while (pos < stepsArrayJson.Length)
+        {
+            int key = stepsArrayJson.IndexOf("\"target_id\"", pos, StringComparison.Ordinal);
+            if (key < 0) break;
+            int colon = stepsArrayJson.IndexOf(':', key);
+            if (colon < 0) break;
+            int q1 = stepsArrayJson.IndexOf('"', colon + 1);
+            if (q1 < 0) break;
+            int q2 = stepsArrayJson.IndexOf('"', q1 + 1);
+            if (q2 < 0) break;
+            string id = stepsArrayJson.Substring(q1 + 1, q2 - q1 - 1);
+            if (!string.IsNullOrEmpty(id)) into.Add(id);
+            pos = q2 + 1;
+        }
     }
 
     /// <summary>

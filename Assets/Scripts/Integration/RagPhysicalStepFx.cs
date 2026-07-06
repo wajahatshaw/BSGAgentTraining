@@ -17,12 +17,13 @@ public static class RagPhysicalStepFx
             menu?.HideAllMenus();
         }
 
-        if (!string.IsNullOrWhiteSpace(step.targetObjectId))
+        string navTargetId = PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
+        if (!string.IsNullOrWhiteSpace(navTargetId))
         {
             if (RagMenuController.IsMenuStep(step))
-                RagMenuController.EnsureInScene()?.ShowButtonPressedFeedback(step.targetObjectId, zoneIndex);
+                RagMenuController.EnsureInScene()?.ShowButtonPressedFeedback(navTargetId, zoneIndex);
 
-            FlashTarget(step.targetObjectId, zoneIndex, VerbToColor(step.actionVerb), 0.4f);
+            FlashTarget(navTargetId, zoneIndex, VerbToColor(step.actionVerb), 0.4f);
         }
 
         RagSequenceAgentMover physicalMover = FindDesignatedPhysicalMover(zoneIndex);

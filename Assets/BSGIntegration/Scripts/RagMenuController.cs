@@ -425,13 +425,17 @@ public class RagMenuController : MonoBehaviour
     // ── Helpers ──────────────────────────────────────────────────────────────
     static Vector3 ResolveAnchor(ActionSequenceStep step, int zoneIndex)
     {
-        if (SceneGenerator.Instance != null && !string.IsNullOrWhiteSpace(step.targetObjectId))
+        string objectId = PhysicalStepTargetResolver.IsPhysicalStep(step)
+            ? PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex)
+            : step.targetObjectId;
+
+        if (SceneGenerator.Instance != null && !string.IsNullOrWhiteSpace(objectId))
         {
-            Vector3 p = SceneGenerator.Instance.GetTargetPositionById(step.targetObjectId, zoneIndex);
+            Vector3 p = SceneGenerator.Instance.GetTargetPositionById(objectId, zoneIndex);
             if (p != Vector3.zero) return p;
         }
 
-        GameObject go = FindSceneObject(step.targetObjectId, zoneIndex);
+        GameObject go = FindSceneObject(objectId, zoneIndex);
         if (go != null) return go.transform.position;
 
         GameObject agent = FindAgent(zoneIndex);
