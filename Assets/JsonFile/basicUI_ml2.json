@@ -171,7 +171,9 @@
                         "position": null,
                         "meronyms": [
                             {
+                                "id": "scene_001_customer_record_table",
                                 "name": "customer_record_table",
+                                "meronym_type": "data_table",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -179,10 +181,19 @@
                                     "information",
                                     "data",
                                     "table"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_001_transaction_history_table",
                                 "name": "transaction_history_table",
+                                "meronym_type": "data_table",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -190,7 +201,14 @@
                                     "information",
                                     "data",
                                     "table"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             }
                         ],
                         "fieldState": {
@@ -209,9 +227,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": -16.5,
+                            "x": -9.0,
                             "y": 0.5,
-                            "z": -17.5
+                            "z": -16.0
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -254,7 +272,9 @@
                         "position": null,
                         "meronyms": [
                             {
+                                "id": "scene_002_resource_planning_table",
                                 "name": "resource_planning_table",
+                                "meronym_type": "data_table",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -262,10 +282,19 @@
                                     "information",
                                     "data",
                                     "table"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_002_financial_data_table",
                                 "name": "financial_data_table",
+                                "meronym_type": "data_table",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -273,7 +302,14 @@
                                     "information",
                                     "data",
                                     "table"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             }
                         ],
                         "fieldState": {
@@ -292,9 +328,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": -10.75,
+                            "x": -3.0,
                             "y": 0.5,
-                            "z": -17.5
+                            "z": -16.0
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -379,7 +415,9 @@
                         "position": null,
                         "meronyms": [
                             {
+                                "id": "scene_003_pricing_dashboard",
                                 "name": "pricing_dashboard",
+                                "meronym_type": "screen",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -388,10 +426,19 @@
                                     "writing",
                                     "display",
                                     "screen_display"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_003_effectiveness_panel",
                                 "name": "effectiveness_panel",
+                                "meronym_type": "screen",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -400,10 +447,19 @@
                                     "writing",
                                     "display",
                                     "screen_display"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_003_market_segment_grid",
                                 "name": "market_segment_grid",
+                                "meronym_type": "screen",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -412,10 +468,19 @@
                                     "writing",
                                     "display",
                                     "screen_display"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_003_api_integration_window",
                                 "name": "api_integration_window",
+                                "meronym_type": "screen",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -424,7 +489,14 @@
                                     "writing",
                                     "display",
                                     "screen_display"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             }
                         ],
                         "fieldState": {
@@ -444,9 +516,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": -5.0,
+                            "x": 3.0,
                             "y": 0.5,
-                            "z": -17.5
+                            "z": -16.0
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -510,7 +582,9 @@
                         "position": null,
                         "meronyms": [
                             {
+                                "id": "scene_004_pricing_workspace",
                                 "name": "pricing_workspace",
+                                "meronym_type": "screen",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -519,10 +593,19 @@
                                     "writing",
                                     "display",
                                     "screen_display"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_004_analytics_panel",
                                 "name": "analytics_panel",
+                                "meronym_type": "screen",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -531,10 +614,19 @@
                                     "writing",
                                     "display",
                                     "screen_display"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_004_data_import_window",
                                 "name": "data_import_window",
+                                "meronym_type": "screen",
                                 "thread": [
                                     "entity",
                                     "abstraction",
@@ -543,7 +635,14 @@
                                     "writing",
                                     "display",
                                     "screen_display"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": true
                             }
                         ],
                         "fieldState": {
@@ -563,9 +662,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 0.75,
+                            "x": 9.0,
                             "y": 0.5,
-                            "z": -17.5
+                            "z": -16.0
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -612,7 +711,9 @@
                         },
                         "meronyms": [
                             {
+                                "id": "scene_005_processor",
                                 "name": "processor",
+                                "meronym_type": "device",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -623,10 +724,19 @@
                                     "device",
                                     "electronic_equipment",
                                     "processor"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_005_monitor_screen",
                                 "name": "monitor_screen",
+                                "meronym_type": "screen",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -637,10 +747,19 @@
                                     "device",
                                     "screen",
                                     "video_display"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_005_network_interface",
                                 "name": "network_interface",
+                                "meronym_type": "network_interface",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -651,7 +770,14 @@
                                     "device",
                                     "interface",
                                     "network_interface"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             }
                         ],
                         "fieldState": {
@@ -673,9 +799,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 6.5,
+                            "x": 0.0,
                             "y": 0.5,
-                            "z": -17.5
+                            "z": -11.0
                         },
                         "placementRole": "display",
                         "restsOn": "office desk",
@@ -762,7 +888,9 @@
                         },
                         "meronyms": [
                             {
+                                "id": "scene_006_enter_key",
                                 "name": "enter_key",
+                                "meronym_type": "key",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -773,10 +901,26 @@
                                     "device",
                                     "key",
                                     "computer_key"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.32,
+                                    "y": 0.03,
+                                    "z": 0.06
+                                },
+                                "size": {
+                                    "x": 0.18,
+                                    "y": 0.07,
+                                    "z": 0.12
+                                },
+                                "color": "#4A90D9",
+                                "renderShape": "cube",
+                                "interactive": true,
+                                "spawn": true
                             },
                             {
+                                "id": "scene_006_p_key",
                                 "name": "p_key",
+                                "meronym_type": "key",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -787,10 +931,26 @@
                                     "device",
                                     "key",
                                     "computer_key"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.05,
+                                    "y": 0.03,
+                                    "z": 0.02
+                                },
+                                "size": {
+                                    "x": 0.11,
+                                    "y": 0.07,
+                                    "z": 0.11
+                                },
+                                "color": "#95A5A6",
+                                "renderShape": "cube",
+                                "interactive": true,
+                                "spawn": true
                             },
                             {
+                                "id": "scene_006_tab_key",
                                 "name": "tab_key",
+                                "meronym_type": "key",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -801,7 +961,21 @@
                                     "device",
                                     "key",
                                     "computer_key"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": -0.32,
+                                    "y": 0.03,
+                                    "z": 0.06
+                                },
+                                "size": {
+                                    "x": 0.14,
+                                    "y": 0.07,
+                                    "z": 0.11
+                                },
+                                "color": "#95A5A6",
+                                "renderShape": "cube",
+                                "interactive": true,
+                                "spawn": true
                             }
                         ],
                         "fieldState": {
@@ -823,9 +997,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 12.25,
+                            "x": -3.0,
                             "y": 0.75,
-                            "z": -17.5
+                            "z": -5.0
                         },
                         "placementRole": "tool",
                         "restsOn": "office desk",
@@ -891,7 +1065,9 @@
                         },
                         "meronyms": [
                             {
+                                "id": "scene_007_left_mouse_button",
                                 "name": "left_mouse_button",
+                                "meronym_type": "button",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -902,10 +1078,26 @@
                                     "device",
                                     "button",
                                     "push_button"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": -0.1,
+                                    "y": 0.03,
+                                    "z": 0.14
+                                },
+                                "size": {
+                                    "x": 0.15,
+                                    "y": 0.07,
+                                    "z": 0.22
+                                },
+                                "color": "#4A90D9",
+                                "renderShape": "cube",
+                                "interactive": true,
+                                "spawn": true
                             },
                             {
+                                "id": "scene_007_right_mouse_button",
                                 "name": "right_mouse_button",
+                                "meronym_type": "button",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -916,10 +1108,26 @@
                                     "device",
                                     "button",
                                     "push_button"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.1,
+                                    "y": 0.03,
+                                    "z": 0.14
+                                },
+                                "size": {
+                                    "x": 0.15,
+                                    "y": 0.07,
+                                    "z": 0.22
+                                },
+                                "color": "#7F8C9A",
+                                "renderShape": "cube",
+                                "interactive": false,
+                                "spawn": true
                             },
                             {
+                                "id": "scene_007_scroll_wheel",
                                 "name": "scroll_wheel",
+                                "meronym_type": "wheel",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -930,7 +1138,21 @@
                                     "device",
                                     "wheel",
                                     "scroll_wheel"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.04,
+                                    "z": 0.18
+                                },
+                                "size": {
+                                    "x": 0.06,
+                                    "y": 0.09,
+                                    "z": 0.1
+                                },
+                                "color": "#2C3E50",
+                                "renderShape": "cylinder",
+                                "interactive": true,
+                                "spawn": true
                             }
                         ],
                         "fieldState": {
@@ -952,9 +1174,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 16.5,
+                            "x": 4.0,
                             "y": 0.75,
-                            "z": -17.5
+                            "z": -5.0
                         },
                         "placementRole": "tool",
                         "restsOn": "office desk",
@@ -999,7 +1221,9 @@
                         },
                         "meronyms": [
                             {
+                                "id": "scene_008_desktop_surface",
                                 "name": "desktop_surface",
+                                "meronym_type": "surface",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1007,27 +1231,59 @@
                                     "part",
                                     "artifact",
                                     "surface"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.02,
+                                    "z": 0.0
+                                },
+                                "size": {
+                                    "x": 0.95,
+                                    "y": 0.03,
+                                    "z": 0.6
+                                },
+                                "color": "#8B6F47",
+                                "renderShape": "cube",
+                                "interactive": true,
+                                "spawn": true
                             },
                             {
+                                "id": "scene_008_front_edge",
                                 "name": "front_edge",
+                                "meronym_type": "edge",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
                                     "object",
                                     "part",
                                     "edge"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_008_desk_leg",
                                 "name": "desk_leg",
+                                "meronym_type": "support",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
                                     "object",
                                     "part",
                                     "support"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             }
                         ],
                         "fieldState": {
@@ -1048,9 +1304,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": -16.5,
+                            "x": 0.0,
                             "y": 0.5,
-                            "z": -11.2
+                            "z": -7.0
                         },
                         "placementRole": "surface",
                         "restsOn": "floor",
@@ -1137,7 +1393,9 @@
                         },
                         "meronyms": [
                             {
+                                "id": "scene_009_torso",
                                 "name": "torso",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1148,10 +1406,19 @@
                                     "body",
                                     "torso",
                                     "trunk"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_right_shoulder",
                                 "name": "right_shoulder",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1160,10 +1427,19 @@
                                     "body_part",
                                     "joint",
                                     "shoulder"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_right_upper_limb",
                                 "name": "right_upper_limb",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1172,10 +1448,19 @@
                                     "body_part",
                                     "limb",
                                     "arm"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_right_forearm",
                                 "name": "right_forearm",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1184,10 +1469,19 @@
                                     "body_part",
                                     "arm",
                                     "forearm"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_right_hand",
                                 "name": "right_hand",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1196,10 +1490,19 @@
                                     "body_part",
                                     "extremity",
                                     "hand"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_right_index_finger",
                                 "name": "right_index_finger",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1209,10 +1512,19 @@
                                     "digit",
                                     "finger",
                                     "index_finger"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_right_index_distal_phalanx",
                                 "name": "right_index_distal_phalanx",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1221,10 +1533,19 @@
                                     "body_part",
                                     "bone",
                                     "phalanx"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_right_index_fingertip_pad",
                                 "name": "right_index_fingertip_pad",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1233,10 +1554,19 @@
                                     "body_part",
                                     "skin",
                                     "fingertip"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_neck",
                                 "name": "neck",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1244,10 +1574,19 @@
                                     "part",
                                     "body_part",
                                     "neck"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_head",
                                 "name": "head",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1255,10 +1594,19 @@
                                     "part",
                                     "body_part",
                                     "head"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_face",
                                 "name": "face",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1266,10 +1614,19 @@
                                     "part",
                                     "body_part",
                                     "face"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_right_eye",
                                 "name": "right_eye",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1278,10 +1635,19 @@
                                     "body_part",
                                     "sense_organ",
                                     "eye"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_eyeball",
                                 "name": "eyeball",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1291,10 +1657,19 @@
                                     "sense_organ",
                                     "eye",
                                     "eyeball"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_retina",
                                 "name": "retina",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1303,10 +1678,19 @@
                                     "body_part",
                                     "membrane",
                                     "retina"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_fovea",
                                 "name": "fovea",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1315,10 +1699,19 @@
                                     "body_part",
                                     "retinal_structure",
                                     "fovea"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_brain",
                                 "name": "brain",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1327,10 +1720,19 @@
                                     "body_part",
                                     "neural_structure",
                                     "brain"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_cerebral_cortex",
                                 "name": "cerebral_cortex",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1340,10 +1742,19 @@
                                     "neural_structure",
                                     "cortex",
                                     "cerebral_cortex"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             },
                             {
+                                "id": "scene_009_frontal_lobe",
                                 "name": "frontal_lobe",
+                                "meronym_type": "body_part",
                                 "thread": [
                                     "entity",
                                     "physical_entity",
@@ -1353,7 +1764,14 @@
                                     "neural_structure",
                                     "lobe",
                                     "frontal_lobe"
-                                ]
+                                ],
+                                "localOffset": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "interactive": false,
+                                "spawn": false
                             }
                         ],
                         "fieldState": {
@@ -1374,9 +1792,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": -10.75,
+                            "x": 0.0,
                             "y": 0.5,
-                            "z": -11.2
+                            "z": -1.0
                         },
                         "placementRole": "worker",
                         "restsOn": "floor",
@@ -12961,6 +13379,7 @@
                                 "targetObjectId": "cognitive_005",
                                 "targetObjectName": "ManualModule",
                                 "description": "RESTING desktop_surface",
+                                
                                 "klein_frame_id": "KF-1-1",
                                 "expectedDuration": 2.0,
                                 "startTimeSec": 0.0,
@@ -13050,7 +13469,7 @@
                                 "targetObjectName": "ManualModule",
                                 "description": "PRESSING left_mouse_button",
                                 "klein_frame_id": "KF-1-6",
-                                "expectedDuration": 0.1,
+                                "expectedDuration": 3,
                                 "startTimeSec": 2.0,
                                 "endTimeSec": 2.1,
                                 "dependsOn": [
@@ -13144,7 +13563,7 @@
                                 "targetObjectName": "ManualModule",
                                 "description": "DEPRESSING enter_key",
                                 "klein_frame_id": "KF-1-7",
-                                "expectedDuration": 0.09,
+                                "expectedDuration": 3,
                                 "startTimeSec": 2.1,
                                 "endTimeSec": 2.19,
                                 "dependsOn": [
@@ -13238,7 +13657,7 @@
                                 "targetObjectName": "ManualModule",
                                 "description": "DEPRESSING enter_key",
                                 "klein_frame_id": "KF-1-8",
-                                "expectedDuration": 0.09,
+                                "expectedDuration": 3,
                                 "startTimeSec": 2.19,
                                 "endTimeSec": 2.28,
                                 "dependsOn": [
@@ -17812,7 +18231,7 @@
                             "z": 0.4
                         },
                         "forceNewtons": 0.25,
-                        "durationMs": 100,
+                        "durationMs": 2000,
                         "stateBefore": "unpressed",
                         "stateAfter": "pressed",
                         "rig_bone": "mixamorig:RightHandIndex4_end",
@@ -18142,7 +18561,7 @@
                             "z": 0.38
                         },
                         "forceNewtons": 0.3,
-                        "durationMs": 90,
+                        "durationMs": 2000,
                         "stateBefore": "unpressed",
                         "stateAfter": "pressed",
                         "rig_bone": "mixamorig:RightHandIndex4_end",
@@ -18472,7 +18891,7 @@
                             "z": 0.38
                         },
                         "forceNewtons": 0.3,
-                        "durationMs": 90,
+                        "durationMs": 2000,
                         "stateBefore": "unpressed",
                         "stateAfter": "pressed",
                         "rig_bone": "mixamorig:RightHandIndex4_end",
@@ -18802,7 +19221,7 @@
                             "z": 0.38
                         },
                         "forceNewtons": 0.3,
-                        "durationMs": 80,
+                        "durationMs": 2000,
                         "stateBefore": "unpressed",
                         "stateAfter": "pressed",
                         "rig_bone": "mixamorig:RightHandIndex4_end",
@@ -19132,7 +19551,7 @@
                             "z": 0.38
                         },
                         "forceNewtons": 0.3,
-                        "durationMs": 80,
+                        "durationMs": 2000,
                         "stateBefore": "unpressed",
                         "stateAfter": "pressed",
                         "rig_bone": "mixamorig:RightHandIndex4_end",
@@ -19462,7 +19881,7 @@
                             "z": 0.38
                         },
                         "forceNewtons": 0.3,
-                        "durationMs": 80,
+                        "durationMs": 2000,
                         "stateBefore": "unpressed",
                         "stateAfter": "pressed",
                         "rig_bone": "mixamorig:RightHandIndex4_end",
@@ -19792,7 +20211,7 @@
                             "z": 0.4
                         },
                         "forceNewtons": 0.25,
-                        "durationMs": 140,
+                        "durationMs": 2000,
                         "stateBefore": "stationary",
                         "stateAfter": "scrolled",
                         "rig_bone": "mixamorig:RightHandIndex4_end",
@@ -20122,7 +20541,7 @@
                             "z": 0.4
                         },
                         "forceNewtons": 0.25,
-                        "durationMs": 100,
+                        "durationMs": 2000,
                         "stateBefore": "unpressed",
                         "stateAfter": "pressed",
                         "rig_bone": "mixamorig:RightHandIndex4_end",
@@ -20452,7 +20871,7 @@
                             "z": 0.38
                         },
                         "forceNewtons": 0.3,
-                        "durationMs": 90,
+                        "durationMs": 2000,
                         "stateBefore": "unpressed",
                         "stateAfter": "pressed",
                         "rig_bone": "mixamorig:RightHandIndex4_end",
@@ -20782,7 +21201,7 @@
                             "z": 0.38
                         },
                         "forceNewtons": 0.3,
-                        "durationMs": 90,
+                        "durationMs": 2000,
                         "stateBefore": "unpressed",
                         "stateAfter": "pressed",
                         "rig_bone": "mixamorig:RightHandIndex4_end",
@@ -21112,7 +21531,7 @@
                             "z": 0.38
                         },
                         "forceNewtons": 0.3,
-                        "durationMs": 90,
+                        "durationMs": 2000,
                         "stateBefore": "unpressed",
                         "stateAfter": "pressed",
                         "rig_bone": "mixamorig:RightHandIndex4_end",

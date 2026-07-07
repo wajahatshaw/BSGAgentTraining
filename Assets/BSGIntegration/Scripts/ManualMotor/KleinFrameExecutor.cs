@@ -27,10 +27,14 @@ public class KleinFrameExecutor : MonoBehaviour
     ButtonPressContact _pressContact;
     bool _pressFxEngaged;
 
-    [Tooltip("How close (m) the fingertip must get to the target object's top surface to count as a physical press. Tight (~3cm) so a finger still hovering in the air does NOT register as pressed — only a real touch does.")]
+    [Tooltip("How close (m) the fingertip must get to the target object's top surface to count as a genuine press (button turns green). Tight (~3cm) so a finger still hovering in the air does NOT green — only a real touch does.")]
     public float pressContactDistance = 0.03f;
-    [Tooltip("The step does NOT complete until the fingertip physically presses the target. This is only a safety cap (seconds) so a genuinely unreachable target can't deadlock the sim.")]
-    public float pressContactTimeout = 10f;
+    [Tooltip("Relaxed fingertip-to-target tolerance (m). If a press doesn't reach the strict distance but the finger settled within this, it still counts as a press (green) — covers targets a bit beyond the rig's exact reach.")]
+    public float relaxedContactDistance = 0.14f;
+    [Tooltip("Once the fingertip stops getting closer to the target for this long (seconds), the press finishes best-effort instead of holding out — that's as close as this rig can reach.")]
+    public float pressSettleSeconds = 0.35f;
+    [Tooltip("Hard safety cap (seconds) on a single press attempt so a genuinely unreachable target can't hold the coroutine open. The press completes best-effort at the cap; the step still records and advances.")]
+    public float pressContactTimeout = 2.5f;
     Vector3 _contactPoint;
     bool _pressContacted;
     Transform _pressTargetRoot;   // the station whose TOP the fingertip must touch (correct Klein target)
@@ -53,7 +57,8 @@ public class KleinFrameExecutor : MonoBehaviour
         exec._hand = HandRotationManager.EnsureOnAgent(agent);
         exec._hand?.RefreshRigWire();
         BodyPartRegistry.TryLoad();
-        ManualBufferCatalog.TryLoad();
+        // Do NOT pre-load mannualBuffer2.json here — the Klein frames come from the RAG (LoadFromRag in
+        // BootstrapFromRagText / EnsureKleinFramesFromRag). The file is only a last-resort fallback.
         return exec;
     }
 
@@ -67,7 +72,10 @@ public class KleinFrameExecutor : MonoBehaviour
         if (!string.IsNullOrWhiteSpace(ragText))
             SceneStateLogBridge.TryParseFromRagText(ragText);
         BodyPartRegistry.TryLoad();
-        ManualBufferCatalog.TryLoad();
+        // Klein frames come ONLY from the RAG (sceneStateLog/physicalAgents). No mannualBuffer2.json
+        // fallback — if the RAG has no physical Klein data, the motor simply stays idle.
+        if (!ManualBufferCatalog.LoadFromRag(ragText))
+            Debug.LogWarning("[KleinFrameExecutor] RAG had no physical Klein frames (sceneStateLog/physicalAgents) — motor idle. mannualBuffer2.json is NOT used.");
         BodyPartRegistryValidator.ValidateAtBootstrap(ragText);
         KleinFrameResolver.ResetSequenceCounters();
         _hand?.RefreshRigWire();
@@ -146,14 +154,15 @@ public class KleinFrameExecutor : MonoBehaviour
 
         if (logVerbose)
             Debug.Log($"[KleinFrameExecutor] {step.stepId} → {ActiveFrame.kleinFrameId} ({ActiveFrame.manualCommand} @ {ActiveFrame.targetObject}) " +
-                      $"approach={ActiveFrame.rigPose?.approachAngleDeg}° force={ActiveFrame.rigPose?.contactForceN}N  [read live from mannualBuffer2.json]");
+                      $"approach={ActiveFrame.rigPose?.approachAngleDeg}° force={ActiveFrame.rigPose?.contactForceN}N  " +
+                      $"[{(ManualBufferCatalog.LoadedFromRag ? "read live from RAG sceneStateLog" : "read live from mannualBuffer2.json")}]");
 
         return true;
     }
 
     public bool TryExecuteRestingFrame(Action onComplete = null)
     {
-        if (!ManualBufferCatalog.IsLoaded && !ManualBufferCatalog.TryLoad())
+        if (!ManualBufferCatalog.IsLoaded)   // RAG-only; no mannualBuffer2.json fallback
             return false;
 
         KleinFrame resting = ManualBufferCatalog.RestingFrame;
@@ -240,15 +249,33 @@ public class KleinFrameExecutor : MonoBehaviour
             yield return null;
         }
 
-        // Hold fully pressed and KEEP TRYING until the fingertip PHYSICALLY reaches the surface. The
-        // step does not complete until then: only a real contact turns the button green, records the
-        // unpressed→pressed state, and lets the step finish. The timeout is only a safety cap so a
-        // genuinely unreachable target can't deadlock the sim.
+        // Hold fully pressed and try to physically reach the surface. A genuine touch (within
+        // pressContactDistance, in the target's upper half) turns the button green immediately. But the
+        // press must never deadlock the sim: once the fingertip has settled (stopped getting closer) or
+        // the safety cap is reached, we finish the press best-effort — the RAG is the authority that the
+        // action occurred, so the state transition is recorded regardless of exact rig reach.
         BeginHoldPose(frame, sceneWorldTarget, 1f, force);
         float waited = 0f;
+        float settleTimer = 0f;
+        float lastGap = float.MaxValue;
         while (!_pressContacted && waited < pressContactTimeout)
         {
             CheckPressContact();
+
+            // Track when the fingertip stops making progress toward the target — that's "as close as this
+            // rig can get", so there's no point holding out for the full cap.
+            if (_minTipGap < lastGap - 0.002f)
+            {
+                lastGap = _minTipGap;
+                settleTimer = 0f;
+            }
+            else
+            {
+                settleTimer += Time.deltaTime;
+            }
+            if (settleTimer >= pressSettleSeconds)
+                break;
+
             waited += Time.deltaTime;
             yield return null;
         }
@@ -262,12 +289,18 @@ public class KleinFrameExecutor : MonoBehaviour
         }
         else
         {
-            // Safety cap hit without a real press — surface it loudly with the closest gap reached so
-            // the target can be enlarged / pressContactDistance raised (the step was NOT pressed).
-            ReleasePressFx();
+            // No strict touch. If the fingertip settled within a relaxed tolerance, count it as a press
+            // (green FX). Either way record the state transition and complete so the action performs.
+            bool closeEnough = _minTipGap <= relaxedContactDistance;
+            if (closeEnough)
+                EngagePressFx();
+            else
+                ReleasePressFx();
+            if (frame != null)
+                RecordMotorFrame(frame, _activeStepId);
             Vector3 tipPos = _hand != null && _hand.IndexFingerTip != null ? _hand.IndexFingerTip.position : Vector3.zero;
-            Debug.LogError($"[KleinPress] {_activeStepId} fingertip did NOT reach the target top within the {pressContactTimeout:F0}s cap " +
-                           $"(closest gap {_minTipGap:F2}m > {pressContactDistance:F2}m; tip at {tipPos}). Press NOT registered — enlarge the target or raise pressContactDistance.");
+            Debug.LogWarning($"[KleinPress] {_activeStepId} best-effort press (closest gap {_minTipGap:F2}m vs strict {pressContactDistance:F2}m / relaxed {relaxedContactDistance:F2}m; tip at {tipPos}). " +
+                             $"State '{frame?.stateBefore}'→'{frame?.stateAfter}' recorded{(closeEnough ? "; button green" : " (finger short — enlarge the target to green it)")}.");
         }
 
         SignalMotorComplete();

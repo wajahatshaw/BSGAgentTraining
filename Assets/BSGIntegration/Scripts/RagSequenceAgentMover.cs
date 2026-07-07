@@ -180,6 +180,18 @@ public class RagSequenceAgentMover : MonoBehaviour
     private KleinFrameExecutor kleinFrameExecutor;
     private string kleinMotorStepId;
     private bool kleinMotorCompleted;
+    // Safety cap (seconds, measured by dwellTimer once arrived) on how long a physical step will wait for
+    // its Klein press to signal completion. Guarantees the step still finishes and advances even if the
+    // fingertip can't physically reach the target or the motor coroutine stalls — no unbounded hang.
+    [SerializeField] private float kleinMotorMaxWaitSeconds = 3.5f;
+
+    // Wall-clock cap (seconds) on the INTERACTION phase of a physical act step — counted only AFTER the
+    // agent has arrived. Backstop so the press/dwell can't hang; navigation is never capped (so a step is
+    // never force-completed at the wrong place while the agent is still trying to reach the target).
+    [SerializeField] private float physicalStepHardCapSeconds = 6f;
+    private string _physicalStepTimerId;
+    private float _physicalStepElapsed;
+    private float _physicalArriveLogThrottle;
 
     // Cached reference to the zone's mental leader mover — avoids repeated GameObject.Find calls.
     private RagSequenceAgentMover _leaderMoverCache;
@@ -240,7 +252,10 @@ public class RagSequenceAgentMover : MonoBehaviour
         walkAnim = GetComponent<HumanWalkAnimation>();
         rb = GetComponent<Rigidbody>();
         mlAgent = GetComponent<BSGMLAgent>();
-        handRotationManager = HandRotationManager.EnsureOnAgent(gameObject);
+        // Only physical agents wire a hand/arm rig. Mental (M) agents are brain-only — wiring a hand rig
+        // on them just spams "bone not found" and is never used.
+        if (!isMentalAgent)
+            handRotationManager = HandRotationManager.EnsureOnAgent(gameObject);
         if (hostPlayerMovement)
             kleinFrameExecutor = KleinFrameExecutor.EnsureOnAgent(gameObject, zoneIndex);
         _playerMovement = hostPlayerMovement ? GetComponent<IRagPlayerMovementHost>() : null;
@@ -365,6 +380,14 @@ public class RagSequenceAgentMover : MonoBehaviour
             // Orchestrator DAG controls physical readiness; do not wait for full leader cognitive pass.
             if (!_orchestratorMode && gateOperationalOnLeaderCognitive)
                 drivePlayer = active != null && LeaderCognitiveGateAllowsPhysicalStart();
+            // Once ARRIVED at a physical target (isActivated) and until the step completes, stop the walk
+            // autopilot so the agent STANDS STILL and performs the task via Klein/IK — not the walk
+            // animation. Covers RESTING frames too (which hold no IK pose). Autopilot resumes once the
+            // step is marked complete so the agent walks on to the next step.
+            ActionSequenceStep curStep = active != null ? active.GetCurrentStep() : null;
+            if (drivePlayer && curStep != null && curStep.isActivated
+                && IsPhysicalManualActStep(curStep) && !curStep.isStepCompleted)
+                drivePlayer = false;
             _playerMovement.SetRagAutopilot(drivePlayer, zoneIndex);
         }
 
@@ -453,6 +476,33 @@ public class RagSequenceAgentMover : MonoBehaviour
         if (!isMentalAgent && mlAgent != null)
             mlAgent.SetMlNavigationTarget(targetPos.Value, effectiveTargetId);
 
+        // Backstop for the INTERACTION phase only: once the agent has ARRIVED, don't let the press/dwell
+        // hang forever. It deliberately does NOT time the navigation phase — force-completing while the
+        // agent is still walking (or stuck on the wrong obstacle) would mark the step done at the wrong
+        // place. If it can't reach the target it must keep navigating around, never falsely complete.
+        if (IsPhysicalManualActStep(step))
+        {
+            if (!string.Equals(_physicalStepTimerId, step.stepId, StringComparison.Ordinal))
+            {
+                _physicalStepTimerId = step.stepId;
+                _physicalStepElapsed = 0f;
+            }
+            if (step.isActivated)
+            {
+                _physicalStepElapsed += Time.deltaTime;
+                if (_physicalStepElapsed >= physicalStepHardCapSeconds && !step.isStepCompleted)
+                {
+                    Debug.LogWarning($"[RagMover] {agentId} physical step '{step.stepId}' → '{step.physicalTarget}' arrived but couldn't finish the press in {physicalStepHardCapSeconds:F0}s — force-completing.");
+                    FinishStepDwellAndComplete(step);
+                    return;
+                }
+            }
+            else
+            {
+                _physicalStepElapsed = 0f;   // still navigating — don't count against the cap
+            }
+        }
+
         // Mental agents are brain-only — they must NEVER walk to physical env objects.
         // If a step targets anything other than a cognitive_* station, auto-complete and skip it.
         if (isMentalAgent && !IsCognitiveStationTarget(step.targetObjectId))
@@ -482,6 +532,16 @@ public class RagSequenceAgentMover : MonoBehaviour
         bool arrived = step.isActivated;
         if (!arrived)
             arrived = HasArrivedAtStep(step, effectiveTargetId, stationCenter, dist);
+
+        // Diagnostic: while a physical act step hasn't arrived, report why (throttled ~1s) so a stuck
+        // "keeps bumping the target" state is legible — distance to goal vs the object's hull.
+        if (!arrived && IsPhysicalManualActStep(step) && Time.time >= _physicalArriveLogThrottle)
+        {
+            _physicalArriveLogThrottle = Time.time + 1f;
+            GameObject dbgRoot = FindStationRoot(effectiveTargetId);
+            float hull = dbgRoot != null ? EnvironmentSolidCollider.GetHullDistance(dbgRoot.transform, transform.position) : -1f;
+            Debug.Log($"[RagMover] {agentId} not arrived at '{step.stepId}'→'{step.physicalTarget}' (parent {effectiveTargetId}): distToGoal={dist:F2}, hullDist={hull:F2}, klein={IsCorrectKleinPressTarget(step)}, host={hostPlayerMovement}, elapsed={_physicalStepElapsed:F1}s.");
+        }
 
         if (!arrived)
         {
@@ -594,11 +654,10 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
         else if (IsPhysicalManualActStep(step))
         {
-            // ONLY the act step with an exact (stepId, agentId, zoneIndex) Klein frame in
-            // mannualBuffer2.json (currently just t01_phy_s19) drives the hand/arm/finger IK. Every other
-            // act step — INCLUDING the many other steps that target the same left_mouse_button (s39, s54,
-            // s72, …) — has no buffer frame, so it gets NO klein pose. We also actively clear any held
-            // pose so the klein press can never bleed from t01_phy_s19 onto a later same-target step.
+            // Every physical act step whose klein_frame_id resolves to a RAG sceneStateLog frame drives
+            // the hand/arm/finger IK (each target object gets its own Klein interaction). An act step
+            // with no resolvable frame gets NO klein pose, and we clear any held pose so a press can't
+            // bleed from one step onto the next.
             if (IsCorrectKleinPressTarget(step))
                 TryDriveKleinMotorForStep(step, stationCenter);
             else
@@ -621,10 +680,14 @@ public class RagSequenceAgentMover : MonoBehaviour
 
         UpdateImaginalThoughtBubbleWhileDwelling(step);
 
+        // Wait for the Klein press to finish before completing the step — but only up to a safety cap, so
+        // a target the fingertip can't physically reach (or a stalled motor coroutine) can never block the
+        // step forever. Past the cap we let the step complete and advance regardless.
         if (IsPhysicalManualActStep(step) && kleinFrameExecutor != null && hostPlayerMovement
             && !string.IsNullOrEmpty(kleinMotorStepId)
             && string.Equals(kleinMotorStepId, step.stepId, StringComparison.Ordinal)
-            && !kleinMotorCompleted)
+            && !kleinMotorCompleted
+            && dwellTimer < kleinMotorMaxWaitSeconds)
             return;
 
         if (dwellTimer < dwellNeed)
@@ -1517,6 +1580,22 @@ public class RagSequenceAgentMover : MonoBehaviour
         return null;
     }
 
+    /// <summary>Resolve the spawned meronym PART GameObject a physical step targets (step.target =
+    /// meronym name, step.target_id = parent entity id), so the finger presses that exact part. Tries the
+    /// mover's zone then zone 0 (physical env is authored for zone 0). Null if the part isn't spawned.</summary>
+    GameObject ResolveMeronymPressTarget(ActionSequenceStep step)
+    {
+        if (step == null || string.IsNullOrWhiteSpace(step.physicalTarget))
+            return null;
+
+        string parentId = ResolveEffectiveTargetObjectId(step);
+        GameObject part = MeronymPartRegistry.Get(parentId, step.physicalTarget, zoneIndex)
+                          ?? MeronymPartRegistry.Get(parentId, step.physicalTarget, 0)
+                          ?? MeronymPartRegistry.GetByName(step.physicalTarget, zoneIndex)
+                          ?? MeronymPartRegistry.GetByName(step.physicalTarget, 0);
+        return part;
+    }
+
     GameObject FindStationRoot(string targetObjectId)
     {
         GameObject target = GameObject.Find($"Tool_{targetObjectId}_zone{zoneIndex}");
@@ -1607,12 +1686,18 @@ public class RagSequenceAgentMover : MonoBehaviour
         return ZonePlayAreaBounds.ClampPosition(zoneIndex, stand);
     }
 
-    /// <summary>True only for the designated host player at a physical-act step that has an exact
-    /// (stepId, agentId, zoneIndex) Klein frame in mannualBuffer2.json — i.e. the correct target.</summary>
+    /// <summary>True for the designated player at ANY physical manual-act step — so the agent walks right
+    /// up to every target (passing through its nav box) and can reach the contact to act on it.
+    ///
+    /// This used to also require a resolved Klein frame, which meant only steps present in the buffer
+    /// (historically just t01_phy_s19) got the close-approach — every other step fell back to the normal
+    /// stand-off, couldn't reach its small/low target, and got stuck bumping it (never arriving, so the
+    /// arm motor never started and the step never completed). The close-approach must apply to EVERY
+    /// physical target; whether a Klein motor frame also drives the arm is handled separately in the
+    /// executor (which falls back gracefully when no frame resolves).</summary>
     bool IsCorrectKleinPressTarget(ActionSequenceStep step)
     {
-        return hostPlayerMovement && IsPhysicalManualActStep(step)
-            && ManualBufferCatalog.TryGetForStep(step.stepId, agentId, zoneIndex, out _);
+        return hostPlayerMovement && IsPhysicalManualActStep(step);
     }
 
     bool HasArrivedAtTarget(string targetObjectId, Vector3 stationCenter, float distToMoveGoal)
@@ -1678,7 +1763,22 @@ public class RagSequenceAgentMover : MonoBehaviour
             // Correct Klein target: the move goal sits right at the visible face (the agent passes
             // through the padded nav box), so arrive when it reaches that close stand point.
             if (IsCorrectKleinPressTarget(step))
-                return distToMoveGoal <= kPressApproachStandDistance + 0.18f;
+            {
+                if (distToMoveGoal <= kPressApproachStandDistance + 0.18f)
+                    return true;
+                // The designated host moves via the Photon autopilot, which (unlike AgentGroundMotor's
+                // pass-through) can't overlap the target's collider — so it can never drive the move-goal
+                // distance below the tight threshold above. Also arrive once the capsule reaches the
+                // target's HULL surface: the agent stands at the object and the arm IK reaches onto it.
+                GameObject kleinRoot = FindStationRoot(ResolveEffectiveTargetObjectId(step));
+                if (kleinRoot != null)
+                {
+                    float hullDist = EnvironmentSolidCollider.GetHullDistance(kleinRoot.transform, transform.position);
+                    if (hullDist <= GetInteractionStandDistance() + 0.15f)
+                        return true;
+                }
+                return false;
+            }
 
             Vector3 a = transform.position;
             a.y = 0f;
@@ -1881,13 +1981,34 @@ public class RagSequenceAgentMover : MonoBehaviour
         handRotationManager?.ApplyRightArmReachPose(targetPosition, press);
     }
 
+    /// <summary>Load the Klein frames from the live RAG if they aren't already (idempotent, cheap after
+    /// the first success). Covers the case where the executor bootstrapped before the RAG text was
+    /// available, which would otherwise leave the catalog empty / on the legacy mannualBuffer2.json.</summary>
+    void EnsureKleinFramesFromRag()
+    {
+        if (ManualBufferCatalog.LoadedFromRag)
+            return;
+
+        SceneUILoader loader = FindObjectOfType<SceneUILoader>();
+        if (loader == null)
+            return;
+
+        string rag = !string.IsNullOrEmpty(loader.MergedRawRagJson) ? loader.MergedRawRagJson
+                   : !string.IsNullOrEmpty(loader.RawJsonText) ? loader.RawJsonText
+                   : loader.EffectivePipelineJson;
+        if (!string.IsNullOrEmpty(rag))
+            ManualBufferCatalog.LoadFromRag(rag);
+    }
+
     bool TryDriveKleinMotorForStep(ActionSequenceStep step, Vector3 stationCenter)
     {
         if (!hostPlayerMovement || kleinFrameExecutor == null || step == null)
             return false;
 
-        if (!ManualBufferCatalog.IsLoaded)
-            ManualBufferCatalog.TryLoad();
+        // Make sure the Klein frames came from the RAG (sceneStateLog/physicalAgents). If the executor
+        // bootstrapped before SceneUILoader had the RAG text, reload from the live RAG. RAG-only — never
+        // the legacy mannualBuffer2.json.
+        EnsureKleinFramesFromRag();
 
         if (!ManualBufferCatalog.IsLoaded)
             return false;
@@ -1905,18 +2026,21 @@ public class RagSequenceAgentMover : MonoBehaviour
             if (IsCorrectKleinPressTarget(step))
             {
                 GameObject root = FindStationRoot(ResolveEffectiveTargetObjectId(step));
+                // Prefer the exact meronym PART (e.g. left_mouse_button on the mouse) so the finger presses
+                // and greens that specific part, not the parent object's top. Falls back to the parent.
+                GameObject pressTarget = ResolveMeronymPressTarget(step) ?? root;
                 ManualBufferCatalog.TryGetForStep(step.stepId, agentId, zoneIndex, out KleinFrame kf);
                 bool fromJson = kf != null && kf.hasSceneContactPoint;
 
-                Vector3 autoTop = root != null
-                    ? EnvironmentSolidCollider.GetTopContactPoint(root.transform, transform.position)
+                Vector3 autoTop = pressTarget != null
+                    ? EnvironmentSolidCollider.GetTopContactPoint(pressTarget.transform, transform.position)
                     : stationCenter;
                 worldTarget = fromJson ? kf.sceneContactPoint : autoTop;
 
-                kleinFrameExecutor.SetPressFeedbackTarget(root, root != null ? gameObject : null);
-                Debug.Log($"[KleinPress] {step.stepId} press contact = {worldTarget} " +
-                          $"(source: {(fromJson ? "scene_contact_point in mannualBuffer2.json" : "auto visible-top")}). " +
-                          $"Auto visible-top = {autoTop} — set scene_contact_point to this for an exact match.");
+                kleinFrameExecutor.SetPressFeedbackTarget(pressTarget, pressTarget != null ? gameObject : null);
+                Debug.Log($"[KleinPress] {step.stepId} press contact = {worldTarget} on '{(pressTarget != null ? pressTarget.name : "null")}' " +
+                          $"(source: {(fromJson ? "scene_contact_point override" : "auto visible-top")}). " +
+                          $"target part='{step.physicalTarget}' parent='{ResolveEffectiveTargetObjectId(step)}'.");
             }
             else
             {
@@ -1942,9 +2066,9 @@ public class RagSequenceAgentMover : MonoBehaviour
             _groundMotor.pressPassThroughRoot = null;   // re-block the target once the press is done
     }
 
-    /// <summary>Guarantees no Klein press pose lingers when the agent is on a non-buffered act step
-    /// (e.g. another left_mouse_button step that is NOT t01_phy_s19). Keeps the klein hand/arm movement
-    /// exclusive to the buffered step even when other steps share the same target object.</summary>
+    /// <summary>Guarantees no Klein press pose lingers when the agent is on an act step with no
+    /// resolvable RAG Klein frame. Keeps the klein hand/arm movement exclusive to steps that own a
+    /// frame, even when other steps share the same target object.</summary>
     void EnsureKleinPoseCleared()
     {
         if (!hostPlayerMovement)

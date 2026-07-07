@@ -35,6 +35,13 @@ public class HandRotationManager : MonoBehaviour
     readonly List<Transform> _rightIndexChain = new List<Transform>(8);
     readonly Dictionary<Transform, Quaternion> _fingerRestRotations = new Dictionary<Transform, Quaternion>();
 
+    // CLEAN-ROOM RAG ik_chain driver — the bones named in the active frame's rig_pose.ik_chain, resolved
+    // on the rig and CCD-solved to the RAG ik_target. This is the ONLY thing that moves the body in RAG
+    // mode (no default arm/finger pose).
+    readonly List<Transform> _ragChain = new List<Transform>(8);
+    readonly Dictionary<Transform, Quaternion> _ragChainRest = new Dictionary<Transform, Quaternion>();
+    string _ragChainSig;
+
     Quaternion rightArmRestRotation = Quaternion.identity;
     Quaternion rightElbowRestRotation = Quaternion.identity;
     Quaternion rightShoulderRestRotation = Quaternion.identity;
@@ -167,20 +174,18 @@ public class HandRotationManager : MonoBehaviour
         return null;
     }
 
-    /// <summary>Resolve a bone STRICTLY from its data-declared name (rig_pose in mannualBuffer2.json).
-    /// There is NO hardcoded bone fallback — the JSON is the single source of truth for which bones move.
-    /// The only tolerance is two naming conventions of the SAME bone (optional "mixamorig:" prefix and
-    /// optional "_end" tip suffix). If the declared bone can't be found, it logs a clear error so the
-    /// name gets fixed in the file instead of being silently masked.</summary>
+    /// <summary>Resolve a bone from its name in the rig binding (standard right-hand mixamo names supplied
+    /// by <see cref="RagKleinFrameSource.BuildDefaultRightHandBinding"/>). Tolerates the "mixamorig:" prefix
+    /// and "_end" tip suffix. A miss logs a warning (the rig simply lacks that bone — e.g. a non-hand rig).</summary>
     static Transform ResolveBoneName(Transform root, string jsonName, string label)
     {
         if (string.IsNullOrWhiteSpace(jsonName))
-            return null;   // not declared in the file for this frame
+            return null;
 
         Transform t = FindBoneFlexible(root, jsonName);
         if (t == null)
-            Debug.LogError($"[HandRotationManager] Bone '{jsonName}' ({label}) declared in mannualBuffer2.json " +
-                           $"was not found under '{root?.name}'. Fix the name in the file — there is no hardcoded fallback.");
+            Debug.LogWarning($"[HandRotationManager] rig bone '{jsonName}' ({label}) not found under '{root?.name}' — " +
+                             $"this rig doesn't expose that bone (fine for non-hand rigs; the hand IK just skips it).");
         return t;
     }
 
@@ -226,11 +231,9 @@ public class HandRotationManager : MonoBehaviour
         bool useYBot = yBot != null && yBot.gameObject.activeInHierarchy;
         Transform searchRoot = useYBot ? yBot : root;
 
-        // Bone names are the SINGLE SOURCE OF TRUTH in mannualBuffer2.json (rig_pose.arm_chain /
-        // finger_bones / end_effector). Load the buffer so the binding is available at wire time; there
-        // are no hardcoded bone fallbacks — a missing/misnamed bone logs an error from ResolveBoneName.
-        if (!ManualBufferCatalog.IsLoaded)
-            ManualBufferCatalog.TryLoad();
+        // Rig bone names (arm_chain / finger_bones / end_effector) come from the standard right-hand
+        // mixamo binding in code (ManualBufferCatalog.RigBinding defaults to
+        // RagKleinFrameSource.BuildDefaultRightHandBinding) — NOT from mannualBuffer2.json. No file load.
         KleinRigPose binding = ManualBufferCatalog.RigBinding;
         KleinArmChain armChain = binding?.armChain;
         KleinFingerBones fb = binding?.fingerBones;
@@ -542,6 +545,18 @@ public class HandRotationManager : MonoBehaviour
 
     void ApplyPendingManualPose()
     {
+        // CLEAN-ROOM RAG MODE (first, before any default rig wiring): a Klein frame that declares an
+        // ik_chain drives ONLY those bones, CCD-solved toward the target. It resolves its own bones from
+        // the RAG names, so it needs NO default rig binding / wiring / MixamoManualPose. Whatever the RAG
+        // lists in ik_chain is the entire body movement — nothing else, no mannualBuffer2 defaults.
+        if (_manualFrame != null && _manualFrame.rigPose != null
+            && _manualFrame.rigPose.ikChain != null && _manualFrame.rigPose.ikChain.Length >= 2)
+        {
+            ApplyKleinFramePureIk(_manualFrame, _manualTarget, _manualPressPhase);
+            return;
+        }
+
+        // Reach-only (menu, no Klein frame) still uses the legacy wired arm pose.
         if (RightArmPivot == null && RightShoulderPivot == null)
         {
             TryAutoWirePlayerHands(transform);
@@ -672,10 +687,22 @@ public class HandRotationManager : MonoBehaviour
         // raised wrist goal.
         ApplyMixamoHandAim(kleinFingerPress ? fingerContact : surfacePoint, w);
 
-        // Index is a STRAIGHT pointing finger whose down-angle is set directly by approach_angle_deg
-        // (data-driven & controllable), rather than IK aiming at the button's scene position.
+        // True finger IK: CCD-solve the RAG's ik_chain (RightHand→Index1..Index4_end) so the index TIP
+        // lands on the actual contact (the meronym part), with the approach direction taken from the RAG's
+        // approach_angle_deg (90° = press straight down) and the sink scaled by contact_force_n. This
+        // replaces the old fixed-angle point so the finger follows the RAG, not a hardcoded bend table.
         if (kleinFingerPress && _manualFrame != null && _manualFrame.UsesUnityIk)
-            ApplyMixamoIndexPoint(_manualFrame, pressW);
+        {
+            float approachDeg = _manualFrame.rigPose != null && _manualFrame.rigPose.approachAngleDeg > 0.01f
+                ? _manualFrame.rigPose.approachAngleDeg : 90f;
+            Vector3 horiz = RightHandRoot != null ? (RightHandRoot.position - fingerContact) : transform.forward;
+            horiz.y = 0f;
+            horiz = horiz.sqrMagnitude > 1e-6f ? horiz.normalized : transform.forward;
+            // approach_angle_deg: 0° = press horizontally (finger comes from the wrist side), 90° = press
+            // straight down (finger comes from directly above). Blend the approach normal accordingly.
+            Vector3 approachNormal = Vector3.Slerp(horiz, Vector3.up, Mathf.Clamp01(approachDeg / 90f));
+            ApplyMixamoIndexFingerContactIK(_manualFrame, fingerContact, approachNormal, pressW, w);
+        }
         else
             ApplyMixamoIndexFingerContact(pressW, w);
 
@@ -807,6 +834,71 @@ public class HandRotationManager : MonoBehaviour
         Vector3 ikTarget = contactPoint + approachNormal * (hover - pressDepth);
 
         FingerChainIKSolver.Solve(_rightIndexChain, ikTarget, approachNormal);
+    }
+
+    /// <summary>
+    /// CLEAN-ROOM RAG pose. CCD-solves EXACTLY the bones named in <c>frame.rig_pose.ik_chain</c> toward
+    /// the world contact — approach_angle_deg sets the approach direction, contact_force_n the press-in
+    /// depth. NOTHING else moves: no default two-bone arm pose, no elbow pole, no fixed finger angles.
+    /// So whatever bones the RAG lists in ik_chain are the entire body movement. An empty/short chain
+    /// (e.g. torso RESTING, or a hand-only chain that can't reach) intentionally leaves the rest of the
+    /// body at rest — that visible gap tells you which bones to ADD to the RAG's ik_chain.
+    /// </summary>
+    public void ApplyKleinFramePureIk(KleinFrame frame, Vector3 worldTarget, float pressPhase)
+    {
+        if (frame == null || frame.rigPose == null)
+            return;
+        string[] names = frame.rigPose.ikChain;
+        if (names == null || names.Length < 2)
+            return;   // RAG defines no drivable chain for this frame (e.g. torso RESTING) — move nothing.
+
+        string sig = string.Join("|", names);
+        if (!string.Equals(sig, _ragChainSig, System.StringComparison.Ordinal))
+        {
+            _ragChainSig = sig;
+            _ragChain.Clear();
+            Transform searchRoot = RigSearchRoot();
+            foreach (string n in names)
+            {
+                Transform b = ResolveBoneName(searchRoot, n, "rag ik_chain");
+                if (b == null) continue;
+                _ragChain.Add(b);
+                if (!_ragChainRest.ContainsKey(b)) _ragChainRest[b] = b.localRotation;
+            }
+            Debug.Log($"[HandRotationManager] RAG ik_chain '{frame.kleinFrameId}' resolved {_ragChain.Count}/{names.Length} bone(s): {sig}");
+        }
+        if (_ragChain.Count < 2)
+            return;
+
+        SuppressRigAnimators();
+
+        // Reset the chain to captured rest so CCD is deterministic (no per-frame accumulation).
+        foreach (Transform b in _ragChain)
+            if (b != null && _ragChainRest.TryGetValue(b, out Quaternion rest))
+                b.localRotation = rest;
+
+        float approachDeg = frame.rigPose.approachAngleDeg > 0.01f ? frame.rigPose.approachAngleDeg : 90f;
+        Vector3 horiz = worldTarget - _ragChain[0].position;
+        horiz.y = 0f;
+        horiz = horiz.sqrMagnitude > 1e-6f ? horiz.normalized : transform.forward;
+        // 90° = press straight down (normal up); 0° = horizontal from the chain-root side.
+        Vector3 approachNormal = Vector3.Slerp(horiz, Vector3.up, Mathf.Clamp01(approachDeg / 90f));
+
+        float force = frame.hasForceNewtons ? frame.forceNewtons
+                    : (frame.rigPose.contactForceN > 0.0001f ? frame.rigPose.contactForceN : 0.25f);
+        float press = Mathf.Clamp01(pressPhase);
+        float sink = press * Mathf.Clamp(force, 0.05f, 1f) * 0.02f;
+        float hover = 0.012f * (1f - press);
+        Vector3 ikTarget = worldTarget + approachNormal * (hover - sink);
+
+        FingerChainIKSolver.Solve(_ragChain, ikTarget, approachNormal);
+    }
+
+    /// <summary>Root under which to resolve rig_pose.ik_chain bone names (the animated Y Bot rig if present).</summary>
+    Transform RigSearchRoot()
+    {
+        Transform yBot = FindDeepChild(transform, "Y Bot");
+        return (yBot != null && yBot.gameObject.activeInHierarchy) ? yBot : transform;
     }
 
     /// <summary>Approx world length of the index finger (sum of joint segments to the tip).</summary>

@@ -30,7 +30,8 @@ public static class KleinFrameResolver
         if (step == null || string.IsNullOrWhiteSpace(step.stepId))
             return result;
 
-        if (!ManualBufferCatalog.IsLoaded && !ManualBufferCatalog.TryLoad())
+        // RAG-only: frames come from LoadFromRag (sceneStateLog). Never fall back to mannualBuffer2.json.
+        if (!ManualBufferCatalog.IsLoaded)
             return result;
 
         if (!ManualBufferCatalog.TryGetForStep(step.stepId, agentId, zoneIndex, out KleinFrame frame) || frame == null)

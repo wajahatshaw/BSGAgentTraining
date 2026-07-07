@@ -22,25 +22,74 @@ public static class ManualBufferCatalog
     }
 
     static bool _loaded;
+    static bool _loadedFromRag;
     static readonly Dictionary<string, KleinFrame> _byId = new Dictionary<string, KleinFrame>(StringComparer.OrdinalIgnoreCase);
     static readonly Dictionary<string, List<KleinFrame>> _byTargetCommand = new Dictionary<string, List<KleinFrame>>(StringComparer.OrdinalIgnoreCase);
     static readonly Dictionary<string, KleinFrame> _byStepKey = new Dictionary<string, KleinFrame>(StringComparer.OrdinalIgnoreCase);
+    static readonly Dictionary<string, KleinFrame> _byStepId = new Dictionary<string, KleinFrame>(StringComparer.OrdinalIgnoreCase);
     static KleinFrame _restingFrame;
 
     public static bool IsLoaded => _loaded;
+
+    /// <summary>True when the active frames came from the RAG (sceneStateLog/physicalAgents) rather than
+    /// the legacy mannualBuffer2.json file.</summary>
+    public static bool LoadedFromRag => _loadedFromRag;
     public static IReadOnlyDictionary<string, KleinFrame> ById => _byId;
     public static KleinFrame RestingFrame => _restingFrame;
 
-    /// <summary>The rig binding (side + arm-chain + finger bone names) declared in the buffer, used to
-    /// wire the hand/arm from DATA instead of hardcoded bone names. Taken from the first frame that
-    /// declares it (the rig is the same across frames).</summary>
-    public static KleinRigPose RigBinding { get; private set; }
-
-    public static bool TryLoad(string relativePath = null)
+    /// <summary>The rig binding (side + arm-chain + finger bone names) used to wire the hand/arm. The RAG
+    /// doesn't carry these bone-name maps, so this defaults to the standard right-hand mixamo binding in
+    /// code (NOT read from mannualBuffer2.json). Never null, so wiring never needs the legacy file.</summary>
+    static KleinRigPose _rigBinding;
+    public static KleinRigPose RigBinding
     {
+        get => _rigBinding ?? RagKleinFrameSource.BuildDefaultRightHandBinding();
+        private set => _rigBinding = value;
+    }
+
+    /// <summary>
+    /// Build the Klein-frame catalog from the RAG (basicUI_ml2.json) instead of mannualBuffer2.json.
+    /// Each physical step's klein_frame_id is joined to its sceneStateLog entry (see
+    /// <see cref="RagKleinFrameSource"/>), so every physical step / target object gets a motor frame —
+    /// keyed by the same (stepId, agentId, zoneIndex) the rest of the pipeline already resolves against.
+    /// </summary>
+    public static bool LoadFromRag(string ragText)
+    {
+        if (!RagKleinFrameSource.TryBuildFrames(ragText, out List<KleinFrame> frames) || frames.Count == 0)
+            return false;
+
         _byId.Clear();
         _byTargetCommand.Clear();
         _byStepKey.Clear();
+        _byStepId.Clear();
+        _restingFrame = null;
+        RigBinding = null;
+        _loaded = false;
+        _loadedFromRag = false;
+
+        foreach (KleinFrame frame in frames)
+            RegisterFrame(frame);
+
+        // The RAG omits the mixamo bone-name binding (arm-chain / finger-bones); use the standard
+        // right-hand rig description so HandRotationManager can wire the body from data.
+        RigBinding = RagKleinFrameSource.BuildDefaultRightHandBinding();
+
+        _loaded = true;
+        _loadedFromRag = true;
+        Debug.Log($"[ManualBufferCatalog] Loaded {_byId.Count} Klein frame(s) from RAG sceneStateLog/physicalAgents (mannualBuffer2.json no longer used).");
+        return true;
+    }
+
+    public static bool TryLoad(string relativePath = null)
+    {
+        // Once RAG-sourced frames are active, never clobber them with the legacy file.
+        if (_loadedFromRag)
+            return true;
+
+        _byId.Clear();
+        _byTargetCommand.Clear();
+        _byStepKey.Clear();
+        _byStepId.Clear();
         _restingFrame = null;
         RigBinding = null;
         _loaded = false;
@@ -88,7 +137,12 @@ public static class ManualBufferCatalog
         _byId[frame.kleinFrameId] = frame;
 
         if (!string.IsNullOrWhiteSpace(frame.stepId))
+        {
             _byStepKey[StepKey(frame.stepId, frame.agentId, frame.zoneIndex)] = frame;
+            // stepId-only fallback: the RAG gives every persona the same Klein frame per stepId, so a
+            // host whose agentId/zoneIndex doesn't line up with the RAG agent still resolves the frame.
+            _byStepId[frame.stepId] = frame;
+        }
 
         // Capture the rig binding (bone names) from the first frame that declares one.
         if (RigBinding == null && frame.rigPose != null
@@ -119,9 +173,12 @@ public static class ManualBufferCatalog
     public static bool TryGetForStep(string stepId, string agentId, int zoneIndex, out KleinFrame frame)
     {
         frame = null;
-        if ((!_loaded && !TryLoad()) || string.IsNullOrWhiteSpace(stepId))
+        if (!_loaded || string.IsNullOrWhiteSpace(stepId))   // RAG-only; no mannualBuffer2.json fallback
             return false;
-        return _byStepKey.TryGetValue(StepKey(stepId, agentId, zoneIndex), out frame);
+        if (_byStepKey.TryGetValue(StepKey(stepId, agentId, zoneIndex), out frame))
+            return true;
+        // Fall back to the stepId-only match (RAG frames are identical per step across personas/zones).
+        return _byStepId.TryGetValue(stepId, out frame);
     }
 
     public static string StepKey(string stepId, string agentId, int zoneIndex)
