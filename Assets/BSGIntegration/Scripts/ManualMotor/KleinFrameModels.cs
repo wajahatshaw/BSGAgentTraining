@@ -25,6 +25,7 @@ public class KleinFrame
     public KleinRigPose rigPose;
     public KleinHandPose handPose;
     public KleinArmPose armPose;
+    public KleinBodyPose bodyPose;   // trunk lean allowance so the agent can bend to reach a far/low contact
 
     public bool UsesUnityIk =>
         rigPose != null && string.Equals(rigPose.solve, "unity_ik", StringComparison.OrdinalIgnoreCase);
@@ -42,6 +43,7 @@ public class KleinRigPose
     public string[] ikChain;
     public KleinArmChain armChain;       // bone names the arm IK rotates (shoulder→upper-arm→forearm→hand)
     public KleinFingerBones fingerBones; // per-finger joint bone names curled by hand_pose
+    public string[] spineChain;          // trunk bone names (Spine→Spine1→Spine2) leaned toward the contact to extend reach
     public Vector3 ikTarget;
     public float approachAngleDeg;
     public float contactForceN;
@@ -118,6 +120,21 @@ public class KleinArmPose
 
     // Resting elbow bend (degrees) so the held arm isn't ramrod-straight between presses.
     public float restForearmBendDeg;
+}
+
+/// <summary>
+/// Trunk shaping allowance (degrees). The agent leans the spine toward a contact it can't otherwise reach;
+/// spineLeanDeg is the MAX forward/down lean permitted for this frame (the actual lean is computed live from
+/// the reach deficit, so it stays 0 when the arm alone can reach). chestLift/pelvisTilt are reserved.
+/// </summary>
+[Serializable]
+public class KleinBodyPose
+{
+    public string gesture;
+    public float spineLeanDeg;
+    public float chestLiftDeg;
+    public float pelvisTiltDeg;
+    public bool hasData;
 }
 
 /// <summary>One sceneStateLog entry linking a physical step to Klein metadata.</summary>
@@ -231,6 +248,21 @@ class KleinArmChainDto
     public string upper_arm;
     public string forearm;
     public string hand;
+}
+
+[Serializable]
+class KleinSpineChainDto
+{
+    public string[] chain;
+}
+
+[Serializable]
+class KleinBodyPoseDto
+{
+    public string gesture;
+    public float spine_lean_deg;
+    public float chest_lift_deg;
+    public float pelvis_tilt_deg;
 }
 
 [Serializable]

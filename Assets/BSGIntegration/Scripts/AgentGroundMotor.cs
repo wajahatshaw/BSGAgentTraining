@@ -23,8 +23,11 @@ public class AgentGroundMotor : MonoBehaviour
     [Tooltip("When true, capsule sweeps ignore cognitive-station solid hulls (mental band). Used for the designated Photon physical agent.")]
     public bool skipCognitiveStationSolids;
 
-    [Tooltip("When set, capsule sweeps + depenetration ignore every collider under this root, so the agent can stand right against (and overlap) a small interactable it is physically pressing. Cleared when the press ends.")]
+    [Tooltip("Deprecated — use pressPassThroughNavRoot instead.")]
     public Transform pressPassThroughRoot;
+
+    [Tooltip("When set, only the inflated EnvironmentNavObstacle / CognitiveNavObstacle under this root are ignored so the capsule can stand at the visible surface. Visible solids still collide.")]
+    public Transform pressPassThroughNavRoot;
 
     /// <summary>0 = moved fully; 1 = move fully blocked by environment collision.</summary>
     public float LastMoveBlockedFraction { get; private set; }
@@ -242,10 +245,22 @@ public class AgentGroundMotor : MonoBehaviour
         if (c == null || IsSelf(c))
             return true;
 
-        // Let the designated agent walk right up to (and overlap) the small interactable it presses,
-        // so its oversized capsule does not hold the body out of arm's reach of the contact point.
+        if (pressPassThroughNavRoot != null && c.transform.IsChildOf(pressPassThroughNavRoot))
+        {
+            string n = c.gameObject.name;
+            if (string.Equals(n, "EnvironmentNavObstacle", System.StringComparison.Ordinal)
+                || string.Equals(n, "CognitiveNavObstacle", System.StringComparison.Ordinal))
+                return true;
+        }
+
+        // Legacy field: treat as nav-only pass-through on the same root.
         if (pressPassThroughRoot != null && c.transform.IsChildOf(pressPassThroughRoot))
-            return true;
+        {
+            string n = c.gameObject.name;
+            if (string.Equals(n, "EnvironmentNavObstacle", System.StringComparison.Ordinal)
+                || string.Equals(n, "CognitiveNavObstacle", System.StringComparison.Ordinal))
+                return true;
+        }
 
         if (!skipCognitiveStationSolids)
             return false;

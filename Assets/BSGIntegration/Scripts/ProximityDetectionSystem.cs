@@ -443,6 +443,28 @@ public class ProximityDetectionSystem : MonoBehaviour
         return false;
     }
 
+    /// <summary>JSON proximity radius for a step target when a zone is configured (e.g. tool_001 / scene_007).</summary>
+    public bool TryGetProximityRadiusForTarget(string targetObjectId, out float radius)
+    {
+        radius = 0f;
+        if (string.IsNullOrWhiteSpace(targetObjectId) || config?.proximityZones == null)
+            return false;
+
+        for (int i = 0; i < config.proximityZones.Length; i++)
+        {
+            ProximityZone zone = config.proximityZones[i];
+            if (zone == null || string.IsNullOrWhiteSpace(zone.centerObject))
+                continue;
+            if (!RagSequenceAgentMover.StationIdsMatch(zone.centerObject, targetObjectId))
+                continue;
+
+            radius = Mathf.Max(0.1f, zone.radius);
+            return true;
+        }
+
+        return false;
+    }
+
     /// <summary>
     /// Non-target cognitive stations: <b>no inward radial motion</b> inside (radius + hullPadding) on XZ,
     /// plus an outer approach band that blends toward a tangential go-around toward the goal.

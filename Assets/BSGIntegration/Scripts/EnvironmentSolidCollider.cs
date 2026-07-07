@@ -95,11 +95,19 @@ public class EnvironmentSolidCollider : MonoBehaviour
         col = null;
         if (stationRoot == null) return false;
 
-        Transform nav = stationRoot.Find("CognitiveNavObstacle");
-        if (nav == null)
-            nav = stationRoot.Find("EnvironmentNavObstacle");
-        if (nav != null)
-            col = nav.GetComponent<Collider>();
+        // Prefer the tight visible hull so approach/arrival match what the player sees on screen.
+        Transform visible = stationRoot.Find("EnvironmentVisibleSolid");
+        if (visible != null)
+            col = visible.GetComponent<Collider>();
+
+        if (col == null)
+        {
+            Transform nav = stationRoot.Find("CognitiveNavObstacle");
+            if (nav == null)
+                nav = stationRoot.Find("EnvironmentNavObstacle");
+            if (nav != null)
+                col = nav.GetComponent<Collider>();
+        }
 
         if (col == null)
         {
@@ -155,6 +163,56 @@ public class EnvironmentSolidCollider : MonoBehaviour
         float x = Mathf.Clamp(fromWorld.x, b.min.x, b.max.x);
         float z = Mathf.Clamp(fromWorld.z, b.min.z, b.max.z);
         return new Vector3(x, b.max.y, z);
+    }
+
+    /// <summary>
+    /// Stand position just outside the station's visible footprint, on the face nearest
+    /// <paramref name="fromWorld"/>, biased toward <paramref name="targetWorldPoint"/> when the agent
+    /// is already inside the footprint (e.g. pressing a meronym on a desk top).
+    /// </summary>
+    public static Vector3 GetVisibleApproachTowardPoint(
+        Transform stationRoot, Vector3 targetWorldPoint, Vector3 fromWorld, float standOff)
+    {
+        if (stationRoot == null)
+            return fromWorld;
+
+        if (!TryGetVisibleBounds(stationRoot, out Bounds vb))
+            return GetVisibleApproachPosition(stationRoot, fromWorld, standOff);
+
+        Vector3 closest = vb.ClosestPoint(fromWorld);
+        Vector3 outDir = fromWorld - closest;
+        outDir.y = 0f;
+        if (outDir.sqrMagnitude < 1e-4f)
+        {
+            Vector3 toTarget = targetWorldPoint - closest;
+            toTarget.y = 0f;
+            if (toTarget.sqrMagnitude < 1e-4f)
+            {
+                outDir = stationRoot.forward;
+                outDir.y = 0f;
+            }
+            else
+            {
+                outDir = toTarget.normalized;
+            }
+        }
+        else
+        {
+            outDir.Normalize();
+        }
+
+        Vector3 stand = closest + outDir * Mathf.Max(0f, standOff);
+        stand.y = stationRoot.position.y;
+        return stand;
+    }
+
+    /// <summary>Distance from a world point to the top face of visible bounds (XZ clamped).</summary>
+    public static float GetTopSurfaceGap(Bounds bounds, Vector3 worldPoint)
+    {
+        float x = Mathf.Clamp(worldPoint.x, bounds.min.x, bounds.max.x);
+        float z = Mathf.Clamp(worldPoint.z, bounds.min.z, bounds.max.z);
+        Vector3 top = new Vector3(x, bounds.max.y, z);
+        return Vector3.Distance(worldPoint, top);
     }
 
     /// <summary>

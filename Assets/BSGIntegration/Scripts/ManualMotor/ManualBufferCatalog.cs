@@ -242,7 +242,7 @@ public static class ManualBufferCatalog
     /// <summary>Map the per-frame arm_pose block. Defaults match the previous hardcoded reach so frames
     /// without an arm_pose behave exactly as before — except the elbow pole now carries a forward term so
     /// the elbow folds in front of the chest instead of behind the spine.</summary>
-    static KleinArmPose ConvertArmPose(KleinArmPoseDto dto)
+    internal static KleinArmPose ConvertArmPose(KleinArmPoseDto dto)
     {
         KleinArmPose pose = new KleinArmPose
         {
@@ -280,7 +280,7 @@ public static class ManualBufferCatalog
         return pose;
     }
 
-    static KleinHandPose ConvertHandPose(KleinHandPoseDto dto)
+    internal static KleinHandPose ConvertHandPose(KleinHandPoseDto dto)
     {
         if (dto == null)
             return null;
@@ -333,7 +333,7 @@ public static class ManualBufferCatalog
         };
     }
 
-    static KleinArmChain ConvertArmChain(KleinArmChainDto dto)
+    internal static KleinArmChain ConvertArmChain(KleinArmChainDto dto)
     {
         if (dto == null) return null;
         return new KleinArmChain
@@ -345,7 +345,7 @@ public static class ManualBufferCatalog
         };
     }
 
-    static KleinFingerBones ConvertFingerBones(KleinFingerBonesDto dto)
+    internal static KleinFingerBones ConvertFingerBones(KleinFingerBonesDto dto)
     {
         if (dto == null) return null;
         return new KleinFingerBones

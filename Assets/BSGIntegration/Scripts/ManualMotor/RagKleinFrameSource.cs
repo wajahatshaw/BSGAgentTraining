@@ -66,6 +66,11 @@ public static class RagKleinFrameSource
         string command = FirstToken(entry.manualCommand);
         Vector3 coord = ToVec3(entry.coordinates);
 
+        // Only PRESSING / DEPRESSING frames drive the arm+hand. RESTING (and any non-press command, e.g. the
+        // torso pending_full_body_rig frame) leaves handPose/armPose null so the motor never reaches or presses.
+        bool isPress = string.Equals(command, "PRESSING", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(command, "DEPRESSING", StringComparison.OrdinalIgnoreCase);
+
         return new KleinFrame
         {
             kleinFrameId = entry.klein_frame_id ?? step.klein_frame_id ?? string.Empty,
@@ -89,12 +94,17 @@ public static class RagKleinFrameSource
             stateBefore = entry.stateBefore ?? string.Empty,
             stateAfter = entry.stateAfter ?? string.Empty,
             rigPose = BuildRigPose(entry, coord),
-            // The updated RAG does NOT define per-finger curl angles OR arm/shoulder poses, so we invent
-            // none: handPose and armPose are null. The body movement is driven SOLELY by CCD-solving the
-            // RAG's rig_pose.ik_chain toward ik_target (approach_angle_deg + contact_force_n). To move the
-            // arm/shoulder, add those bones to the RAG's ik_chain.
-            handPose = null,
-            armPose = null,
+            // The updated RAG now carries per-finger curl angles (hand_pose) and right-arm shaping (arm_pose)
+            // on every press frame. For PRESSING/DEPRESSING we map them so HandRotationManager can drive the
+            // full arm reach + pointing-press hand (arm two-bone IK + finger curls) toward the live meronym
+            // contact. Reused ManualBufferCatalog converters keep the mapping identical to the legacy path;
+            // ConvertArmPose(null) yields hasData=false, so a press frame missing arm_pose safely falls back
+            // to the finger-only IK. RESTING/non-press frames stay null → no reach, no press.
+            handPose = isPress ? ManualBufferCatalog.ConvertHandPose(entry.hand_pose) : null,
+            armPose = isPress ? ManualBufferCatalog.ConvertArmPose(entry.arm_pose) : null,
+            // body_pose caps how far the trunk may lean to reach a far/low contact (press frames only). The
+            // actual lean is computed live from the reach deficit in HandRotationManager; this is the ceiling.
+            bodyPose = isPress ? ConvertBodyPose(entry.body_pose) : null,
         };
     }
 
@@ -111,10 +121,13 @@ public static class RagKleinFrameSource
                 ? rp.end_effector
                 : (!string.IsNullOrWhiteSpace(entry.rig_bone) ? entry.rig_bone : binding.endEffector),
             ikChain = (rp?.ik_chain != null && rp.ik_chain.Length > 0) ? rp.ik_chain : binding.ikChain,
-            // Arm-chain and finger-bone names describe the fixed rig, not per-step data — the RAG omits
-            // them, so use the standard right-hand binding.
-            armChain = binding.armChain,
-            fingerBones = binding.fingerBones,
+            // Arm-chain and finger-bone names describe the rig the arm IK / finger curls wire. Read them from
+            // the RAG's rig_pose when present, else fall back to the standard right-hand binding (the
+            // converters return null on null input, so the ?? falls through cleanly).
+            armChain = ManualBufferCatalog.ConvertArmChain(rp?.arm_chain) ?? binding.armChain,
+            fingerBones = ManualBufferCatalog.ConvertFingerBones(rp?.finger_bones) ?? binding.fingerBones,
+            spineChain = (rp?.spine_chain?.chain != null && rp.spine_chain.chain.Length > 0)
+                ? rp.spine_chain.chain : binding.spineChain,
             ikTarget = rp?.ik_target != null ? ToVec3(rp.ik_target) : coord,
             approachAngleDeg = rp != null ? rp.approach_angle_deg : 90f,
             contactForceN = rp != null && rp.contact_force_n > 0.0001f ? rp.contact_force_n : entry.forceNewtons,
@@ -153,9 +166,27 @@ public static class RagKleinFrameSource
                 pinky = new[] { "mixamorig:RightHandPinky1", "mixamorig:RightHandPinky2", "mixamorig:RightHandPinky3" },
                 thumb = new[] { "mixamorig:RightHandThumb1", "mixamorig:RightHandThumb2", "mixamorig:RightHandThumb3" },
             },
+            // Trunk bones the reach may lean toward the contact. Start at Spine (not Hips) so the feet/pelvis
+            // stay planted while the upper body bends over the desk. RAG rig_pose.spine_chain overrides this.
+            spineChain = new[] { "mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2" },
             ikTarget = Vector3.zero,
             approachAngleDeg = 90f,
             contactForceN = 0.25f,
+        };
+    }
+
+    /// <summary>Map the RAG body_pose (trunk lean allowance). null → no lean permitted this frame.</summary>
+    static KleinBodyPose ConvertBodyPose(KleinBodyPoseDto dto)
+    {
+        if (dto == null)
+            return null;
+        return new KleinBodyPose
+        {
+            gesture = dto.gesture ?? string.Empty,
+            spineLeanDeg = dto.spine_lean_deg,
+            chestLiftDeg = dto.chest_lift_deg,
+            pelvisTiltDeg = dto.pelvis_tilt_deg,
+            hasData = true,
         };
     }
 
@@ -173,7 +204,16 @@ public static class RagKleinFrameSource
         // reward/habit trees, "T-2" object keys, deep nesting) makes Unity's JsonUtility choke or return
         // empty — so replace it with null BEFORE parsing. Then sanitize null floats on the mapped fields.
         string slim = StripNestedValue(arrayText, "kleinFrame");
-        string sanitized = SanitizeNullFloats(slim, "forceNewtons", "approach_angle_deg", "contact_force_n");
+        // Sanitize every numeric key we map (entry-level + rig_pose + arm_pose + hand_pose). A single `null`
+        // number anywhere makes JsonUtility fail for the WHOLE array (dropping all frames), so cover the
+        // arm/hand pose numbers too now that we parse them.
+        string sanitized = SanitizeNullFloats(slim,
+            "forceNewtons", "approach_angle_deg", "contact_force_n",
+            "mcp", "pip", "dip",
+            "side", "forward", "down",
+            "forward_min_m", "forward_max_m", "shoulder_lift_deg", "wrist_hover_m",
+            "forearm_bend_deg",
+            "spine_lean_deg", "chest_lift_deg", "pelvis_tilt_deg");
 
         RagSceneStateArrayDto parsed = null;
         try { parsed = JsonUtility.FromJson<RagSceneStateArrayDto>("{\"items\":" + sanitized + "}"); }
@@ -325,6 +365,9 @@ class RagRigPoseDto
     public string solve;
     public string end_effector;
     public string[] ik_chain;
+    public KleinArmChainDto arm_chain;
+    public KleinFingerBonesDto finger_bones;
+    public KleinSpineChainDto spine_chain;
     public KleinVec3Dto ik_target;
     public float approach_angle_deg;
     public float contact_force_n;
@@ -346,6 +389,9 @@ class RagSceneStateEntryDto
     public string rig_bone;
     public string rig_bone_status;
     public RagRigPoseDto rig_pose;
+    public KleinHandPoseDto hand_pose;
+    public KleinArmPoseDto arm_pose;
+    public KleinBodyPoseDto body_pose;
 }
 
 [Serializable]

@@ -5,14 +5,21 @@ using UnityEngine;
 public static class FingerChainIKSolver
 {
     const int DefaultIterations = 4;
+    const float DefaultMaxStepDeg = 55f;
 
     public static void Solve(IReadOnlyList<Transform> chain, Vector3 worldTarget, Vector3 approachNormal, int iterations = DefaultIterations)
+    {
+        Solve(chain, worldTarget, approachNormal, iterations, DefaultMaxStepDeg);
+    }
+
+    public static void Solve(IReadOnlyList<Transform> chain, Vector3 worldTarget, Vector3 approachNormal, int iterations, float maxStepDeg)
     {
         if (chain == null || chain.Count < 2)
             return;
 
         approachNormal = approachNormal.sqrMagnitude > 0.0001f ? approachNormal.normalized : Vector3.down;
         Vector3 biasedTarget = worldTarget - approachNormal * 0.01f;
+        maxStepDeg = Mathf.Clamp(maxStepDeg, 20f, 90f);
 
         for (int iter = 0; iter < iterations; iter++)
         {
@@ -29,8 +36,8 @@ public static class FingerChainIKSolver
 
                 Quaternion delta = Quaternion.FromToRotation(toTip.normalized, toTarget.normalized);
                 float angle = Quaternion.Angle(Quaternion.identity, delta);
-                if (angle > 55f)
-                    delta = Quaternion.Slerp(Quaternion.identity, delta, 55f / angle);
+                if (angle > maxStepDeg)
+                    delta = Quaternion.Slerp(Quaternion.identity, delta, maxStepDeg / angle);
 
                 bone.rotation = delta * bone.rotation;
             }

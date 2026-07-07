@@ -10,11 +10,36 @@ public static class RagPhysicalStepFx
         if (step == null)
             return;
 
+        RagSequenceAgentMover mover = FindDesignatedPhysicalMover(zoneIndex);
+        if (mover != null && mover.StepRequiresPressContact(step) && !mover.WasLastPhysicalStepContactVerified)
+        {
+            Debug.Log($"[RagPhysicalStepFx] Skipping parent/meronym flash for '{step.stepId}' — no verified fingertip contact.");
+            return;
+        }
+
         if (RagMenuController.IsMenuStep(step))
         {
             RagMenuController menu = RagMenuController.EnsureInScene();
             menu?.MarkOptionSelected(RagMenuController.GetSelectedOptionTargetId(step), zoneIndex);
             menu?.HideAllMenus();
+        }
+
+        if (!string.IsNullOrWhiteSpace(step.physicalTarget))
+        {
+            string parentId = PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
+            GameObject meronym = MeronymPartRegistry.Get(parentId, step.physicalTarget, zoneIndex)
+                                 ?? MeronymPartRegistry.Get(parentId, step.physicalTarget, 0)
+                                 ?? MeronymPartRegistry.GetByName(step.physicalTarget, zoneIndex)
+                                 ?? MeronymPartRegistry.GetByName(step.physicalTarget, 0);
+            if (meronym != null)
+            {
+                Renderer meronymRend = meronym.GetComponentInChildren<Renderer>();
+                if (meronymRend != null)
+                {
+                    RagStepFxRunner runner = RagStepFxRunner.EnsureInScene();
+                    runner?.RunFlash(meronymRend, VerbToColor(step.actionVerb), 0.4f);
+                }
+            }
         }
 
         string navTargetId = PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
@@ -23,11 +48,13 @@ public static class RagPhysicalStepFx
             if (RagMenuController.IsMenuStep(step))
                 RagMenuController.EnsureInScene()?.ShowButtonPressedFeedback(navTargetId, zoneIndex);
 
-            FlashTarget(navTargetId, zoneIndex, VerbToColor(step.actionVerb), 0.4f);
+            // Parent flash only when contact was verified (press/depress) or step is non-contact (RESTING).
+            if (mover == null || !mover.StepRequiresPressContact(step) || mover.WasLastPhysicalStepContactVerified)
+                FlashTarget(navTargetId, zoneIndex, VerbToColor(step.actionVerb), 0.4f);
         }
 
-        RagSequenceAgentMover physicalMover = FindDesignatedPhysicalMover(zoneIndex);
-        physicalMover?.PlayNetworkStepCompletionFlash();
+        if (mover != null && (!mover.StepRequiresPressContact(step) || mover.WasLastPhysicalStepContactVerified))
+            mover.PlayNetworkStepCompletionFlash();
     }
 
     static RagSequenceAgentMover FindDesignatedPhysicalMover(int zoneIndex)

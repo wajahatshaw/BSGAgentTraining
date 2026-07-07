@@ -118,7 +118,7 @@ public class MeronymPartSpawner : MonoBehaviour
 
     // Target world height (metres) for the top of a press-target box, so meronyms on top are at a natural
     // standing reach for the humanoid agent.
-    const float ReachableTopHeight = 1.0f;
+    const float ReachableTopHeight = 1.05f;
     readonly HashSet<string> _resizedParents = new HashSet<string>();
 
     void ShrinkParentToReachable(GameObject parent, string parentId)

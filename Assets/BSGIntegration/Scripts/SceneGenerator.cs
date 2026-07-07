@@ -635,18 +635,23 @@ public class SceneGenerator : MonoBehaviour
             return;
 
         bool isPressTarget =
-            string.Equals(toolId, "scene_011", System.StringComparison.OrdinalIgnoreCase)
+            string.Equals(toolId, "scene_007", System.StringComparison.OrdinalIgnoreCase)
+            || string.Equals(toolId, "scene_011", System.StringComparison.OrdinalIgnoreCase)
             || (toolState != null && !string.IsNullOrWhiteSpace(toolState.name)
                 && string.Equals(toolState.name, "left_mouse_button", System.StringComparison.OrdinalIgnoreCase));
         if (!isPressTarget)
             return;
+
+        Vector3 scaleBoost = string.Equals(toolId, "scene_007", System.StringComparison.OrdinalIgnoreCase)
+            ? new Vector3(1.15f, 1.42f, 1.15f)
+            : PhysicalPressTargetScale;
 
         // Measure the MAIN cube renderer (on the root), not the decorative base-pad child, so the
         // re-seat keeps the cube's base on the ground after scaling.
         Renderer before = toolGO.GetComponent<Renderer>() ?? toolGO.GetComponentInChildren<Renderer>();
         float baseY = before != null ? before.bounds.min.y : toolGO.transform.position.y;
 
-        toolGO.transform.localScale = Vector3.Scale(toolGO.transform.localScale, PhysicalPressTargetScale);
+        toolGO.transform.localScale = Vector3.Scale(toolGO.transform.localScale, scaleBoost);
 
         // Re-seat the base on the ground (scaling about the pivot would otherwise sink/raise it).
         Renderer after = toolGO.GetComponent<Renderer>() ?? toolGO.GetComponentInChildren<Renderer>();

@@ -56,6 +56,92 @@ public static class EnvironmentNavigationColliderBuilder
         EnvironmentSolidCollider solid = go.AddComponent<EnvironmentSolidCollider>();
         solid.ConfigureSolidCollider();
         ScenePhysicsLayers.ApplyEnvironmentLayer(go);
+
+        EnsureVisibleSurfaceSolid(toolRoot);
+    }
+
+    /// <summary>
+    /// Tight solid hull fitted to the visible mesh — agents collide with what they see on screen,
+    /// not only the inflated navigation box used for pathfinding clearance.
+    /// </summary>
+    public static void EnsureVisibleSurfaceSolid(GameObject toolRoot, bool forceRebuild = false)
+    {
+        if (toolRoot == null)
+            return;
+
+        const string childName = "EnvironmentVisibleSolid";
+        Transform existing = toolRoot.transform.Find(childName);
+        if (existing != null)
+        {
+            if (!forceRebuild)
+            {
+                ConfigureVisibleSolid(existing.gameObject);
+                return;
+            }
+
+            Object.Destroy(existing.gameObject);
+        }
+
+        if (!TryComputeLocalVisibleBox(toolRoot, out Vector3 localCenter, out Vector3 localSize))
+            return;
+
+        GameObject go = new GameObject(childName);
+        go.transform.SetParent(toolRoot.transform, false);
+        BoxCollider box = go.AddComponent<BoxCollider>();
+        box.center = localCenter;
+        box.size = localSize;
+        box.isTrigger = false;
+
+        EnvironmentSolidCollider solid = go.AddComponent<EnvironmentSolidCollider>();
+        solid.ConfigureSolidCollider();
+        ScenePhysicsLayers.ApplyEnvironmentLayer(go);
+    }
+
+    static void ConfigureVisibleSolid(GameObject visGo)
+    {
+        if (visGo == null)
+            return;
+
+        BoxCollider box = visGo.GetComponent<BoxCollider>();
+        if (box == null)
+            box = visGo.AddComponent<BoxCollider>();
+
+        Transform root = visGo.transform.parent;
+        if (root != null && TryComputeLocalVisibleBox(root.gameObject, out Vector3 localCenter, out Vector3 localSize))
+        {
+            box.center = localCenter;
+            box.size = localSize;
+        }
+
+        box.isTrigger = false;
+        EnvironmentSolidCollider solid = visGo.GetComponent<EnvironmentSolidCollider>();
+        if (solid == null)
+            solid = visGo.AddComponent<EnvironmentSolidCollider>();
+        solid.ConfigureSolidCollider();
+        ScenePhysicsLayers.ApplyEnvironmentLayer(visGo);
+    }
+
+    static bool TryComputeLocalVisibleBox(GameObject toolRoot, out Vector3 localCenter, out Vector3 localSize)
+    {
+        localCenter = Vector3.zero;
+        localSize = Vector3.one;
+
+        if (!TryCollectVisualBounds(toolRoot, out Bounds worldBounds))
+            return false;
+
+        Transform t = toolRoot.transform;
+        Vector3 localMin = t.InverseTransformPoint(worldBounds.min);
+        Vector3 localMax = t.InverseTransformPoint(worldBounds.max);
+
+        localSize = new Vector3(
+            Mathf.Max(0.12f, Mathf.Abs(localMax.x - localMin.x)),
+            Mathf.Max(0.12f, Mathf.Abs(localMax.y - localMin.y)),
+            Mathf.Max(0.12f, Mathf.Abs(localMax.z - localMin.z)));
+        localCenter = new Vector3(
+            (localMin.x + localMax.x) * 0.5f,
+            (localMin.y + localMax.y) * 0.5f,
+            (localMin.z + localMax.z) * 0.5f);
+        return true;
     }
 
     public static void RebuildAllEnvironmentToolsInScene()
@@ -76,6 +162,7 @@ public static class EnvironmentNavigationColliderBuilder
             if (tool.GetComponent<CognitiveStationInteractable>() != null)
                 continue;
             EnsureOnTool(tool.gameObject, forceRebuild: true);
+            EnsureVisibleSurfaceSolid(tool.gameObject, forceRebuild: true);
         }
     }
 
@@ -115,9 +202,13 @@ public static class EnvironmentNavigationColliderBuilder
         Vector3 localMin = t.InverseTransformPoint(worldBounds.min);
         Vector3 localMax = t.InverseTransformPoint(worldBounds.max);
 
-        float xSize = Mathf.Max(MinAgentBlockingXZ, Mathf.Abs(localMax.x - localMin.x) * NavBoundsPad);
-        float zSize = Mathf.Max(MinAgentBlockingXZ, Mathf.Abs(localMax.z - localMin.z) * NavBoundsPad);
-        float ySize = Mathf.Max(MinAgentBlockingHeight, Mathf.Abs(localMax.y - localMin.y) * NavBoundsPad);
+        float xSize = Mathf.Max(Mathf.Abs(localMax.x - localMin.x) * NavBoundsPad, Mathf.Abs(localMax.x - localMin.x) + 0.08f);
+        float zSize = Mathf.Max(Mathf.Abs(localMax.z - localMin.z) * NavBoundsPad, Mathf.Abs(localMax.z - localMin.z) + 0.08f);
+        float ySize = Mathf.Max(Mathf.Abs(localMax.y - localMin.y) * NavBoundsPad, Mathf.Abs(localMax.y - localMin.y) + 0.08f);
+        // Nav hull only needs to block pathing — visible solid handles contact. Do not inflate XZ to 0.92m.
+        xSize = Mathf.Min(xSize, MinAgentBlockingXZ);
+        zSize = Mathf.Min(zSize, MinAgentBlockingXZ);
+        ySize = Mathf.Max(ySize, MinAgentBlockingHeight * 0.55f);
 
         float footY = Mathf.Min(localMin.y, localMax.y);
         localCenter = new Vector3(

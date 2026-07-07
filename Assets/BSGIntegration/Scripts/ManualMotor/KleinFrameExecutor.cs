@@ -29,19 +29,23 @@ public class KleinFrameExecutor : MonoBehaviour
 
     [Tooltip("How close (m) the fingertip must get to the target object's top surface to count as a genuine press (button turns green). Tight (~3cm) so a finger still hovering in the air does NOT green — only a real touch does.")]
     public float pressContactDistance = 0.03f;
-    [Tooltip("Relaxed fingertip-to-target tolerance (m). If a press doesn't reach the strict distance but the finger settled within this, it still counts as a press (green) — covers targets a bit beyond the rig's exact reach.")]
-    public float relaxedContactDistance = 0.14f;
-    [Tooltip("Once the fingertip stops getting closer to the target for this long (seconds), the press finishes best-effort instead of holding out — that's as close as this rig can reach.")]
+    [Tooltip("Once the fingertip stops getting closer to the target for this long (seconds), stop waiting for contact — the step may still advance but the button stays un-pressed.")]
     public float pressSettleSeconds = 0.35f;
-    [Tooltip("Hard safety cap (seconds) on a single press attempt so a genuinely unreachable target can't hold the coroutine open. The press completes best-effort at the cap; the step still records and advances.")]
+    [Tooltip("Hard safety cap (seconds) on a single press attempt so a genuinely unreachable target can't hold the coroutine open.")]
     public float pressContactTimeout = 2.5f;
     Vector3 _contactPoint;
     bool _pressContacted;
     Transform _pressTargetRoot;   // the station whose TOP the fingertip must touch (correct Klein target)
     float _minTipGap;             // closest fingertip-to-target gap achieved this press (diagnostics)
 
+    [Tooltip("Extra reach aggression from RagSequenceAgentMover retry attempts (0..1).")]
+    public float PressReachRetryBoost;
+
     public bool IsExecuting => _activeRoutine != null && !_completed;
     public bool IsHoldingPose => _poseHoldActive;
+    public bool PressContactAchieved => _pressContacted;
+    /// <summary>Closest gap (m) between fingertip pad and meronym top this press attempt.</summary>
+    public float ClosestTipGap => _minTipGap;
     public KleinFrame ActiveFrame { get; private set; }
     public KleinFrameResolveResult LastResolve { get; private set; }
 
@@ -143,11 +147,11 @@ public class KleinFrameExecutor : MonoBehaviour
         if (ActiveFrame == null)
             return false;
 
-        if (ActiveFrame.IsPendingFullBody || string.Equals(ActiveFrame.manualCommand, "RESTING", StringComparison.OrdinalIgnoreCase))
+        if (ActiveFrame.IsPendingFullBody || (ActiveFrame.manualCommand ?? "").StartsWith("RESTING", StringComparison.OrdinalIgnoreCase))
             _activeRoutine = StartCoroutine(CoResting(ActiveFrame));
-        else if (string.Equals(ActiveFrame.manualCommand, "PRESSING", StringComparison.OrdinalIgnoreCase))
+        else if ((ActiveFrame.manualCommand ?? "").StartsWith("PRESSING", StringComparison.OrdinalIgnoreCase))
             _activeRoutine = StartCoroutine(CoPressing(ActiveFrame, sceneWorldTarget));
-        else if (string.Equals(ActiveFrame.manualCommand, "DEPRESSING", StringComparison.OrdinalIgnoreCase))
+        else if ((ActiveFrame.manualCommand ?? "").StartsWith("DEPRESSING", StringComparison.OrdinalIgnoreCase))
             _activeRoutine = StartCoroutine(CoDepressing(ActiveFrame, sceneWorldTarget));
         else
             _activeRoutine = StartCoroutine(CoPressing(ActiveFrame, sceneWorldTarget));
@@ -249,21 +253,25 @@ public class KleinFrameExecutor : MonoBehaviour
             yield return null;
         }
 
-        // Hold fully pressed and try to physically reach the surface. A genuine touch (within
-        // pressContactDistance, in the target's upper half) turns the button green immediately. But the
-        // press must never deadlock the sim: once the fingertip has settled (stopped getting closer) or
-        // the safety cap is reached, we finish the press best-effort — the RAG is the authority that the
-        // action occurred, so the state transition is recorded regardless of exact rig reach.
+        // Hold fully pressed and wait for a genuine fingertip touch. No time-based or relaxed-distance
+        // green — only CheckPressContact() may EngagePressFx().
         BeginHoldPose(frame, sceneWorldTarget, 1f, force);
+        yield return CoWaitForPressContact(frame);
+        SignalMotorComplete();
+    }
+
+    IEnumerator CoWaitForPressContact(KleinFrame frame)
+    {
         float waited = 0f;
         float settleTimer = 0f;
         float lastGap = float.MaxValue;
-        while (!_pressContacted && waited < pressContactTimeout)
+        float contactTimeout = pressContactTimeout + PressReachRetryBoost * 1.8f;
+        while (!_pressContacted && waited < contactTimeout)
         {
             CheckPressContact();
+            if (_hand != null && _poseHoldActive && _holdFrame != null)
+                ApplyMotorPose(_holdFrame, _holdTarget, 1f, _holdForce);
 
-            // Track when the fingertip stops making progress toward the target — that's "as close as this
-            // rig can get", so there's no point holding out for the full cap.
             if (_minTipGap < lastGap - 0.002f)
             {
                 lastGap = _minTipGap;
@@ -285,31 +293,19 @@ public class KleinFrameExecutor : MonoBehaviour
             if (frame != null)
                 RecordMotorFrame(frame, _activeStepId);
             if (logVerbose)
-                Debug.Log($"[KleinPress] {_activeStepId} fingertip HIT the target top (gap {_minTipGap:F2}m) → state '{frame?.stateBefore}'→'{frame?.stateAfter}' recorded; button green.");
+                Debug.Log($"[KleinPress] {_activeStepId} fingertip HIT the target top (gap {_minTipGap:F3}m) → state '{frame?.stateBefore}'→'{frame?.stateAfter}' recorded; button green.");
         }
         else
         {
-            // No strict touch. If the fingertip settled within a relaxed tolerance, count it as a press
-            // (green FX). Either way record the state transition and complete so the action performs.
-            bool closeEnough = _minTipGap <= relaxedContactDistance;
-            if (closeEnough)
-                EngagePressFx();
-            else
-                ReleasePressFx();
-            if (frame != null)
-                RecordMotorFrame(frame, _activeStepId);
+            ReleasePressFx();
             Vector3 tipPos = _hand != null && _hand.IndexFingerTip != null ? _hand.IndexFingerTip.position : Vector3.zero;
-            Debug.LogWarning($"[KleinPress] {_activeStepId} best-effort press (closest gap {_minTipGap:F2}m vs strict {pressContactDistance:F2}m / relaxed {relaxedContactDistance:F2}m; tip at {tipPos}). " +
-                             $"State '{frame?.stateBefore}'→'{frame?.stateAfter}' recorded{(closeEnough ? "; button green" : " (finger short — enlarge the target to green it)")}.");
+            Debug.LogWarning($"[KleinPress] {_activeStepId} no physical contact (closest gap {_minTipGap:F3}m vs required {pressContactDistance:F3}m; tip at {tipPos}). " +
+                             "No state transition recorded; button stays un-pressed.");
         }
-
-        SignalMotorComplete();
     }
 
-    /// <summary>True once the right index fingertip is physically pressing the TARGET's top surface:
-    /// within <see cref="pressContactDistance"/> of the object's visible bounds AND in its upper half
-    /// (so the resting hand near the base can't false-trigger). Falls back to a point-distance test
-    /// when there is no target object. Latches and turns the button green on the first real contact.</summary>
+    /// <summary>True once the right index fingertip is physically pressing the meronym TOP surface.
+    /// Uses top-surface gap, downward raycast, and trigger overlap — not time or parent proximity.</summary>
     bool CheckPressContact()
     {
         if (_pressContacted)
@@ -318,29 +314,89 @@ public class KleinFrameExecutor : MonoBehaviour
         Transform tip = _hand != null ? _hand.IndexFingerTip : null;
         if (tip == null)
             return false;
-        Vector3 p = tip.position;
+        Vector3 p = _hand.GetEffectiveFingerTipWorld();
 
-        float gap;
-        bool onTop;
+        float gap = float.MaxValue;
+        bool onTop = false;
+        float contactTol = pressContactDistance;
+
         if (_pressTargetRoot != null && EnvironmentSolidCollider.TryGetVisibleBounds(_pressTargetRoot, out Bounds b))
         {
-            gap = Mathf.Sqrt(b.SqrDistance(p));   // 0 when the fingertip is inside the object's box
-            onTop = p.y >= b.center.y;            // only the top half counts
+            gap = EnvironmentSolidCollider.GetTopSurfaceGap(b, p);
+            float topY = b.max.y;
+            // Fingertip must be at or slightly into the top face — hovering above does not count.
+            onTop = p.y <= topY + 0.003f && p.y >= topY - Mathf.Max(0.004f, b.size.y * 0.65f);
+
+            // Cylinder meronyms (scroll_wheel): accept cap-disk proximity in XZ when the tip is on the top cap.
+            if (!onTop && b.size.y < b.size.x * 0.85f)
+            {
+                float dx = p.x - b.center.x;
+                float dz = p.z - b.center.z;
+                float capR = Mathf.Max(b.extents.x, b.extents.z) * 0.9f;
+                if (dx * dx + dz * dz <= capR * capR && p.y <= topY + 0.005f && p.y >= topY - 0.018f)
+                    onTop = true;
+            }
+
+            if (TryFingerOverlapsMeronym(p, 0.014f))
+            {
+                onTop = true;
+                gap = Mathf.Min(gap, 0f);
+            }
+
+            if (TryFingerRayHitsMeronymTop(p, topY, 0.09f))
+            {
+                onTop = true;
+                gap = Mathf.Min(gap, Vector3.Distance(p, new Vector3(p.x, topY, p.z)));
+            }
         }
         else
         {
+            // No renderer bounds on the meronym — never treat "near the IK goal" as a physical touch.
             gap = Vector3.Distance(p, _contactPoint);
-            onTop = true;
+            onTop = p.y <= _contactPoint.y + 0.003f && p.y >= _contactPoint.y - 0.015f;
         }
 
         if (gap < _minTipGap)
             _minTipGap = gap;
 
-        if (gap <= pressContactDistance && onTop)
+        if (gap <= contactTol && onTop)
         {
             _pressContacted = true;
-            EngagePressFx();   // button turns green at the moment of real physical contact
+            EngagePressFx();
+            if (logVerbose)
+                Debug.Log($"[KleinPress] {_activeStepId} verified meronym contact (gap {gap:F4}m, tip {p}).");
             return true;
+        }
+        return false;
+    }
+
+    bool TryFingerOverlapsMeronym(Vector3 tipPos, float radius)
+    {
+        if (_pressTargetRoot == null)
+            return false;
+
+        Collider[] hits = Physics.OverlapSphere(tipPos, radius, ~0, QueryTriggerInteraction.Collide);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider c = hits[i];
+            if (c == null)
+                continue;
+            if (c.transform == _pressTargetRoot || c.transform.IsChildOf(_pressTargetRoot))
+                return true;
+        }
+        return false;
+    }
+
+    bool TryFingerRayHitsMeronymTop(Vector3 tipPos, float topY, float maxDown)
+    {
+        if (_pressTargetRoot == null)
+            return false;
+
+        Vector3 origin = tipPos + Vector3.up * 0.015f;
+        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, maxDown + 0.02f, ~0, QueryTriggerInteraction.Collide))
+        {
+            if (hit.transform == _pressTargetRoot || hit.transform.IsChildOf(_pressTargetRoot))
+                return hit.point.y >= topY - 0.006f;
         }
         return false;
     }
@@ -349,6 +405,9 @@ public class KleinFrameExecutor : MonoBehaviour
     {
         float duration = Mathf.Max(0.08f, frame.durationMs / 1000f);
         float force = frame.hasForceNewtons ? frame.forceNewtons : frame.rigPose?.contactForceN ?? 0.3f;
+        _contactPoint = sceneWorldTarget;
+        _pressContacted = false;
+        _minTipGap = float.MaxValue;
         float elapsed = 0f;
 
         while (elapsed < duration)
@@ -358,18 +417,24 @@ public class KleinFrameExecutor : MonoBehaviour
                 ? Mathf.SmoothStep(0f, 1f, t / 0.45f)
                 : Mathf.SmoothStep(1f, 0f, (t - 0.45f) / 0.55f);
             ApplyMotorPose(frame, sceneWorldTarget, press, force);
-            if (press >= 0.5f)
-                EngagePressFx();   // depress at the peak, then release as the click rises back up
-            else
+            CheckPressContact();
+            if (!_pressContacted && press < 0.5f)
                 ReleasePressFx();
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        ReleasePressFx();
-        BeginHoldPose(null, sceneWorldTarget, 0f, 0f);
-        if (frame != null)
+        if (!_pressContacted)
+        {
+            BeginHoldPose(frame, sceneWorldTarget, 1f, force);
+            yield return CoWaitForPressContact(frame);
+        }
+        else if (frame != null)
+        {
             RecordMotorFrame(frame, _activeStepId);
+        }
+
+        BeginHoldPose(null, sceneWorldTarget, 0f, 0f);
         SignalMotorComplete();
     }
 
@@ -450,7 +515,16 @@ public class KleinFrameExecutor : MonoBehaviour
             return Mathf.Max(0.35f, step != null && step.expectedDuration > 0f ? step.expectedDuration * 0.5f : 0.35f);
 
         if (resolve.frame != null)
-            return Mathf.Max(0.35f, resolve.frame.durationMs / 1000f);
+        {
+            float motor = resolve.frame.durationMs / 1000f;
+            string cmd = resolve.frame.manualCommand ?? string.Empty;
+            if (string.Equals(cmd, "PRESSING", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(cmd, "DEPRESSING", StringComparison.OrdinalIgnoreCase))
+            {
+                motor += pressContactTimeout;
+            }
+            return Mathf.Max(0.35f, motor);
+        }
 
         return 0.35f;
     }

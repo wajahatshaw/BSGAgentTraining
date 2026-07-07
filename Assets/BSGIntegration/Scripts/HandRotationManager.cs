@@ -42,6 +42,14 @@ public class HandRotationManager : MonoBehaviour
     readonly Dictionary<Transform, Quaternion> _ragChainRest = new Dictionary<Transform, Quaternion>();
     string _ragChainSig;
 
+    // Spine-lean chain (Spine→Spine1→Spine2). Resolved from the frame's rig_pose.spine_chain and leaned
+    // toward a contact the arm alone can't reach, so the upper body bends over the desk. Rest rotations are
+    // captured once and restored each frame so the lean is deterministic (no accumulation).
+    readonly List<Transform> _spineChain = new List<Transform>(4);
+    readonly Dictionary<Transform, Quaternion> _spineRest = new Dictionary<Transform, Quaternion>();
+    string _spineSig;
+    float _smoothedSpineLeanDeg;
+
     Quaternion rightArmRestRotation = Quaternion.identity;
     Quaternion rightElbowRestRotation = Quaternion.identity;
     Quaternion rightShoulderRestRotation = Quaternion.identity;
@@ -68,9 +76,30 @@ public class HandRotationManager : MonoBehaviour
     Vector3 _lockedReachTarget;
     bool _hasLockedReachTarget;
     float _smoothedReachWeight;
-    float _measuredTipDrop = 0.08f;   // live wrist→fingertip vertical gap, so the wrist is placed to land the tip exactly on the surface
+    float _measuredFingerReach = 0.11f;   // live hand→fingertip 3D length for wrist placement
+    const float FingertipPadExtensionM = 0.028f; // bone tip → fingertip pad when rig has no Index4_end
+
+    /// <summary>0..1 — increases press depth and refinement from RagSequenceAgentMover retries.</summary>
+    public float PressReachRetryBoost { get; set; }
 
     public bool ManualPoseActive => _manualPoseActive;
+
+    /// <summary>World position used for press contact — extends past the last index bone when the rig
+    /// stops at Index4 instead of Index4_end (common Mixamo convention).</summary>
+    public Vector3 GetEffectiveFingerTipWorld()
+    {
+        if (IndexFingerTip == null)
+            return transform.position;
+
+        Transform hand = RightHandRoot ?? IndexFingerTip.parent;
+        Vector3 along = hand != null ? IndexFingerTip.position - hand.position : Vector3.down;
+        if (along.sqrMagnitude < 1e-6f)
+            along = Vector3.down;
+        else
+            along.Normalize();
+
+        return IndexFingerTip.position + along * FingertipPadExtensionM;
+    }
 
     public static HandRotationManager EnsureOnAgent(GameObject agent)
     {
@@ -284,6 +313,14 @@ public class HandRotationManager : MonoBehaviour
         Transform index2 = ResolveBoneName(searchRoot, BoneAt(fb?.index, 1), "finger_bones.index[1]");
         Transform index3 = ResolveBoneName(searchRoot, BoneAt(fb?.index, 2), "finger_bones.index[2]") ?? IndexFingerTip;
         Transform index4 = ResolveBoneName(searchRoot, BoneAt(fb?.index, 3), "finger_bones.index[3] tip");
+        if (index4 != null)
+        {
+            Transform tipEnd = index4.Find(index4.name + "_end");
+            if (tipEnd == null)
+                tipEnd = FindDeepChild(searchRoot, index4.name + "_end");
+            if (tipEnd != null)
+                index4 = tipEnd;
+        }
 
         fingers.Clear();
         fingers.Add(new FingerData { fingerName = "Thumb" });
@@ -449,6 +486,7 @@ public class HandRotationManager : MonoBehaviour
         _loggedRegistrySummary = false;
         _hasLockedReachTarget = false;
         _smoothedReachWeight = 0f;
+        _smoothedSpineLeanDeg = 0f;
         TryAutoWirePlayerHands(transform);
         CacheRigAnimators();
     }
@@ -506,7 +544,8 @@ public class HandRotationManager : MonoBehaviour
         _manualForce = 0f;
         _hasLockedReachTarget = false;
         _smoothedReachWeight = 0f;
-        _measuredTipDrop = 0.08f;
+        _smoothedSpineLeanDeg = 0f;
+        _measuredFingerReach = 0.11f;
         RestoreRigAnimators();
     }
 
@@ -545,11 +584,15 @@ public class HandRotationManager : MonoBehaviour
 
     void ApplyPendingManualPose()
     {
-        // CLEAN-ROOM RAG MODE (first, before any default rig wiring): a Klein frame that declares an
-        // ik_chain drives ONLY those bones, CCD-solved toward the target. It resolves its own bones from
-        // the RAG names, so it needs NO default rig binding / wiring / MixamoManualPose. Whatever the RAG
-        // lists in ik_chain is the entire body movement — nothing else, no mannualBuffer2 defaults.
-        if (_manualFrame != null && _manualFrame.rigPose != null
+        // MODULAR SOLVER (the correct method): on the mixamo character we ALWAYS drive the press through
+        // ApplyMixamoManualPose (below) — a two-bone analytic arm IK (MixamoRightArmIKSolver) for reach, then
+        // finger rotations applied SEPARATELY, then an isolated spine-lean module. We never fold the whole
+        // arm+finger chain into one CCD solve. The monolithic single-chain CCD (ApplyKleinFramePureIk) is
+        // ABANDONED for this rig; it survives only as a fallback for a NON-mixamo rig that has no wired arm,
+        // so a finger press is never lost. Method choice does NOT depend on arm_pose — a frame without it
+        // still uses the modular path with the default reach envelope (same as the old mannualBuffer.json).
+        if (!UsesMixamoRig
+            && _manualFrame != null && _manualFrame.rigPose != null
             && _manualFrame.rigPose.ikChain != null && _manualFrame.rigPose.ikChain.Length >= 2)
         {
             ApplyKleinFramePureIk(_manualFrame, _manualTarget, _manualPressPhase);
@@ -630,35 +673,49 @@ public class HandRotationManager : MonoBehaviour
         Transform shoulderRef = shoulder ?? upper;
         Vector3 surfacePoint;
         Vector3 fingerContact = Vector3.zero;
+        Vector3 approachNormal = Vector3.up;
         bool kleinFingerPress = false;
         if (_manualFrame != null && _hasLockedReachTarget)
         {
-            // Klein press onto the TOP surface. The two-bone IK positions the WRIST (hand bone); the
-            // index points DOWN from it. We place the wrist so the FINGERTIP lands exactly where we want:
-            // hovering above the surface during the approach, then settling onto it (with a tiny, force-
-            // scaled press-in) at full press — so it physically touches, never hovers and never sinks deep.
             Vector3 topContact = _lockedReachTarget;
 
+            float approachDeg = _manualFrame.rigPose != null && _manualFrame.rigPose.approachAngleDeg > 0.01f
+                ? _manualFrame.rigPose.approachAngleDeg : 90f;
+            Vector3 horiz = topContact - shoulderRef.position;
+            horiz.y = 0f;
+            horiz = horiz.sqrMagnitude > 1e-6f ? horiz.normalized : transform.forward;
+            Vector3 pressDir = Vector3.Slerp(horiz, Vector3.down, Mathf.Clamp01(approachDeg / 90f));
+            if (pressDir.sqrMagnitude < 1e-6f)
+                pressDir = Vector3.down;
+            else
+                pressDir.Normalize();
+            approachNormal = -pressDir;
+
             float pressForceN = ResolveFrameForce(_manualFrame);
-            float pressDepth = Mathf.Clamp(pressForceN, 0f, 1f) * 0.006f * pressW;   // press in a few mm at full press
-            float approachHover = (wristHover + 0.03f) * (1f - pressW);              // bleeds to 0 as the press completes
+            float reachBoost = Mathf.Clamp01(PressReachRetryBoost);
+            float pressDepth = Mathf.Clamp(pressForceN, 0f, 1f) * (0.008f + (0.055f + reachBoost * 0.05f) * pressW) * Mathf.Clamp01(pressW + 0.3f + reachBoost * 0.25f);
+            float approachHover = (wristHover + 0.008f) * (1f - pressW) * (1f - pressW) * (1f - reachBoost * 0.65f);
 
-            // Where the FINGERTIP should be this frame (world Y), then place the WRIST a measured
-            // finger-drop above it so the down-pointing tip actually arrives there.
-            float desiredTipY = topContact.y + approachHover - pressDepth;
-            Vector3 wristGoal = new Vector3(topContact.x, desiredTipY + _measuredTipDrop, topContact.z);
+            // Place the wrist so the fingertip PAD (not just the last bone) lands on the meronym top.
+            Vector3 desiredTip = topContact - pressDir * pressDepth + pressDir * approachHover;
+            desiredTip -= pressDir * FingertipPadExtensionM;
+            Vector3 wristGoal = desiredTip - pressDir * _measuredFingerReach;
 
-            // Clamp the WRIST goal to arm length so the shoulder/elbow can physically reach it (the arm
-            // still extends forward from the shoulder, never folding back across the chest).
             float armLen = Vector3.Distance(upper.position, forearm.position)
                          + Vector3.Distance(forearm.position, hand.position);
             float maxReach = Mathf.Max(0.1f, armLen);
+
+            ApplySpineLeanToward(wristGoal, shoulderRef, maxReach, w);
+            armLen = Vector3.Distance(upper.position, forearm.position)
+                   + Vector3.Distance(forearm.position, hand.position);
+            maxReach = Mathf.Max(0.1f, armLen);
+
             Vector3 toWrist = wristGoal - shoulderRef.position;
             if (toWrist.magnitude > maxReach)
                 wristGoal = shoulderRef.position + toWrist.normalized * maxReach;
 
             surfacePoint = wristGoal;
-            fingerContact = topContact;   // the hand aims at the real top-surface contact, not the raised wrist
+            fingerContact = topContact;
             kleinFingerPress = true;
         }
         else
@@ -693,14 +750,6 @@ public class HandRotationManager : MonoBehaviour
         // replaces the old fixed-angle point so the finger follows the RAG, not a hardcoded bend table.
         if (kleinFingerPress && _manualFrame != null && _manualFrame.UsesUnityIk)
         {
-            float approachDeg = _manualFrame.rigPose != null && _manualFrame.rigPose.approachAngleDeg > 0.01f
-                ? _manualFrame.rigPose.approachAngleDeg : 90f;
-            Vector3 horiz = RightHandRoot != null ? (RightHandRoot.position - fingerContact) : transform.forward;
-            horiz.y = 0f;
-            horiz = horiz.sqrMagnitude > 1e-6f ? horiz.normalized : transform.forward;
-            // approach_angle_deg: 0° = press horizontally (finger comes from the wrist side), 90° = press
-            // straight down (finger comes from directly above). Blend the approach normal accordingly.
-            Vector3 approachNormal = Vector3.Slerp(horiz, Vector3.up, Mathf.Clamp01(approachDeg / 90f));
             ApplyMixamoIndexFingerContactIK(_manualFrame, fingerContact, approachNormal, pressW, w);
         }
         else
@@ -710,13 +759,47 @@ public class HandRotationManager : MonoBehaviour
         if (_manualFrame != null && _manualFrame.handPose != null && _manualFrame.handPose.hasData)
             ApplyOtherFingerCurls(_manualFrame.handPose, pressW);
 
-        // Measure the live vertical gap from the wrist to the posed fingertip and feed it back next frame.
-        // The wrist goal above uses this so the down-pointing tip converges onto the exact surface point,
-        // regardless of the rig's finger length/angle — so the press physically touches (no hover, no deep sink).
+        // Second/third pass: if the fingertip pad still hovers above the surface, lower the wrist goal
+        // and re-solve arm + finger IK (fixes Mixamo rigs where Index4_end is missing).
+        if (kleinFingerPress && pressW > 0.65f)
+            RefineMixamoPressReach(shoulder, upper, forearm, hand, shoulderRef, ref surfacePoint, fingerContact, approachNormal, pressW, w, shoulderLiftDeg, poleSide, poleForward, poleDown);
+
         if (kleinFingerPress && IndexFingerTip != null && RightHandRoot != null)
         {
-            float drop = RightHandRoot.position.y - IndexFingerTip.position.y;   // wrist → fingertip vertical gap
-            _measuredTipDrop = Mathf.Clamp(Mathf.Lerp(_measuredTipDrop, drop, 0.5f), 0.02f, 0.25f);
+            float len = Vector3.Distance(RightHandRoot.position, IndexFingerTip.position) + FingertipPadExtensionM;
+            _measuredFingerReach = Mathf.Clamp(Mathf.Lerp(_measuredFingerReach, len, 0.55f), 0.08f, 0.17f);
+        }
+    }
+
+    void RefineMixamoPressReach(
+        Transform shoulder, Transform upper, Transform forearm, Transform hand, Transform shoulderRef,
+        ref Vector3 surfacePoint, Vector3 fingerContact, Vector3 approachNormal, float pressW, float w,
+        float shoulderLiftDeg, float poleSide, float poleForward, float poleDown)
+    {
+        if (IndexFingerTip == null)
+            return;
+
+        Vector3 pole = MixamoRightArmIKSolver.BuildElbowPole(transform, shoulderRef, poleSide, poleForward, poleDown);
+        int maxPasses = 3 + Mathf.RoundToInt(Mathf.Clamp01(PressReachRetryBoost) * 4f);
+        for (int pass = 0; pass < maxPasses; pass++)
+        {
+            Vector3 tip = GetEffectiveFingerTipWorld();
+            float gap = tip.y - fingerContact.y;
+            if (gap <= 0.004f)
+                break;
+
+            float stepDown = Mathf.Min(gap * (0.88f + PressReachRetryBoost * 0.08f), 0.045f + PressReachRetryBoost * 0.025f);
+            surfacePoint += Vector3.down * stepDown;
+            MixamoRightArmIKSolver.Apply(
+                shoulder, upper, forearm, hand,
+                rightShoulderRestRotation, rightArmRestRotation, rightElbowRestRotation,
+                surfacePoint, pole, w, shoulderLiftDeg);
+            ApplyMixamoHandAim(fingerContact, w);
+            if (_manualFrame != null && _manualFrame.UsesUnityIk)
+            {
+                int iters = 6 + pass * 4;
+                ApplyMixamoIndexFingerContactIK(_manualFrame, fingerContact, approachNormal, pressW, w, iters);
+            }
         }
     }
 
@@ -809,7 +892,7 @@ public class HandRotationManager : MonoBehaviour
     /// contact_force_n scales how far the tip sinks into the surface as the press ramps in. The chain
     /// is reset to its captured rest each frame so the per-frame CCD is deterministic (no accumulation).
     /// </summary>
-    void ApplyMixamoIndexFingerContactIK(KleinFrame frame, Vector3 contactPoint, Vector3 approachNormal, float pressWeight, float reachWeight)
+    void ApplyMixamoIndexFingerContactIK(KleinFrame frame, Vector3 contactPoint, Vector3 approachNormal, float pressWeight, float reachWeight, int iterations = 10)
     {
         ResetMixamoIndexToRest();
 
@@ -827,13 +910,15 @@ public class HandRotationManager : MonoBehaviour
             ? frame.rigPose.contactForceN
             : (frame != null && frame.hasForceNewtons ? frame.forceNewtons : 0.25f);
 
-        // Hover just above the contact when unpressed; sink in proportional to press × contact force.
         float press = Mathf.Clamp01(pressWeight);
-        float pressDepth = press * Mathf.Clamp(force, 0.05f, 1f) * 0.02f;
-        float hover = 0.012f * (1f - press);
-        Vector3 ikTarget = contactPoint + approachNormal * (hover - pressDepth);
+        float reachBoost = Mathf.Clamp01(PressReachRetryBoost);
+        float pressDepth = press * Mathf.Clamp(force, 0.05f, 1f) * (0.065f + reachBoost * 0.035f);
+        float hover = 0.001f * (1f - press) * (1f - reachBoost * 0.8f);
+        Vector3 pressDir = -approachNormal;
+        Vector3 ikTarget = contactPoint + pressDir * (pressDepth - hover) - pressDir * FingertipPadExtensionM;
 
-        FingerChainIKSolver.Solve(_rightIndexChain, ikTarget, approachNormal);
+        float maxStep = press > 0.85f ? 78f : 55f;
+        FingerChainIKSolver.Solve(_rightIndexChain, ikTarget, approachNormal, iterations, maxStep);
     }
 
     /// <summary>
@@ -899,6 +984,88 @@ public class HandRotationManager : MonoBehaviour
     {
         Transform yBot = FindDeepChild(transform, "Y Bot");
         return (yBot != null && yBot.gameObject.activeInHierarchy) ? yBot : transform;
+    }
+
+    /// <summary>
+    /// Lean the trunk toward a contact the arm alone can't reach, so the agent bends over the desk instead of
+    /// pressing the air. Resolves the frame's rig_pose.spine_chain (Spine→Spine1→Spine2 by default — feet and
+    /// pelvis stay planted) and rotates those bones so the shoulder swings toward the wrist goal. Fully
+    /// data-/geometry-driven: the lean angle is computed LIVE from the reach deficit (how far the goal is
+    /// beyond arm length) versus the spine lever length, eased by the press weight and capped by
+    /// body_pose.spine_lean_deg (a safe default ceiling when the RAG omits it). Deficit ≤ 0 → zero lean, so
+    /// targets the arm can already reach behave exactly as before. Because the spine bones parent the arm,
+    /// the caller recomputes arm length after this and lets the two-bone arm IK finish onto the surface.
+    /// </summary>
+    void ApplySpineLeanToward(Vector3 wristGoal, Transform shoulderRef, float maxReach, float weight)
+    {
+        if (_manualFrame == null || _manualFrame.rigPose == null || shoulderRef == null)
+            return;
+
+        string[] names = _manualFrame.rigPose.spineChain;
+        string sig = names != null ? string.Join("|", names) : string.Empty;
+        if (!string.Equals(sig, _spineSig, System.StringComparison.Ordinal))
+        {
+            _spineSig = sig;
+            _spineChain.Clear();
+            if (names != null)
+            {
+                Transform searchRoot = RigSearchRoot();
+                foreach (string n in names)
+                {
+                    Transform b = ResolveBoneName(searchRoot, n, "rag spine_chain");
+                    if (b == null) continue;
+                    _spineChain.Add(b);
+                    if (!_spineRest.ContainsKey(b)) _spineRest[b] = b.localRotation;
+                }
+            }
+        }
+
+        // Restore the spine to rest first so the lean is recomputed cleanly each frame (no accumulation).
+        RestoreSpineRest();
+        if (_spineChain.Count == 0)
+            return;
+
+        Transform spineBase = _spineChain[0];
+        float deficit = (wristGoal - shoulderRef.position).magnitude - maxReach;   // beyond the arm's reach
+
+        float goalLeanDeg = 0f;
+        if (deficit > 0.005f)
+        {
+            // Angle that swings the shoulder ~deficit closer, pivoting about the spine base: θ ≈ deficit / lever.
+            float lever = Mathf.Max(0.15f, Vector3.Distance(spineBase.position, shoulderRef.position));
+            float maxLeanDeg = (_manualFrame.bodyPose != null && _manualFrame.bodyPose.spineLeanDeg > 0.01f)
+                ? _manualFrame.bodyPose.spineLeanDeg : 45f;
+            goalLeanDeg = Mathf.Clamp(Mathf.Rad2Deg * (deficit / lever), 0f, maxLeanDeg);
+        }
+
+        // Ease the lean in/out (never snaps); relax back to 0 as the press weight or deficit drop.
+        _smoothedSpineLeanDeg = Mathf.MoveTowards(_smoothedSpineLeanDeg, goalLeanDeg * Mathf.Clamp01(weight), Time.deltaTime * 90f);
+        if (_smoothedSpineLeanDeg < 0.05f)
+            return;
+
+        Vector3 curDir = shoulderRef.position - spineBase.position;      // spine base → shoulder (the lever)
+        Vector3 targetDir = wristGoal - spineBase.position;              // where we want the shoulder to head
+        if (curDir.sqrMagnitude < 1e-6f || targetDir.sqrMagnitude < 1e-6f)
+            return;
+
+        Quaternion full = Quaternion.FromToRotation(curDir.normalized, targetDir.normalized);
+        full.ToAngleAxis(out float fullDeg, out Vector3 axis);
+        if (fullDeg < 0.01f || float.IsNaN(axis.x) || axis.sqrMagnitude < 1e-6f)
+            return;
+
+        // Distribute the (capped) lean evenly across the resolved spine bones as a world-space pre-rotation,
+        // so the bend spreads naturally along the trunk from base to chest.
+        float applyDeg = Mathf.Min(fullDeg, _smoothedSpineLeanDeg);
+        Quaternion per = Quaternion.AngleAxis(applyDeg / _spineChain.Count, axis.normalized);
+        foreach (Transform b in _spineChain)
+            if (b != null) b.rotation = per * b.rotation;
+    }
+
+    void RestoreSpineRest()
+    {
+        foreach (Transform b in _spineChain)
+            if (b != null && _spineRest.TryGetValue(b, out Quaternion rest))
+                b.localRotation = rest;
     }
 
     /// <summary>Approx world length of the index finger (sum of joint segments to the tip).</summary>
@@ -976,6 +1143,8 @@ public class HandRotationManager : MonoBehaviour
         }
         if (handRestCaptured && RightHandRoot != null)
             RightHandRoot.localRotation = rightHandRestRotation;
+        RestoreSpineRest();
+        _smoothedSpineLeanDeg = 0f;
         ResetFingerCurl();
         ResetOtherFingerCurls();
     }

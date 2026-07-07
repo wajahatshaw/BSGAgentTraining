@@ -1,0 +1,1245 @@
+{
+    "sceneStateLog": [
+      {
+        "klein_frame_id": "KF-1-1",
+        "subTaskId": "st_1",
+        "effector": "torso",
+        "manualCommand": "RESTING desktop_surface",
+        "target": "desktop_surface",
+        "target_id": "scene_008",
+        "coordinates": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.75
+        },
+        "forceNewtons": null,
+        "durationMs": 2000,
+        "stateBefore": "clear",
+        "stateAfter": "supporting",
+        "rig_bone": "mixamorig:Spine2",
+        "rig_bone_status": "mapped",
+        "rig_pose": {
+          "solve": "unity_ik",
+          "side": "bilateral",
+          "side_comment": "Torso/spine frame. No single-arm IK chain; Spine2 is the driven bone. Both arms are secondary and settle into desk-rest pose via hand_pose + arm_pose below.",
+          "end_effector": "mixamorig:Spine2",
+          "ik_chain": [],
+          "arm_chain": null,
+          "finger_bones": null,
+          "ik_target": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.75
+          },
+          "approach_angle_deg": null,
+          "contact_force_n": null,
+          "sourceIkTarget": {
+            "x": 150,
+            "y": 480,
+            "z": 720
+          }
+        },
+        "hand_pose": {
+          "gesture": "bilateral_desk_rest",
+          "comment": "Both hands lay flat on the desk surface with all fingers relaxed. No active contact pressure. All joints near-zero as torso settles into supported position.",
+          "right": {
+            "index": {
+              "mcp": 10,
+              "pip": 8,
+              "dip": 5
+            },
+            "middle": {
+              "mcp": 12,
+              "pip": 10,
+              "dip": 6
+            },
+            "ring": {
+              "mcp": 12,
+              "pip": 10,
+              "dip": 6
+            },
+            "pinky": {
+              "mcp": 10,
+              "pip": 8,
+              "dip": 5
+            },
+            "thumb": {
+              "mcp": 8,
+              "pip": 6,
+              "dip": 4
+            }
+          },
+          "left": {
+            "index": {
+              "mcp": 10,
+              "pip": 8,
+              "dip": 5
+            },
+            "middle": {
+              "mcp": 12,
+              "pip": 10,
+              "dip": 6
+            },
+            "ring": {
+              "mcp": 12,
+              "pip": 10,
+              "dip": 6
+            },
+            "pinky": {
+              "mcp": 10,
+              "pip": 8,
+              "dip": 5
+            },
+            "thumb": {
+              "mcp": 8,
+              "pip": 6,
+              "dip": 4
+            }
+          }
+        },
+        "arm_pose": {
+          "comment": "Bilateral desk-rest. Both forearms settle forward onto the desk surface. Elbows slightly bent and dropped below shoulder height. Shoulders level and relaxed. No active extension.",
+          "elbow_pole": {
+            "comment": "Both elbows drop below shoulder height and tuck slightly inward to rest passively on desk surface.",
+            "side": 0.2,
+            "forward": 0.3,
+            "down": 0.35
+          },
+          "reach": {
+            "comment": "Minimal forward reach. Arms settle onto desk; no extension required for this torso-resting frame.",
+            "forward_min_m": 0.2,
+            "forward_max_m": 0.35,
+            "shoulder_lift_deg": 0,
+            "wrist_hover_m": 0.0
+          },
+          "rest": {
+            "comment": "Forearms flat on desk surface. Natural desk-support idle pose between subsequent motor actions.",
+            "forearm_bend_deg": 25
+          }
+        },
+        "motor_execution": "motor_module executes KF-1-1 by event physical-event support-event rest-event torso-resting desktop_surface with torso, stores frame into declarative_module.stored_frames[].",
+        "kleinFrame": {
+          "klein_frame_id": "KF-1-1",
+          "representation_type": "trajectory",
+          "frame_mode": "physical",
+          "tdp_category": "Things",
+          "actor_state": {
+            "actor": "torso",
+            "actor_thread": [
+              "entity",
+              "physical_entity",
+              "object",
+              "whole",
+              "living_thing",
+              "organism",
+              "body",
+              "torso",
+              "trunk"
+            ],
+            "rig_bone": "mixamorig:Spine2",
+            "rig_bone_status": "mapped",
+            "pad_predicted": {
+              "valence": 5.4,
+              "arousal": 5.3,
+              "dominance": 6.2
+            },
+            "pad_observed": {
+              "valence": 5.4,
+              "arousal": 5.3,
+              "dominance": 6.2
+            },
+            "pad_delta_direction_valid": true,
+            "pad_tolerance": 0.5,
+            "pad_conversion": {
+              "scale": "Warriner 1-9",
+              "valence_anchor": {
+                "1": "unhappy",
+                "9": "happy"
+              },
+              "arousal_anchor": {
+                "1": "calm",
+                "9": "excited"
+              },
+              "dominance_anchor": {
+                "1": "controlled",
+                "9": "in-control"
+              },
+              "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
+              "derivation_method": "average Warriner ratings of words describing the post-action moment",
+              "tolerance": 0.5,
+              "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+            },
+            "routing_target_buffer": [
+              "imaginal_buffer",
+              "goal_buffer"
+            ]
+          },
+          "thread": [
+            "event",
+            "physical-event",
+            "support-event",
+            "rest-event",
+            "torso-resting"
+          ],
+          "object": "desktop_surface",
+          "object_thread": [
+            "entity",
+            "physical_entity",
+            "object",
+            "part",
+            "artifact",
+            "surface"
+          ],
+          "state_before": "clear",
+          "state_after": "supporting",
+          "frequency": 1,
+          "duration_ms": 2000,
+          "granularity_level": "micro",
+          "contributes_to_timeline": true,
+          "force_newtons": null,
+          "physics": {
+            "force_newtons": null,
+            "torque_nm": null,
+            "angle_degrees": null,
+            "properties": [
+              {
+                "name": "support_contact",
+                "value": 1,
+                "unit": "binary",
+                "changes_during_action": true,
+                "source": "derived"
+              }
+            ]
+          },
+          "action_type": "motor_action",
+          "location": {
+            "x": 150,
+            "y": 480,
+            "z": 720
+          },
+          "transitions": [
+            {
+              "id": "TR-1",
+              "label": "desktop surface changes from clear to supporting",
+              "from_state": {
+                "T-2": "clear"
+              },
+              "to_state": {
+                "T-2": "supporting"
+              },
+              "trigger": "KF-1-1 fires",
+              "fires_relation": "R-1",
+              "involves_things": [
+                "T-1",
+                "T-2"
+              ],
+              "is_compound": false,
+              "depends_on": [],
+              "routing_target_buffer": [
+                "imaginal_buffer",
+                "production_memory"
+              ]
+            }
+          ],
+          "reward_emissions_sequenced": [
+            {
+              "t_ms": 0,
+              "step": 1,
+              "phase": "transition begins",
+              "event": "R-1 resting trajectory begins",
+              "node_affected": "R-1",
+              "reward": 0,
+              "reward_channel": "logging_only",
+              "emitted_by_gameobject": "manual_buffer",
+              "subscriber": "imaginal_buffer",
+              "reason": "trace motor contact onset"
+            },
+            {
+              "t_ms": 1500,
+              "step": 2,
+              "phase": "transition fires",
+              "event": "TR-1 fires",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "state_transition_terminal",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "production_memory",
+              "reason": "support state reached"
+            },
+            {
+              "t_ms": 1600,
+              "step": 3,
+              "phase": "sequence completes",
+              "event": "S-1 completes",
+              "node_affected": "S-1",
+              "reward": 1,
+              "reward_channel": "sequence_completion_bonus",
+              "emitted_by_gameobject": "goal_buffer",
+              "subscriber": "imaginal_buffer",
+              "reason": "single-step response completed"
+            },
+            {
+              "t_ms": 2000,
+              "step": 4,
+              "phase": "frame close",
+              "event": "state_after matches anticipated state",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_state_match",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "declarative_module",
+              "reason": "frame closed with expected support state"
+            },
+            {
+              "t_ms": 2000,
+              "step": 5,
+              "phase": "frame close",
+              "event": "pad_observed within tolerance",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_pad_match",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "declarative_module",
+              "reason": "predicted and observed PAD aligned"
+            },
+            {
+              "t_ms": 2000,
+              "step": 6,
+              "phase": "frame close",
+              "event": "duration matched expected latency",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_latency_match",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "declarative_module",
+              "reason": "authoritative duration matched"
+            },
+            {
+              "t_ms": 2000,
+              "step": 7,
+              "phase": "frame close",
+              "event": "state_after enables next cue",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_next_cue",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "goal_buffer",
+              "reason": "settled posture enabled visual orientation"
+            }
+          ],
+          "reward_summary": {
+            "total_frame_reward": 6,
+            "computed_from_emissions": true,
+            "emission_count": 7,
+            "total_change_from_v2_0": null
+          },
+          "habit_loop": {
+            "cue": {
+              "description": "desktop surface available and torso not yet supported",
+              "current_state": {
+                "T-2": "clear"
+              },
+              "matched_chunk_id": "workspace-support-schema",
+              "chunk_activation_strength": "HIGH",
+              "routing_target_buffer": [
+                "visual_buffer"
+              ]
+            },
+            "craving": {
+              "desired_state": {
+                "T-2": "supporting"
+              },
+              "anticipated_emotion": "settled readiness",
+              "pad_predicted": [
+                5.4,
+                5.3,
+                6.2
+              ],
+              "routing_target_buffer": [
+                "goal_buffer"
+              ]
+            },
+            "response": {
+              "action_sequence_id": "S-1",
+              "summary": "rest torso on desktop surface",
+              "routing_target_buffer": [
+                "visual_buffer",
+                "manual_buffer",
+                "temporal_buffer"
+              ]
+            },
+            "reward": {
+              "actual_state": {
+                "T-2": "supporting"
+              },
+              "pad_observed": [
+                5.4,
+                5.3,
+                6.2
+              ],
+              "pad_delta_direction_valid": true,
+              "pad_tolerance": 0.5,
+              "total_frame_reward": 6,
+              "routing_target_buffer": [
+                "imaginal_buffer"
+              ]
+            }
+          },
+          "connections": {
+            "preceded_by": null,
+            "followed_by": "KF-1-2",
+            "relation_to_prior": null,
+            "relation_to_next": "enables"
+          },
+          "sexpr": "(s \"rep trajectory\" (t \"RESTING\" ) (s \"rep entity\" (t \"torso\")) (r \"rep path\" (t \"against\") (s \"rep entity\" (t \"desktop_surface\"))) (d \"duration_ms\" 2000) (d \"frequency\" 1) (d \"tdp_category\" \"Things\") (d \"frame_mode\" \"physical\") (d \"state_before\" \"clear\") (d \"state_after\" \"supporting\"))"
+        },
+        "sourceCoordinates": {
+          "x": 150,
+          "y": 480,
+          "z": 720
+        }
+      },
+      {
+        "klein_frame_id": "KF-1-6",
+        "subTaskId": "st_1",
+        "effector": "right_index_fingertip_pad",
+        "manualCommand": "PRESSING left_mouse_button",
+        "target": "left_mouse_button",
+        "target_id": "scene_007",
+        "coordinates": {
+          "x": 0.22,
+          "y": 0.75,
+          "z": 0.4
+        },
+        "forceNewtons": 0.25,
+        "durationMs": 2000,
+        "stateBefore": "unpressed",
+        "stateAfter": "pressed",
+        "rig_bone": "mixamorig:RightHandIndex4_end",
+        "rig_bone_status": "mapped",
+        "rig_pose": {
+          "solve": "unity_ik",
+          "side": "right",
+          "side_comment": "Right arm/hand this frame drives. All bone names below are right-side mixamo bones; mirror to mixamorig:Left* for left hand.",
+          "end_effector": "mixamorig:RightHandIndex4_end",
+          "ik_chain": [
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4_end"
+          ],
+          "arm_chain": {
+            "comment": "Bones the two-bone arm IK rotates to carry the hand to the mouse button contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+            "shoulder": "mixamorig:RightShoulder",
+            "upper_arm": "mixamorig:RightArm",
+            "forearm": "mixamorig:RightForeArm",
+            "hand": "mixamorig:RightHand"
+          },
+          "finger_bones": {
+            "comment": "Per-finger joint chains the hand_pose FK angles bend. index also drives the press contact (its last bone is the end_effector fingertip).",
+            "index": [
+              "mixamorig:RightHandIndex1",
+              "mixamorig:RightHandIndex2",
+              "mixamorig:RightHandIndex3",
+              "mixamorig:RightHandIndex4_end"
+            ],
+            "middle": [
+              "mixamorig:RightHandMiddle1",
+              "mixamorig:RightHandMiddle2",
+              "mixamorig:RightHandMiddle3"
+            ],
+            "ring": [
+              "mixamorig:RightHandRing1",
+              "mixamorig:RightHandRing2",
+              "mixamorig:RightHandRing3"
+            ],
+            "pinky": [
+              "mixamorig:RightHandPinky1",
+              "mixamorig:RightHandPinky2",
+              "mixamorig:RightHandPinky3"
+            ],
+            "thumb": [
+              "mixamorig:RightHandThumb1",
+              "mixamorig:RightHandThumb2",
+              "mixamorig:RightHandThumb3"
+            ]
+          },
+          "ik_target": {
+            "x": 0.22,
+            "y": 0.75,
+            "z": 0.4
+          },
+          "approach_angle_deg": 90,
+          "contact_force_n": 0.25,
+          "sourceIkTarget": {
+            "x": 290,
+            "y": 515,
+            "z": 736
+          }
+        },
+        "hand_pose": {
+          "gesture": "index_point_press",
+          "comment": "Index kept nearly straight to point at mouse button; middle/ring/pinky curled into palm; thumb relaxed alongside. All angles in degrees toward palm (mcp=base knuckle, pip=middle joint, dip=tip joint).",
+          "index": {
+            "mcp": 14,
+            "pip": 6,
+            "dip": 4
+          },
+          "middle": {
+            "mcp": 85,
+            "pip": 100,
+            "dip": 70
+          },
+          "ring": {
+            "mcp": 85,
+            "pip": 100,
+            "dip": 70
+          },
+          "pinky": {
+            "mcp": 80,
+            "pip": 95,
+            "dip": 65
+          },
+          "thumb": {
+            "mcp": 14,
+            "pip": 10,
+            "dip": 6
+          }
+        },
+        "arm_pose": {
+          "comment": "Right arm reaching forward-right to mouse button. Elbow folds down-and-out so the arm approaches from the front and never crosses the torso.",
+          "elbow_pole": {
+            "comment": "forward(+) keeps elbow in front of chest; side(+) folds it right to clear torso; down(+) drops it below shoulder. Forward term prevents elbow folding behind backbone.",
+            "side": 0.45,
+            "forward": 0.2,
+            "down": 0.28
+          },
+          "reach": {
+            "comment": "Forward reach envelope to mouse button. shoulder_lift_deg raises the clavicle as arm extends; wrist_hover_m settles the fingertip onto the button top surface.",
+            "forward_min_m": 0.36,
+            "forward_max_m": 0.5,
+            "shoulder_lift_deg": 18,
+            "wrist_hover_m": 0.012
+          },
+          "rest": {
+            "comment": "Held arm pose between presses. Slight forearm bend gives natural idle instead of ramrod-straight hang.",
+            "forearm_bend_deg": 10
+          }
+        },
+        "motor_execution": "motor_module executes KF-1-6 by event physical-event contact-event press-event mouse-button-press left_mouse_button with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
+        "kleinFrame": {
+          "klein_frame_id": "KF-1-6",
+          "representation_type": "trajectory",
+          "frame_mode": "physical",
+          "tdp_category": "Things",
+          "actor_state": {
+            "actor": "right_index_fingertip_pad",
+            "actor_thread": [
+              "entity",
+              "physical_entity",
+              "object",
+              "part",
+              "body_part",
+              "skin",
+              "fingertip"
+            ],
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "rig_bone_status": "mapped",
+            "pad_predicted": {
+              "valence": 6,
+              "arousal": 5.3,
+              "dominance": 6.5
+            },
+            "pad_observed": {
+              "valence": 6,
+              "arousal": 5.3,
+              "dominance": 6.5
+            },
+            "pad_delta_direction_valid": true,
+            "pad_tolerance": 0.5,
+            "pad_conversion": {
+              "scale": "Warriner 1-9",
+              "valence_anchor": {
+                "1": "unhappy",
+                "9": "happy"
+              },
+              "arousal_anchor": {
+                "1": "calm",
+                "9": "excited"
+              },
+              "dominance_anchor": {
+                "1": "controlled",
+                "9": "in-control"
+              },
+              "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
+              "derivation_method": "average Warriner ratings of words describing the post-action moment",
+              "tolerance": 0.5,
+              "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+            },
+            "routing_target_buffer": [
+              "imaginal_buffer",
+              "goal_buffer"
+            ]
+          },
+          "thread": [
+            "event",
+            "physical-event",
+            "contact-event",
+            "press-event",
+            "mouse-button-press"
+          ],
+          "object": "left_mouse_button",
+          "object_thread": [
+            "entity",
+            "physical_entity",
+            "object",
+            "part",
+            "artifact",
+            "instrumentality",
+            "device",
+            "button",
+            "push_button"
+          ],
+          "state_before": "unpressed",
+          "state_after": "pressed",
+          "frequency": 1,
+          "duration_ms": 100,
+          "granularity_level": "micro",
+          "contributes_to_timeline": true,
+          "force_newtons": 0.25,
+          "physics": {
+            "force_newtons": 0.25,
+            "torque_nm": null,
+            "angle_degrees": 90,
+            "properties": [
+              {
+                "name": "required_force",
+                "value": 0.2,
+                "unit": "N",
+                "changes_during_action": false,
+                "source": "derived"
+              },
+              {
+                "name": "button_travel",
+                "value": 0.5,
+                "unit": "mm",
+                "changes_during_action": true,
+                "source": "scene_inventory"
+              }
+            ]
+          },
+          "action_type": "motor_action",
+          "location": {
+            "x": 290,
+            "y": 515,
+            "z": 736
+          },
+          "transitions": [
+            {
+              "id": "TR-1",
+              "label": "left mouse button changes from unpressed to pressed",
+              "from_state": {
+                "T-2": "unpressed"
+              },
+              "to_state": {
+                "T-2": "pressed"
+              },
+              "trigger": "KF-1-6 fires",
+              "fires_relation": "R-1",
+              "involves_things": [
+                "T-1",
+                "T-2"
+              ],
+              "is_compound": false,
+              "depends_on": [],
+              "routing_target_buffer": [
+                "imaginal_buffer",
+                "production_memory"
+              ]
+            }
+          ],
+          "reward_emissions_sequenced": [
+            {
+              "t_ms": 0,
+              "step": 1,
+              "phase": "transition begins",
+              "event": "R-1 press-event fires",
+              "node_affected": "R-1",
+              "reward": 0,
+              "reward_channel": "logging_only",
+              "emitted_by_gameobject": "manual_buffer",
+              "subscriber": "imaginal_buffer",
+              "reason": "trace button press onset"
+            },
+            {
+              "t_ms": 60,
+              "step": 2,
+              "phase": "transition fires",
+              "event": "TR-1 fires",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "state_transition_terminal",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "production_memory",
+              "reason": "button pressed state reached"
+            },
+            {
+              "t_ms": 70,
+              "step": 3,
+              "phase": "sequence completes",
+              "event": "S-1 completes",
+              "node_affected": "S-1",
+              "reward": 1,
+              "reward_channel": "sequence_completion_bonus",
+              "emitted_by_gameobject": "goal_buffer",
+              "subscriber": "imaginal_buffer",
+              "reason": "single press completed"
+            },
+            {
+              "t_ms": 100,
+              "step": 4,
+              "phase": "frame close",
+              "event": "state_after matches anticipated state",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_state_match",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "declarative_module",
+              "reason": "pressed state matched"
+            },
+            {
+              "t_ms": 100,
+              "step": 5,
+              "phase": "frame close",
+              "event": "pad_observed within tolerance",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_pad_match",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "declarative_module",
+              "reason": "PAD aligned"
+            },
+            {
+              "t_ms": 100,
+              "step": 6,
+              "phase": "frame close",
+              "event": "duration matched expected latency",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_latency_match",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "declarative_module",
+              "reason": "authoritative duration matched"
+            },
+            {
+              "t_ms": 100,
+              "step": 7,
+              "phase": "frame close",
+              "event": "state_after enables next cue",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_next_cue",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "goal_buffer",
+              "reason": "button press enabled enter submission"
+            }
+          ],
+          "reward_summary": {
+            "total_frame_reward": 6,
+            "computed_from_emissions": true,
+            "emission_count": 7,
+            "total_change_from_v2_0": null
+          },
+          "habit_loop": {
+            "cue": {
+              "description": "left mouse button available and unpressed",
+              "current_state": {
+                "T-2": "unpressed"
+              },
+              "matched_chunk_id": "mouse-click-focus-schema",
+              "chunk_activation_strength": "HIGH",
+              "routing_target_buffer": [
+                "visual_buffer"
+              ]
+            },
+            "craving": {
+              "desired_state": {
+                "T-2": "pressed"
+              },
+              "anticipated_emotion": "field activation",
+              "pad_predicted": [
+                6,
+                5.3,
+                6.5
+              ],
+              "routing_target_buffer": [
+                "goal_buffer"
+              ]
+            },
+            "response": {
+              "action_sequence_id": "S-1",
+              "summary": "press left mouse button",
+              "routing_target_buffer": [
+                "visual_buffer",
+                "manual_buffer",
+                "temporal_buffer"
+              ]
+            },
+            "reward": {
+              "actual_state": {
+                "T-2": "pressed"
+              },
+              "pad_observed": [
+                6,
+                5.3,
+                6.5
+              ],
+              "pad_delta_direction_valid": true,
+              "pad_tolerance": 0.5,
+              "total_frame_reward": 6,
+              "routing_target_buffer": [
+                "imaginal_buffer"
+              ]
+            }
+          },
+          "connections": {
+            "preceded_by": "KF-1-5",
+            "followed_by": "KF-1-7",
+            "relation_to_prior": "requires",
+            "relation_to_next": "enables"
+          },
+          "sexpr": "(s \"rep trajectory\" (t \"PRESSING\" ) (s \"rep entity\" (t \"right_index_fingertip_pad\")) (r \"rep path\" (t \"to\") (s \"rep entity\" (t \"left_mouse_button\"))) (d \"duration_ms\" 100) (d \"frequency\" 1) (d \"tdp_category\" \"Things\") (d \"frame_mode\" \"physical\") (d \"state_before\" \"unpressed\") (d \"state_after\" \"pressed\"))"
+        },
+        "sourceCoordinates": {
+          "x": 290,
+          "y": 515,
+          "z": 736
+        }
+      },
+      {
+        "klein_frame_id": "KF-1-7",
+        "subTaskId": "st_1",
+        "effector": "right_index_fingertip_pad",
+        "manualCommand": "DEPRESSING enter_key",
+        "target": "enter_key",
+        "target_id": "scene_006",
+        "coordinates": {
+          "x": 0.0,
+          "y": 0.75,
+          "z": 0.38
+        },
+        "forceNewtons": 0.3,
+        "durationMs": 2000,
+        "stateBefore": "unpressed",
+        "stateAfter": "pressed",
+        "rig_bone": "mixamorig:RightHandIndex4_end",
+        "rig_bone_status": "mapped",
+        "rig_pose": {
+          "solve": "unity_ik",
+          "side": "right",
+          "side_comment": "Right arm/hand this frame drives. All bone names below are right-side mixamo bones; mirror to mixamorig:Left* for left hand.",
+          "end_effector": "mixamorig:RightHandIndex4_end",
+          "ik_chain": [
+            "mixamorig:RightShoulder",
+            "mixamorig:RightArm",
+            "mixamorig:RightForeArm",
+            "mixamorig:RightHand",
+            "mixamorig:RightHandIndex1",
+            "mixamorig:RightHandIndex2",
+            "mixamorig:RightHandIndex3",
+            "mixamorig:RightHandIndex4_end"
+          ],
+          "arm_chain": {
+            "comment": "Bones the two-bone arm IK rotates to carry the hand to the enter key contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+            "shoulder": "mixamorig:RightShoulder",
+            "upper_arm": "mixamorig:RightArm",
+            "forearm": "mixamorig:RightForeArm",
+            "hand": "mixamorig:RightHand"
+          },
+          "finger_bones": {
+            "comment": "Per-finger joint chains the hand_pose FK angles bend. index also drives the press contact (its last bone is the end_effector fingertip).",
+            "index": [
+              "mixamorig:RightHandIndex1",
+              "mixamorig:RightHandIndex2",
+              "mixamorig:RightHandIndex3",
+              "mixamorig:RightHandIndex4_end"
+            ],
+            "middle": [
+              "mixamorig:RightHandMiddle1",
+              "mixamorig:RightHandMiddle2",
+              "mixamorig:RightHandMiddle3"
+            ],
+            "ring": [
+              "mixamorig:RightHandRing1",
+              "mixamorig:RightHandRing2",
+              "mixamorig:RightHandRing3"
+            ],
+            "pinky": [
+              "mixamorig:RightHandPinky1",
+              "mixamorig:RightHandPinky2",
+              "mixamorig:RightHandPinky3"
+            ],
+            "thumb": [
+              "mixamorig:RightHandThumb1",
+              "mixamorig:RightHandThumb2",
+              "mixamorig:RightHandThumb3"
+            ]
+          },
+          "ik_target": {
+            "x": 0.0,
+            "y": 0.75,
+            "z": 0.38
+          },
+          "approach_angle_deg": 90,
+          "contact_force_n": 0.3,
+          "sourceIkTarget": {
+            "x": 110,
+            "y": 520,
+            "z": 735
+          }
+        },
+        "hand_pose": {
+          "gesture": "index_point_press",
+          "comment": "Index nearly straight for keyboard key depression; middle/ring/pinky curled into palm; thumb relaxed. Finger angles slightly tighter than mouse press due to vertical approach onto key surface.",
+          "index": {
+            "mcp": 12,
+            "pip": 5,
+            "dip": 3
+          },
+          "middle": {
+            "mcp": 85,
+            "pip": 100,
+            "dip": 70
+          },
+          "ring": {
+            "mcp": 85,
+            "pip": 100,
+            "dip": 70
+          },
+          "pinky": {
+            "mcp": 80,
+            "pip": 95,
+            "dip": 65
+          },
+          "thumb": {
+            "mcp": 14,
+            "pip": 10,
+            "dip": 6
+          }
+        },
+        "arm_pose": {
+          "comment": "Right arm reaching forward-center to enter key. Target is more medial than mouse (x=0.0 vs 0.22), so elbow tucks less to the side and more forward, keeping the arm path clear of torso without excessive lateral splay.",
+          "elbow_pole": {
+            "comment": "Reduced side offset vs mouse reach; more forward offset centers the elbow in front of the chest for the keyboard approach.",
+            "side": 0.3,
+            "forward": 0.25,
+            "down": 0.28
+          },
+          "reach": {
+            "comment": "Slightly shorter forward reach than mouse. shoulder_lift_deg lower since target is more level with the resting arm. wrist_hover_m settles fingertip onto key top surface.",
+            "forward_min_m": 0.28,
+            "forward_max_m": 0.44,
+            "shoulder_lift_deg": 14,
+            "wrist_hover_m": 0.01
+          },
+          "rest": {
+            "comment": "Held arm pose between key presses. Natural elbow bend instead of hanging straight.",
+            "forearm_bend_deg": 10
+          }
+        },
+        "motor_execution": "motor_module executes KF-1-7 by event physical-event contact-event key-press-event enter-key-press enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
+        "kleinFrame": {
+          "klein_frame_id": "KF-1-7",
+          "representation_type": "trajectory",
+          "frame_mode": "physical",
+          "tdp_category": "Things",
+          "actor_state": {
+            "actor": "right_index_fingertip_pad",
+            "actor_thread": [
+              "entity",
+              "physical_entity",
+              "object",
+              "part",
+              "body_part",
+              "skin",
+              "fingertip"
+            ],
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "rig_bone_status": "mapped",
+            "pad_predicted": {
+              "valence": 6.1,
+              "arousal": 5.2,
+              "dominance": 6.5
+            },
+            "pad_observed": {
+              "valence": 6.1,
+              "arousal": 5.2,
+              "dominance": 6.5
+            },
+            "pad_delta_direction_valid": true,
+            "pad_tolerance": 0.5,
+            "pad_conversion": {
+              "scale": "Warriner 1-9",
+              "valence_anchor": {
+                "1": "unhappy",
+                "9": "happy"
+              },
+              "arousal_anchor": {
+                "1": "calm",
+                "9": "excited"
+              },
+              "dominance_anchor": {
+                "1": "controlled",
+                "9": "in-control"
+              },
+              "correlation": "valence and dominance linearly correlated (r=0.717); arousal U-shaped",
+              "derivation_method": "average Warriner ratings of words describing the post-action moment",
+              "tolerance": 0.5,
+              "runtime_note": "In this canonical template pad_predicted and pad_observed are identical to demonstrate schema structure for a clean reference frame. At runtime pad_observed MUST be measured separately from the agent's actual state transition and the Warriner ratings of words describing the moment \u2014 not copied from pad_predicted. The delta between predicted and observed is the learning signal: identical values represent perfect anticipation and will be the exception, not the rule. New analyst frames will show observed diverging from predicted; that delta is what training is designed to close."
+            },
+            "routing_target_buffer": [
+              "imaginal_buffer",
+              "goal_buffer"
+            ]
+          },
+          "thread": [
+            "event",
+            "physical-event",
+            "contact-event",
+            "key-press-event",
+            "enter-key-press"
+          ],
+          "object": "enter_key",
+          "object_thread": [
+            "entity",
+            "physical_entity",
+            "object",
+            "part",
+            "artifact",
+            "instrumentality",
+            "device",
+            "key",
+            "computer_key"
+          ],
+          "state_before": "unpressed",
+          "state_after": "pressed",
+          "frequency": 1,
+          "duration_ms": 90,
+          "granularity_level": "micro",
+          "contributes_to_timeline": true,
+          "force_newtons": 0.3,
+          "physics": {
+            "force_newtons": 0.3,
+            "torque_nm": null,
+            "angle_degrees": 90,
+            "properties": [
+              {
+                "name": "required_force",
+                "value": 0.25,
+                "unit": "N",
+                "changes_during_action": false,
+                "source": "derived"
+              },
+              {
+                "name": "key_travel",
+                "value": 0.6,
+                "unit": "mm",
+                "changes_during_action": true,
+                "source": "scene_inventory"
+              }
+            ]
+          },
+          "action_type": "motor_action",
+          "location": {
+            "x": 110,
+            "y": 520,
+            "z": 735
+          },
+          "transitions": [
+            {
+              "id": "TR-1",
+              "label": "enter key changes from unpressed to pressed",
+              "from_state": {
+                "T-2": "unpressed"
+              },
+              "to_state": {
+                "T-2": "pressed"
+              },
+              "trigger": "KF-1-7 fires",
+              "fires_relation": "R-1",
+              "involves_things": [
+                "T-1",
+                "T-2"
+              ],
+              "is_compound": false,
+              "depends_on": [],
+              "routing_target_buffer": [
+                "imaginal_buffer",
+                "production_memory"
+              ]
+            }
+          ],
+          "reward_emissions_sequenced": [
+            {
+              "t_ms": 0,
+              "step": 1,
+              "phase": "transition begins",
+              "event": "R-1 key-press-event fires",
+              "node_affected": "R-1",
+              "reward": 0,
+              "reward_channel": "logging_only",
+              "emitted_by_gameobject": "manual_buffer",
+              "subscriber": "imaginal_buffer",
+              "reason": "trace enter key press onset"
+            },
+            {
+              "t_ms": 50,
+              "step": 2,
+              "phase": "transition fires",
+              "event": "TR-1 fires",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "state_transition_terminal",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "production_memory",
+              "reason": "enter key pressed state reached"
+            },
+            {
+              "t_ms": 60,
+              "step": 3,
+              "phase": "sequence completes",
+              "event": "S-1 completes",
+              "node_affected": "S-1",
+              "reward": 1,
+              "reward_channel": "sequence_completion_bonus",
+              "emitted_by_gameobject": "goal_buffer",
+              "subscriber": "imaginal_buffer",
+              "reason": "single key press completed"
+            },
+            {
+              "t_ms": 90,
+              "step": 4,
+              "phase": "frame close",
+              "event": "state_after matches anticipated state",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_state_match",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "declarative_module",
+              "reason": "pressed state matched"
+            },
+            {
+              "t_ms": 90,
+              "step": 5,
+              "phase": "frame close",
+              "event": "pad_observed within tolerance",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_pad_match",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "declarative_module",
+              "reason": "PAD aligned"
+            },
+            {
+              "t_ms": 90,
+              "step": 6,
+              "phase": "frame close",
+              "event": "duration matched expected latency",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_latency_match",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "declarative_module",
+              "reason": "authoritative duration matched"
+            },
+            {
+              "t_ms": 90,
+              "step": 7,
+              "phase": "frame close",
+              "event": "state_after enables next cue",
+              "node_affected": "TR-1",
+              "reward": 1,
+              "reward_channel": "frame_close_next_cue",
+              "emitted_by_gameobject": "imaginal_buffer",
+              "subscriber": "goal_buffer",
+              "reason": "enter submission enabled final SAP completion"
+            }
+          ],
+          "reward_summary": {
+            "total_frame_reward": 6,
+            "computed_from_emissions": true,
+            "emission_count": 7,
+            "total_change_from_v2_0": null
+          },
+          "habit_loop": {
+            "cue": {
+              "description": "enter key available and unpressed",
+              "current_state": {
+                "T-2": "unpressed"
+              },
+              "matched_chunk_id": "enter-submit-schema",
+              "chunk_activation_strength": "HIGH",
+              "routing_target_buffer": [
+                "visual_buffer"
+              ]
+            },
+            "craving": {
+              "desired_state": {
+                "T-2": "pressed"
+              },
+              "anticipated_emotion": "submission progress",
+              "pad_predicted": [
+                6.1,
+                5.2,
+                6.5
+              ],
+              "routing_target_buffer": [
+                "goal_buffer"
+              ]
+            },
+            "response": {
+              "action_sequence_id": "S-1",
+              "summary": "depress enter key",
+              "routing_target_buffer": [
+                "visual_buffer",
+                "manual_buffer",
+                "temporal_buffer"
+              ]
+            },
+            "reward": {
+              "actual_state": {
+                "T-2": "pressed"
+              },
+              "pad_observed": [
+                6.1,
+                5.2,
+                6.5
+              ],
+              "pad_delta_direction_valid": true,
+              "pad_tolerance": 0.5,
+              "total_frame_reward": 6,
+              "routing_target_buffer": [
+                "imaginal_buffer"
+              ]
+            }
+          },
+          "connections": {
+            "preceded_by": "KF-1-6",
+            "followed_by": "KF-1-8",
+            "relation_to_prior": "requires",
+            "relation_to_next": "enables"
+          },
+          "sexpr": "(s \"rep trajectory\" (t \"DEPRESSING\" ) (s \"rep entity\" (t \"right_index_fingertip_pad\")) (r \"rep path\" (t \"to\") (s \"rep entity\" (t \"enter_key\"))) (d \"duration_ms\" 90) (d \"frequency\" 1) (d \"tdp_category\" \"Things\") (d \"frame_mode\" \"physical\") (d \"state_before\" \"unpressed\") (d \"state_after\" \"pressed\"))"
+        },
+        "sourceCoordinates": {
+          "x": 110,
+          "y": 520,
+          "z": 735
+        }
+      }
+    ]
+  }

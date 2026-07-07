@@ -17922,8 +17922,14 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "center",
+                            "side_comment": "Non-hand effector: this frame drives the trunk, not an arm. rig_bone maps to the spine, but the full-body rig is not yet provided, so arm/finger chains are omitted and body_pose below holds placeholder shaping angles..",
                             "end_effector": "mixamorig:Spine2",
                             "ik_chain": [],
+                            "spine_chain": {
+                                "comment": "Spine bones the trunk pose shapes as the torso settles onto the seated, desk-facing rest posture.",
+                                "chain": ["mixamorig:Hips", "mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.0,
@@ -17937,6 +17943,20 @@
                                 "z": 720
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "body_pose": {
+                            "gesture": "seated_upright_rest",
+                            "comment": "Trunk resting posture as the torso settles into the seated, desk-facing pose. Placeholder shaping angles (degrees) read live from this file; refine once the full-body rig is provided.",
+                            "spine_lean_deg": 6,
+                            "chest_lift_deg": 3,
+                            "pelvis_tilt_deg": 2
+                        },
+                        "motor_execution": "motor_module executes KF-1-1 by event physical-event support-event rest-event torso-resting desktop_surface with torso, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-1-1",
                             "representation_type": "trajectory",
@@ -18238,6 +18258,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -18246,6 +18268,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.22,
                                 "y": 0.75,
@@ -18259,6 +18300,49 @@
                                 "z": 736
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_point_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: left_mouse_button.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-1-6 by event physical-event contact-event press-event mouse-button-press left_mouse_button with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-1-6",
                             "representation_type": "trajectory",
@@ -18568,6 +18652,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -18576,6 +18662,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.75,
@@ -18589,6 +18694,49 @@
                                 "z": 735
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_point_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: enter_key.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-1-7 by event physical-event contact-event press-event key-press enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-1-7",
                             "representation_type": "trajectory",
@@ -18898,6 +19046,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -18906,6 +19056,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.75,
@@ -18919,6 +19088,49 @@
                                 "z": 735
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_point_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: enter_key.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-1-8 by event physical-event contact-event press-event key-press enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-1-8",
                             "representation_type": "trajectory",
@@ -19228,6 +19440,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -19236,6 +19450,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.75,
@@ -19249,6 +19482,49 @@
                                 "z": 735
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_point_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: p_key.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-2-9 by event physical-event contact-event press-event key-press p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-2-9",
                             "representation_type": "trajectory",
@@ -19558,6 +19834,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -19566,6 +19844,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.75,
@@ -19579,6 +19876,49 @@
                                 "z": 735
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_point_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: p_key.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-2-10 by event physical-event contact-event press-event key-press p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-2-10",
                             "representation_type": "trajectory",
@@ -19888,6 +20228,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -19896,6 +20238,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.75,
@@ -19909,6 +20270,49 @@
                                 "z": 735
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_point_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: p_key.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-2-11 by event physical-event contact-event press-event key-press p_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-2-11",
                             "representation_type": "trajectory",
@@ -20218,6 +20622,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -20226,6 +20632,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.22,
                                 "y": 0.75,
@@ -20239,6 +20664,49 @@
                                 "z": 736
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_scroll_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: scroll_wheel.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-2-12 by event physical-event contact-event press-event scroll scroll_wheel with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-2-12",
                             "representation_type": "trajectory",
@@ -20548,6 +21016,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -20556,6 +21026,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.22,
                                 "y": 0.75,
@@ -20569,6 +21058,49 @@
                                 "z": 736
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_point_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: left_mouse_button.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-4-16 by event physical-event contact-event press-event mouse-button-press left_mouse_button with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-4-16",
                             "representation_type": "trajectory",
@@ -20878,6 +21410,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -20886,6 +21420,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.75,
@@ -20899,6 +21452,49 @@
                                 "z": 735
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_point_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: enter_key.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-4-17 by event physical-event contact-event press-event key-press enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-4-17",
                             "representation_type": "trajectory",
@@ -21208,6 +21804,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -21216,6 +21814,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.75,
@@ -21229,6 +21846,49 @@
                                 "z": 735
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_point_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: enter_key.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-4-18 by event physical-event contact-event press-event key-press enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-4-18",
                             "representation_type": "trajectory",
@@ -21538,6 +22198,8 @@
                         "rig_bone_status": "mapped",
                         "rig_pose": {
                             "solve": "unity_ik",
+                            "side": "right",
+                            "side_comment": "Which arm/hand this frame drives. All bone names below are the RIGHT-side mixamo bones; the motor wires exactly these bones (no hardcoded guessing). Mirror to mixamorig:Left* for the left hand.",
                             "end_effector": "mixamorig:RightHandIndex4_end",
                             "ik_chain": [
                                 "mixamorig:RightHand",
@@ -21546,6 +22208,25 @@
                                 "mixamorig:RightHandIndex3",
                                 "mixamorig:RightHandIndex4_end"
                             ],
+                            "arm_chain": {
+                                "comment": "Bones the two-bone arm IK rotates to carry the hand to the contact. shoulder=clavicle, upper_arm=shoulder joint, forearm=elbow, hand=wrist.",
+                                "shoulder": "mixamorig:RightShoulder",
+                                "upper_arm": "mixamorig:RightArm",
+                                "forearm": "mixamorig:RightForeArm",
+                                "hand": "mixamorig:RightHand"
+                            },
+                            "finger_bones": {
+                                "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
+                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
+                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
+                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
+                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
+                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                            },
+                            "spine_chain": {
+                                "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
+                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                            },
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.75,
@@ -21559,6 +22240,49 @@
                                 "z": 735
                             }
                         },
+                        "scene_contact_point_comment": "Unity WORLD-space point the effector actually contacts (NOT the UI-space 'coordinates'/'rig_pose.ik_target' above). Left at 0,0,0 = AUTO: the motor targets the resized visible top of the target automatically. To pin an exact point, copy the 'Auto visible-top = (...)' value from the [KleinPress] console log into x/y/z.",
+                        "scene_contact_point": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "hand_pose": {
+                            "gesture": "index_point_press",
+                            "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: enter_key.",
+                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
+                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
+                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
+                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
+                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                        },
+                        "arm_pose": {
+                            "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
+                            "elbow_pole": {
+                                "comment": "Where the elbow is pulled, in METRES from the shoulder, in the character's own axes. forward (+) keeps the elbow in front of the chest so the arm reaches from the front; side (+) folds it out to the character's right so it clears the torso; down (+) drops it below the shoulder. The forward term is what stops the elbow folding behind the backbone.",
+                                "side": 0.45,
+                                "forward": 0.2,
+                                "down": 0.28
+                            },
+                            "reach": {
+                                "comment": "Forward reach envelope (metres from the shoulder) for the approach, the clavicle lift (degrees) as the hand rises toward the contact, and the wrist hover (metres) so the down-pointing fingertip settles onto the top surface instead of stopping in the air.",
+                                "forward_min_m": 0.36,
+                                "forward_max_m": 0.5,
+                                "shoulder_lift_deg": 18,
+                                "wrist_hover_m": 0.012
+                            },
+                            "rest": {
+                                "comment": "Held arm pose between presses. forearm_bend_deg gives the idle arm a slight natural elbow bend instead of hanging ramrod-straight.",
+                                "forearm_bend_deg": 10
+                            }
+                        },
+                        "body_pose": {
+                            "gesture": "forward_press_lean",
+                            "comment": "Trunk lean allowance for this press. spine_lean_deg is the MAX forward/down lean (degrees) the agent may use to bend over and reach the contact; the actual lean is dynamic (0 when the arm can already reach). chest_lift/pelvis_tilt reserved.",
+                            "spine_lean_deg": 40,
+                            "chest_lift_deg": 0,
+                            "pelvis_tilt_deg": 0
+                        },
+                        "motor_execution": "motor_module executes KF-4-19 by event physical-event contact-event press-event key-press enter_key with right_index_fingertip_pad, stores frame into declarative_module.stored_frames[].",
                         "kleinFrame": {
                             "klein_frame_id": "KF-4-19",
                             "representation_type": "trajectory",

@@ -52,6 +52,10 @@ public class RagSequenceAgentMover : MonoBehaviour
     [Tooltip("Outer blend band for large env props — wider than cognitive stations.")]
     public float environmentSteerApproachBand = 3.4f;
 
+    [Header("Physical step arrival")]
+    [Tooltip("Stand-off (m) at the parent visible hull when walking to a meronym press target.")]
+    public float physicalPressApproachStandOff = 0.015f;
+
     [Header("Obstacle avoidance — cognitive stations")]
     [Tooltip("Optional Physics box slides (can fight proximity steering). Prefer off when using proximity-only navigation.")]
     public bool avoidCognitiveObstacles = false;
@@ -180,6 +184,7 @@ public class RagSequenceAgentMover : MonoBehaviour
     private KleinFrameExecutor kleinFrameExecutor;
     private string kleinMotorStepId;
     private bool kleinMotorCompleted;
+    private bool _lastStepPhysicalContactVerified;
     // Safety cap (seconds, measured by dwellTimer once arrived) on how long a physical step will wait for
     // its Klein press to signal completion. Guarantees the step still finishes and advances even if the
     // fingertip can't physically reach the target or the motor coroutine stalls — no unbounded hang.
@@ -192,6 +197,17 @@ public class RagSequenceAgentMover : MonoBehaviour
     private string _physicalStepTimerId;
     private float _physicalStepElapsed;
     private float _physicalArriveLogThrottle;
+
+    // Progressive press retry — each failed contact attempt walks closer and presses deeper.
+    private string _pressRetryStepId;
+    private int _pressRetryCount;
+    const float PressRetryStandOffStepM = 0.014f;
+    const float PressRetryArriveSlackStepM = 0.012f;
+    const float PressRetryHullStepM = 0.011f;
+    const float PressRetryNudgeBaseM = 0.07f;
+    const float PressRetryNudgeStepM = 0.045f;
+    const float PressRetryReachBoostStep = 0.13f;
+    const int PressRetryMaxLogged = 12;
 
     // Cached reference to the zone's mental leader mover — avoids repeated GameObject.Find calls.
     private RagSequenceAgentMover _leaderMoverCache;
@@ -492,8 +508,15 @@ public class RagSequenceAgentMover : MonoBehaviour
                 _physicalStepElapsed += Time.deltaTime;
                 if (_physicalStepElapsed >= physicalStepHardCapSeconds && !step.isStepCompleted)
                 {
-                    Debug.LogWarning($"[RagMover] {agentId} physical step '{step.stepId}' → '{step.physicalTarget}' arrived but couldn't finish the press in {physicalStepHardCapSeconds:F0}s — force-completing.");
-                    FinishStepDwellAndComplete(step);
+                    if (RequiresPhysicalPressContact(step) && !HasAchievedPhysicalPressContact())
+                    {
+                        HandlePhysicalPressMissed(step, $"no meronym contact after {physicalStepHardCapSeconds:F0}s");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[RagMover] {agentId} physical step '{step.stepId}' → '{step.physicalTarget}' arrived but couldn't finish in {physicalStepHardCapSeconds:F0}s — force-completing.");
+                        FinishStepDwellAndComplete(step);
+                    }
                     return;
                 }
             }
@@ -527,7 +550,7 @@ public class RagSequenceAgentMover : MonoBehaviour
         Vector3 to = moveGoal - transform.position;
         to.y = 0f;
         float dist = to.magnitude;
-        float progressDist = GetApproachProgressDistance(effectiveTargetId, stationCenter, dist);
+        float progressDist = GetApproachProgressDistance(effectiveTargetId, stationCenter, dist, step);
 
         bool arrived = step.isActivated;
         if (!arrived)
@@ -538,8 +561,8 @@ public class RagSequenceAgentMover : MonoBehaviour
         if (!arrived && IsPhysicalManualActStep(step) && Time.time >= _physicalArriveLogThrottle)
         {
             _physicalArriveLogThrottle = Time.time + 1f;
-            GameObject dbgRoot = FindStationRoot(effectiveTargetId);
-            float hull = dbgRoot != null ? EnvironmentSolidCollider.GetHullDistance(dbgRoot.transform, transform.position) : -1f;
+            GameObject dbgRoot = ResolveKleinApproachObject(step) ?? FindStationRoot(effectiveTargetId);
+            float hull = dbgRoot != null ? GetVisibleFootprintDistance(dbgRoot.transform, transform.position) : -1f;
             Debug.Log($"[RagMover] {agentId} not arrived at '{step.stepId}'→'{step.physicalTarget}' (parent {effectiveTargetId}): distToGoal={dist:F2}, hullDist={hull:F2}, klein={IsCorrectKleinPressTarget(step)}, host={hostPlayerMovement}, elapsed={_physicalStepElapsed:F1}s.");
         }
 
@@ -654,10 +677,13 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
         else if (IsPhysicalManualActStep(step))
         {
-            // Every physical act step whose klein_frame_id resolves to a RAG sceneStateLog frame drives
-            // the hand/arm/finger IK (each target object gets its own Klein interaction). An act step
-            // with no resolvable frame gets NO klein pose, and we clear any held pose so a press can't
-            // bleed from one step onto the next.
+            // Ramp press reach while dwelling so a single attempt keeps driving the finger down.
+            if (hostPlayerMovement && RequiresPhysicalPressContact(step) && !HasAchievedPhysicalPressContact())
+            {
+                float intraBoost = Mathf.Clamp01(dwellTimer / 2.2f) * 0.28f;
+                ApplyPressReachRetryBoost(step, intraBoost);
+            }
+
             if (IsCorrectKleinPressTarget(step))
                 TryDriveKleinMotorForStep(step, stationCenter);
             else
@@ -680,18 +706,27 @@ public class RagSequenceAgentMover : MonoBehaviour
 
         UpdateImaginalThoughtBubbleWhileDwelling(step);
 
-        // Wait for the Klein press to finish before completing the step — but only up to a safety cap, so
-        // a target the fingertip can't physically reach (or a stalled motor coroutine) can never block the
-        // step forever. Past the cap we let the step complete and advance regardless.
+        // Wait for the Klein press to finish before completing the step — up to the motor's contact window
+        // (duration + pressContactTimeout), capped by kleinMotorMaxWaitSeconds so a stalled coroutine can't block forever.
+        float motorWaitCap = kleinMotorMaxWaitSeconds;
+        if (kleinFrameExecutor != null)
+            motorWaitCap = Mathf.Max(motorWaitCap, kleinFrameExecutor.GetRequiredDwellSeconds(step, agentId));
         if (IsPhysicalManualActStep(step) && kleinFrameExecutor != null && hostPlayerMovement
             && !string.IsNullOrEmpty(kleinMotorStepId)
             && string.Equals(kleinMotorStepId, step.stepId, StringComparison.Ordinal)
             && !kleinMotorCompleted
-            && dwellTimer < kleinMotorMaxWaitSeconds)
+            && dwellTimer < motorWaitCap)
             return;
 
         if (dwellTimer < dwellNeed)
             return;
+
+        if (IsPhysicalManualActStep(step) && hostPlayerMovement && RequiresPhysicalPressContact(step)
+            && !HasAchievedPhysicalPressContact())
+        {
+            HandlePhysicalPressMissed(step, "motor dwell finished without meronym contact");
+            return;
+        }
 
         if (RagMenuController.IsMenuStep(step) && !IsMenuOpenedForStep(step))
         {
@@ -725,23 +760,201 @@ public class RagSequenceAgentMover : MonoBehaviour
 
     float GetPhysicalManualActArrivalDistance(ActionSequenceStep step)
     {
+        if (IsCorrectKleinPressTarget(step))
+            return GetPressContactStandDistance(step) + GetPressApproachStandOff(step);
+
         float stand = GetInteractionStandDistance();
         float dist = Mathf.Max(reachThreshold, stand + 0.28f);
         if (hostPlayerMovement)
             dist = Mathf.Max(dist, stand + 0.42f);
-        if (IsPhysicalManualActStep(step))
+        if (IsPhysicalManualActStep(step) && !hostPlayerMovement)
             dist = Mathf.Max(dist, 1.35f);
 
-        // Designated host player walks right up to the CORRECT target (one with a Klein frame in
-        // mannualBuffer2.json) so the hand/finger can physically touch it to press. This is NOT
-        // floored by the proximity stand distance (~0.92m) — that floor is what kept the agent
-        // pressing the air half a metre short. Arrival is gated on hull distance in HasArrivedAtStep,
-        // and AgentGroundMotor physically stops the body at the hull. Every other target keeps the
-        // proximity-based stand-off distance computed above.
-        if (IsCorrectKleinPressTarget(step))
-            return GetPressContactStandDistance();
-
         return dist;
+    }
+
+    public bool WasLastPhysicalStepContactVerified => _lastStepPhysicalContactVerified;
+
+    public bool StepRequiresPressContact(ActionSequenceStep step) => RequiresPhysicalPressContact(step);
+
+    public bool DidAchievePressContactForStep(ActionSequenceStep step)
+    {
+        return !RequiresPhysicalPressContact(step) || HasAchievedPhysicalPressContact();
+    }
+
+    bool RequiresPhysicalPressContact(ActionSequenceStep step)
+    {
+        if (step == null || !IsPhysicalManualActStep(step))
+            return false;
+
+        string meronym = ResolveStepMeronymName(step);
+        if (IsRestingPhysicalMeronym(meronym))
+            return false;
+
+        if (ManualBufferCatalog.TryGetForStep(step.stepId, agentId, zoneIndex, out KleinFrame frame) && frame != null)
+        {
+            string cmd = FirstPhysicalCommandToken(frame.manualCommand);
+            if (cmd.StartsWith("RESTING", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(frame.effectorBodyPart, "torso", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            if (cmd.StartsWith("PRESSING", StringComparison.OrdinalIgnoreCase)
+                || cmd.StartsWith("DEPRESSING", StringComparison.OrdinalIgnoreCase))
+                return true;
+        }
+
+        // Never treat a press meronym as contact-optional just because Klein lookup failed.
+        return IsPressPhysicalMeronym(meronym);
+    }
+
+    static string FirstPhysicalCommandToken(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+        value = value.Trim();
+        int space = value.IndexOf(' ');
+        return space > 0 ? value.Substring(0, space) : value;
+    }
+
+    static bool IsRestingPhysicalMeronym(string meronym)
+    {
+        if (string.IsNullOrWhiteSpace(meronym))
+            return false;
+        return meronym.IndexOf("surface", StringComparison.OrdinalIgnoreCase) >= 0
+               || meronym.IndexOf("desktop", StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    static bool IsPressPhysicalMeronym(string meronym)
+    {
+        if (string.IsNullOrWhiteSpace(meronym))
+            return false;
+        if (IsRestingPhysicalMeronym(meronym))
+            return false;
+        return meronym.IndexOf("key", StringComparison.OrdinalIgnoreCase) >= 0
+               || meronym.IndexOf("button", StringComparison.OrdinalIgnoreCase) >= 0
+               || meronym.IndexOf("wheel", StringComparison.OrdinalIgnoreCase) >= 0;
+    }
+
+    void HandlePhysicalPressMissed(ActionSequenceStep step, string reason)
+    {
+        _lastStepPhysicalContactVerified = false;
+        _imaginalThoughtBubble?.Hide();
+
+        float lastGap = kleinFrameExecutor != null ? kleinFrameExecutor.ClosestTipGap : float.NaN;
+        int attempt = RegisterPressRetryAttempt(step);
+        float standOff = GetPressApproachStandOff(step);
+        float boost = GetPressReachRetryBoost(step);
+        NudgeAgentCloserToPressTarget(step, attempt);
+
+        ClearKleinMotorSession();
+        kleinMotorStepId = null;
+        kleinMotorCompleted = false;
+        dwellTimer = 0f;
+        _physicalStepElapsed = 0f;
+        _physicalStepTimerId = null;
+
+        if (step != null)
+        {
+            step.isActivated = false;
+            step.isStepCompleted = false;
+        }
+
+        ApplyPressReachRetryBoost(step);
+
+        string gapText = float.IsNaN(lastGap) || lastGap >= float.MaxValue * 0.5f ? "?" : $"{lastGap:F3}m";
+        Debug.LogWarning($"[RagMover] {agentId} '{step?.stepId}' → '{step?.physicalTarget}' {reason} — " +
+                         $"retry #{attempt}: standOff={standOff:F3}m reachBoost={boost:F2} lastGap={gapText} (step NOT completed).");
+    }
+
+    int GetPressRetryCount(ActionSequenceStep step)
+    {
+        if (step == null || string.IsNullOrEmpty(step.stepId))
+            return 0;
+        if (!string.Equals(_pressRetryStepId, step.stepId, StringComparison.Ordinal))
+            return 0;
+        return _pressRetryCount;
+    }
+
+    int RegisterPressRetryAttempt(ActionSequenceStep step)
+    {
+        if (step == null || string.IsNullOrEmpty(step.stepId))
+            return 0;
+
+        if (!string.Equals(_pressRetryStepId, step.stepId, StringComparison.Ordinal))
+        {
+            _pressRetryStepId = step.stepId;
+            _pressRetryCount = 0;
+        }
+
+        _pressRetryCount = Mathf.Min(_pressRetryCount + 1, PressRetryMaxLogged);
+        return _pressRetryCount;
+    }
+
+    void ResetPressRetry(ActionSequenceStep step)
+    {
+        if (step == null || string.IsNullOrEmpty(step.stepId))
+            return;
+        if (string.Equals(_pressRetryStepId, step.stepId, StringComparison.Ordinal))
+        {
+            _pressRetryStepId = null;
+            _pressRetryCount = 0;
+        }
+        ApplyPressReachRetryBoost(step, 0f);
+    }
+
+    float GetPressApproachStandOff(ActionSequenceStep step)
+    {
+        int retries = GetPressRetryCount(step);
+        return Mathf.Max(-0.045f, physicalPressApproachStandOff - retries * PressRetryStandOffStepM);
+    }
+
+    float GetPressArriveSlack(ActionSequenceStep step)
+    {
+        int retries = GetPressRetryCount(step);
+        return Mathf.Max(0.008f, 0.06f - retries * PressRetryArriveSlackStepM);
+    }
+
+    float GetPressReachRetryBoost(ActionSequenceStep step, float extra = 0f)
+    {
+        return Mathf.Clamp01(GetPressRetryCount(step) * PressRetryReachBoostStep + extra);
+    }
+
+    void ApplyPressReachRetryBoost(ActionSequenceStep step, float extraBoost = 0f)
+    {
+        float boost = GetPressReachRetryBoost(step, extraBoost);
+        if (handRotationManager == null)
+            handRotationManager = HandRotationManager.EnsureOnAgent(gameObject);
+        if (handRotationManager != null)
+            handRotationManager.PressReachRetryBoost = boost;
+        if (kleinFrameExecutor != null)
+            kleinFrameExecutor.PressReachRetryBoost = boost;
+    }
+
+    void NudgeAgentCloserToPressTarget(ActionSequenceStep step, int attempt)
+    {
+        if (step == null || attempt <= 0)
+            return;
+
+        string parentId = PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
+        GameObject meronym = ResolveMeronymPressTarget(step);
+        GameObject root = FindStationRoot(parentId);
+        Transform targetT = meronym != null ? meronym.transform : root != null ? root.transform : null;
+        if (targetT == null)
+            return;
+
+        Vector3 contactTop = EnvironmentSolidCollider.GetTopContactPoint(targetT, transform.position);
+        Vector3 to = contactTop - transform.position;
+        to.y = 0f;
+        if (to.sqrMagnitude < 1e-6f)
+            return;
+
+        float nudge = Mathf.Min(PressRetryNudgeBaseM + (attempt - 1) * PressRetryNudgeStepM, 0.32f);
+        ApplyMovementDelta(to.normalized * nudge, parentId);
+    }
+
+    bool HasAchievedPhysicalPressContact()
+    {
+        return kleinFrameExecutor != null && kleinFrameExecutor.PressContactAchieved;
     }
 
     void FinishStepDwellAndComplete(ActionSequenceStep step)
@@ -749,6 +962,15 @@ public class RagSequenceAgentMover : MonoBehaviour
         if (step == null || active == null)
             return;
 
+        _lastStepPhysicalContactVerified = !RequiresPhysicalPressContact(step) || HasAchievedPhysicalPressContact();
+
+        if (RequiresPhysicalPressContact(step) && !HasAchievedPhysicalPressContact())
+        {
+            HandlePhysicalPressMissed(step, "finish blocked — no verified meronym contact");
+            return;
+        }
+
+        ResetPressRetry(step);
         _imaginalThoughtBubble?.Hide();
         ApplyPhysicalOnlyStepReward(step);
         RecordStepProducedPayload(step);
@@ -1583,17 +1805,59 @@ public class RagSequenceAgentMover : MonoBehaviour
     /// <summary>Resolve the spawned meronym PART GameObject a physical step targets (step.target =
     /// meronym name, step.target_id = parent entity id), so the finger presses that exact part. Tries the
     /// mover's zone then zone 0 (physical env is authored for zone 0). Null if the part isn't spawned.</summary>
+    static string ResolveStepMeronymName(ActionSequenceStep step)
+    {
+        if (step == null)
+            return string.Empty;
+        if (!string.IsNullOrWhiteSpace(step.physicalTarget))
+            return step.physicalTarget.Trim();
+        return string.Empty;
+    }
+
     GameObject ResolveMeronymPressTarget(ActionSequenceStep step)
     {
-        if (step == null || string.IsNullOrWhiteSpace(step.physicalTarget))
+        string meronym = ResolveStepMeronymName(step);
+        if (string.IsNullOrWhiteSpace(meronym))
             return null;
 
-        string parentId = ResolveEffectiveTargetObjectId(step);
-        GameObject part = MeronymPartRegistry.Get(parentId, step.physicalTarget, zoneIndex)
-                          ?? MeronymPartRegistry.Get(parentId, step.physicalTarget, 0)
-                          ?? MeronymPartRegistry.GetByName(step.physicalTarget, zoneIndex)
-                          ?? MeronymPartRegistry.GetByName(step.physicalTarget, 0);
+        string parentId = PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
+        if (string.IsNullOrWhiteSpace(parentId))
+            parentId = ResolveEffectiveTargetObjectId(step);
+
+        GameObject part = MeronymPartRegistry.Get(parentId, meronym, zoneIndex)
+                          ?? MeronymPartRegistry.Get(parentId, meronym, 0)
+                          ?? MeronymPartRegistry.GetByName(meronym, zoneIndex)
+                          ?? MeronymPartRegistry.GetByName(meronym, 0);
         return part;
+    }
+
+    /// <summary>Meronym part when spawned, else the parent scene tool — used for walk goals and arrival.</summary>
+    GameObject ResolveKleinApproachObject(ActionSequenceStep step)
+    {
+        GameObject part = ResolveMeronymPressTarget(step);
+        if (part != null)
+            return part;
+        if (step == null)
+            return null;
+        return FindStationRoot(ResolveEffectiveTargetObjectId(step));
+    }
+
+    /// <summary>XZ distance from the agent to the nearest point on a target's visible footprint (meronym
+    /// parts have trigger colliders only, so the padded parent nav hull must not be used for press arrival).</summary>
+    static float GetVisibleFootprintDistance(Transform target, Vector3 worldPos)
+    {
+        if (target == null)
+            return float.MaxValue;
+
+        if (EnvironmentSolidCollider.TryGetVisibleBounds(target, out Bounds vb))
+        {
+            Vector3 closest = vb.ClosestPoint(worldPos);
+            Vector3 a = worldPos;
+            a.y = closest.y;
+            return Vector3.Distance(a, closest);
+        }
+
+        return EnvironmentSolidCollider.GetHullDistance(target, worldPos);
     }
 
     GameObject FindStationRoot(string targetObjectId)
@@ -1623,55 +1887,75 @@ public class RagSequenceAgentMover : MonoBehaviour
     /// <summary>Tight contact distance for the correct Klein press target — the agent walks until its
     /// capsule touches the station hull so the arm can physically reach onto the surface. Measured
     /// against the hull (not the station centre) in <see cref="HasArrivedAtStep"/>.</summary>
-    float GetPressContactStandDistance()
+    float GetPressContactStandDistance(ActionSequenceStep step = null)
     {
-        // Press right up against the hull (capsule essentially touching) so the shoulder is as close
-        // as physics allows and the arm has the most reach onto the surface.
-        return GetAgentCapsuleRadius() + 0.03f;
+        float d = GetAgentCapsuleRadius() + 0.03f;
+        if (step != null)
+        {
+            int retries = GetPressRetryCount(step);
+            d = Mathf.Max(GetAgentCapsuleRadius() + 0.004f, d - retries * PressRetryHullStepM);
+        }
+        return d;
     }
 
-    float GetApproachProgressDistance(string targetObjectId, Vector3 stationCenter, float distToMoveGoal)
+    float GetApproachProgressDistance(string targetObjectId, Vector3 stationCenter, float distToMoveGoal, ActionSequenceStep step = null)
     {
+        GameObject root = FindStationRoot(targetObjectId);
+
+        if (step != null && IsCorrectKleinPressTarget(step))
+        {
+            GameObject approachObj = ResolveMeronymPressTarget(step) ?? root;
+            if (approachObj != null)
+                return GetVisibleFootprintDistance(approachObj.transform, transform.position);
+        }
+
         if (!IsCognitiveStationTarget(targetObjectId))
             return distToMoveGoal;
 
-        GameObject root = FindStationRoot(targetObjectId);
         if (root == null)
             return distToMoveGoal;
 
         return EnvironmentSolidCollider.GetHullDistance(root.transform, transform.position);
     }
 
-    // Tiny stand-off (metres) for the correct Klein press target — the designated agent stands right
-    // at the small interactable's visible face (overlapping the padded nav box, which it passes
-    // through) so its arm can physically reach the contact point. NOT based on the fat capsule radius.
-    const float kPressApproachStandDistance = 0.15f;
-
     Vector3 ResolveMoveGoalPosition(string targetObjectId, Vector3 stationCenter, ActionSequenceStep step = null)
     {
         GameObject root = FindStationRoot(targetObjectId);
+        if (root == null)
+            return stationCenter;
 
-        // Correct Klein press target: the designated agent's oversized collision capsule + the padded
-        // nav obstacle hold its body ~0.7m out — beyond arm's reach of this small, low button. Let the
-        // capsule PASS THROUGH the target and stand right at the VISIBLE face (tiny stand-off) so the
-        // visual arm can reach the top. The body may overlap the (invisible, inflated) nav box.
-        if (IsCorrectKleinPressTarget(step) && root != null)
+        if (IsCorrectKleinPressTarget(step))
         {
             if (_groundMotor == null)
                 _groundMotor = GetComponent<AgentGroundMotor>();
             if (_groundMotor != null)
-                _groundMotor.pressPassThroughRoot = root.transform;
-            Vector3 close = EnvironmentSolidCollider.GetVisibleApproachPosition(
-                root.transform, transform.position, kPressApproachStandDistance);
+            {
+                // Desk nav hull blocks the capsule before small desk-top tools (mouse/keyboard); pass
+                // through desk nav so the agent can stand at the visible edge of the tool.
+                GameObject desk = FindStationRoot("scene_008");
+                _groundMotor.pressPassThroughNavRoot = desk != null ? desk.transform : root.transform;
+            }
+
+            GameObject meronym = ResolveMeronymPressTarget(step);
+            GameObject approachObj = meronym ?? root;
+            float standOff = GetPressApproachStandOff(step);
+            Vector3 close;
+            if (meronym != null && root != null && meronym != root)
+            {
+                Vector3 keyTop = EnvironmentSolidCollider.GetTopContactPoint(meronym.transform, transform.position);
+                close = EnvironmentSolidCollider.GetVisibleApproachTowardPoint(
+                    root.transform, keyTop, transform.position, standOff);
+            }
+            else
+            {
+                close = EnvironmentSolidCollider.GetVisibleApproachPosition(
+                    approachObj.transform, transform.position, standOff);
+            }
             return ZonePlayAreaBounds.ClampPosition(zoneIndex, close);
         }
 
-        // Any other target: do not pass through anything; keep the proximity-safe padded approach.
         if (_groundMotor != null)
-            _groundMotor.pressPassThroughRoot = null;
-
-        if (root == null)
-            return stationCenter;
+            _groundMotor.pressPassThroughNavRoot = null;
 
         if (!EnvironmentSolidCollider.TryGetStationSolidCollider(root.transform, out _))
             return stationCenter;
@@ -1682,19 +1966,12 @@ public class RagSequenceAgentMover : MonoBehaviour
         if (solid != null)
             pad = Mathf.Max(pad, solid.approachPadding);
 
-        Vector3 stand = EnvironmentSolidCollider.GetApproachPosition(root.transform, transform.position, agentR, pad);
+        Vector3 stand = EnvironmentSolidCollider.GetVisibleApproachPosition(
+            root.transform, transform.position, Mathf.Max(0.12f, agentR * 0.35f + pad * 0.5f));
         return ZonePlayAreaBounds.ClampPosition(zoneIndex, stand);
     }
 
-    /// <summary>True for the designated player at ANY physical manual-act step — so the agent walks right
-    /// up to every target (passing through its nav box) and can reach the contact to act on it.
-    ///
-    /// This used to also require a resolved Klein frame, which meant only steps present in the buffer
-    /// (historically just t01_phy_s19) got the close-approach — every other step fell back to the normal
-    /// stand-off, couldn't reach its small/low target, and got stuck bumping it (never arriving, so the
-    /// arm motor never started and the step never completed). The close-approach must apply to EVERY
-    /// physical target; whether a Klein motor frame also drives the arm is handled separately in the
-    /// executor (which falls back gracefully when no frame resolves).</summary>
+    /// <summary>True for the designated player at ANY physical manual-act step — close approach + Klein motor.</summary>
     bool IsCorrectKleinPressTarget(ActionSequenceStep step)
     {
         return hostPlayerMovement && IsPhysicalManualActStep(step);
@@ -1763,22 +2040,7 @@ public class RagSequenceAgentMover : MonoBehaviour
             // Correct Klein target: the move goal sits right at the visible face (the agent passes
             // through the padded nav box), so arrive when it reaches that close stand point.
             if (IsCorrectKleinPressTarget(step))
-            {
-                if (distToMoveGoal <= kPressApproachStandDistance + 0.18f)
-                    return true;
-                // The designated host moves via the Photon autopilot, which (unlike AgentGroundMotor's
-                // pass-through) can't overlap the target's collider — so it can never drive the move-goal
-                // distance below the tight threshold above. Also arrive once the capsule reaches the
-                // target's HULL surface: the agent stands at the object and the arm IK reaches onto it.
-                GameObject kleinRoot = FindStationRoot(ResolveEffectiveTargetObjectId(step));
-                if (kleinRoot != null)
-                {
-                    float hullDist = EnvironmentSolidCollider.GetHullDistance(kleinRoot.transform, transform.position);
-                    if (hullDist <= GetInteractionStandDistance() + 0.15f)
-                        return true;
-                }
-                return false;
-            }
+                return HasArrivedAtPhysicalPressTarget(step, targetObjectId, distToMoveGoal);
 
             Vector3 a = transform.position;
             a.y = 0f;
@@ -1790,6 +2052,45 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
 
         return HasArrivedAtTarget(targetObjectId, stationCenter, distToMoveGoal);
+    }
+
+    /// <summary>
+    /// Step activation once the capsule is at the visible meronym/parent surface — not a loose proximity ring.
+    /// JSON proximity zones steer around non-targets only; they do not gate arrival distance here.
+    /// </summary>
+    bool HasArrivedAtPhysicalPressTarget(ActionSequenceStep step, string targetObjectId, float distToMoveGoal)
+    {
+        GameObject root = FindStationRoot(targetObjectId);
+        GameObject approachObj = ResolveMeronymPressTarget(step) ?? root;
+        if (approachObj == null)
+            return distToMoveGoal <= GetPhysicalManualActArrivalDistance(step);
+
+        float arriveSlack = GetPressArriveSlack(step);
+        float tight = GetPressContactStandDistance(step) + arriveSlack;
+
+        // Meronym on a parent: arrive when the capsule is against the parent's visible hull (not the
+        // inflated nav box). The arm/spine IK reaches onto the meronym from there.
+        if (root != null && approachObj != root)
+        {
+            float rootFootprint = GetVisibleFootprintDistance(root.transform, transform.position);
+            if (rootFootprint <= tight)
+                return true;
+        }
+
+        float footprint = GetVisibleFootprintDistance(approachObj.transform, transform.position);
+        if (footprint <= tight)
+            return true;
+
+        if (distToMoveGoal <= GetPressApproachStandOff(step) + arriveSlack)
+            return true;
+
+        if (_groundMotor != null
+            && _groundMotor.LastMoveBlockedFraction >= 0.65f
+            && root != null
+            && GetVisibleFootprintDistance(root.transform, transform.position) <= tight + 0.05f)
+            return true;
+
+        return false;
     }
 
     string ResolveEffectiveTargetObjectId(ActionSequenceStep step)
@@ -2017,19 +2318,35 @@ public class RagSequenceAgentMover : MonoBehaviour
         {
             kleinMotorStepId = step.stepId;
             kleinMotorCompleted = false;
+            ApplyPressReachRetryBoost(step);
 
             // Correct Klein target: press the exact contact point — the JSON-authored
             // scene_contact_point (Unity world space) when set, else the auto-detected TOP of the
             // station's visible mesh. Arm the Motor-style press feedback on it. Other targets keep the
             // station centre and no feedback.
             Vector3 worldTarget = stationCenter;
-            if (IsCorrectKleinPressTarget(step))
+            // A RESTING / torso (pending-full-body) frame does nothing — it must NOT arm a press target or
+            // reach for anything. Detect it up front and skip press-target resolution entirely.
+            ManualBufferCatalog.TryGetForStep(step.stepId, agentId, zoneIndex, out KleinFrame kf);
+            bool isRestFrame = kf != null
+                && ((!string.IsNullOrEmpty(kf.manualCommand)
+                        && kf.manualCommand.StartsWith("RESTING", StringComparison.OrdinalIgnoreCase))
+                    || string.Equals(kf.effectorBodyPart, "torso", StringComparison.OrdinalIgnoreCase));
+
+            if (!isRestFrame && IsCorrectKleinPressTarget(step))
             {
-                GameObject root = FindStationRoot(ResolveEffectiveTargetObjectId(step));
-                // Prefer the exact meronym PART (e.g. left_mouse_button on the mouse) so the finger presses
-                // and greens that specific part, not the parent object's top. Falls back to the parent.
-                GameObject pressTarget = ResolveMeronymPressTarget(step) ?? root;
-                ManualBufferCatalog.TryGetForStep(step.stepId, agentId, zoneIndex, out KleinFrame kf);
+                GameObject root = FindStationRoot(PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex)
+                                                   ?? ResolveEffectiveTargetObjectId(step));
+                // Press the exact meronym PART — never the parent body (touching the mouse shell is not a button press).
+                GameObject pressTarget = ResolveMeronymPressTarget(step);
+                if (pressTarget == null && !string.IsNullOrWhiteSpace(ResolveStepMeronymName(step)))
+                {
+                    Debug.LogWarning($"[KleinPress] {step.stepId} meronym '{ResolveStepMeronymName(step)}' not spawned yet — deferring press motor.");
+                    kleinMotorStepId = null;
+                    return false;
+                }
+
+                pressTarget = pressTarget ?? root;
                 bool fromJson = kf != null && kf.hasSceneContactPoint;
 
                 Vector3 autoTop = pressTarget != null
@@ -2040,7 +2357,7 @@ public class RagSequenceAgentMover : MonoBehaviour
                 kleinFrameExecutor.SetPressFeedbackTarget(pressTarget, pressTarget != null ? gameObject : null);
                 Debug.Log($"[KleinPress] {step.stepId} press contact = {worldTarget} on '{(pressTarget != null ? pressTarget.name : "null")}' " +
                           $"(source: {(fromJson ? "scene_contact_point override" : "auto visible-top")}). " +
-                          $"target part='{step.physicalTarget}' parent='{ResolveEffectiveTargetObjectId(step)}'.");
+                          $"target part='{ResolveStepMeronymName(step)}' parent='{PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex)}'.");
             }
             else
             {
@@ -2063,7 +2380,7 @@ public class RagSequenceAgentMover : MonoBehaviour
         kleinMotorCompleted = false;
         kleinFrameExecutor?.Cancel();
         if (_groundMotor != null)
-            _groundMotor.pressPassThroughRoot = null;   // re-block the target once the press is done
+            _groundMotor.pressPassThroughNavRoot = null;
     }
 
     /// <summary>Guarantees no Klein press pose lingers when the agent is on an act step with no
