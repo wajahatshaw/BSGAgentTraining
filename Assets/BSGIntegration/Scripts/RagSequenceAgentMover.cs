@@ -55,6 +55,8 @@ public class RagSequenceAgentMover : MonoBehaviour
     [Header("Physical step arrival")]
     [Tooltip("Stand-off (m) at the parent visible hull when walking to a meronym press target.")]
     public float physicalPressApproachStandOff = 0.015f;
+    [Tooltip("Max seconds the designated player tries to walk around to a DIFFERENT face on a side-switch retry before giving up and pressing from wherever it can already reach the hull. Guarantees the step keeps retrying (re-arrives) on large objects it can't circle, instead of stranding with the step de-activated.")]
+    public float pressRelocateGiveUpSeconds = 4f;
 
     [Header("Obstacle avoidance — cognitive stations")]
     [Tooltip("Optional Physics box slides (can fight proximity steering). Prefer off when using proximity-only navigation.")]
@@ -201,6 +203,10 @@ public class RagSequenceAgentMover : MonoBehaviour
     // Progressive press retry — each failed contact attempt walks closer and presses deeper.
     private string _pressRetryStepId;
     private int _pressRetryCount;
+    // Relocation give-up timer for side-switch retries — see pressRelocateGiveUpSeconds.
+    private string _pressRelocateStepId;
+    private int _pressRelocateSideIndex = -1;
+    private float _pressRelocateElapsed;
     const float PressRetryStandOffStepM = 0.014f;
     const float PressRetryArriveSlackStepM = 0.012f;
     const float PressRetryHullStepM = 0.011f;
@@ -208,6 +214,10 @@ public class RagSequenceAgentMover : MonoBehaviour
     const float PressRetryNudgeStepM = 0.045f;
     const float PressRetryReachBoostStep = 0.13f;
     const int PressRetryMaxLogged = 12;
+    // After this many failed contacts on one approach side, re-approach the meronym from a DIFFERENT face of
+    // the parent (nearest edge to the meronym first). Fixes the "keeps retrying from the same spot it can't
+    // reach from" case — the agent circles to a side from which the arm can actually land on the part.
+    const int PressRetriesPerSide = 2;
 
     // Cached reference to the zone's mental leader mover — avoids repeated GameObject.Find calls.
     private RagSequenceAgentMover _leaderMoverCache;
@@ -556,6 +566,11 @@ public class RagSequenceAgentMover : MonoBehaviour
         if (!arrived)
             arrived = HasArrivedAtStep(step, effectiveTargetId, stationCenter, dist);
 
+        // Advance the side-switch relocation timer so a large object the agent can't circle still re-arrives
+        // (presses from where it can reach) instead of stranding with the step de-activated.
+        if (IsCorrectKleinPressTarget(step))
+            UpdatePressRelocateTimer(step, arrived);
+
         // Diagnostic: while a physical act step hasn't arrived, report why (throttled ~1s) so a stuck
         // "keeps bumping the target" state is legible — distance to goal vs the object's hull.
         if (!arrived && IsPhysicalManualActStep(step) && Time.time >= _physicalArriveLogThrottle)
@@ -844,7 +859,17 @@ public class RagSequenceAgentMover : MonoBehaviour
         int attempt = RegisterPressRetryAttempt(step);
         float standOff = GetPressApproachStandOff(step);
         float boost = GetPressReachRetryBoost(step);
-        NudgeAgentCloserToPressTarget(step, attempt);
+
+        // Does this failure roll us onto a new approach side? If so, DON'T nudge toward the meronym — the
+        // agent must first walk around to the new face (nudging here would shove it into the parent from the
+        // old, unreachable spot). ResolveMoveGoalPosition + HasArrivedAtPhysicalPressTarget re-route it.
+        int prevSide = (attempt - 1) / PressRetriesPerSide;
+        int newSide = attempt / PressRetriesPerSide;
+        bool switchingSide = newSide != prevSide;
+        if (switchingSide)
+            Debug.Log($"[RagMover] {agentId} '{step?.stepId}' → '{step?.physicalTarget}' unreachable from side {prevSide} after {PressRetriesPerSide} tries — re-approaching from side {newSide}.");
+        else
+            NudgeAgentCloserToPressTarget(step, attempt);
 
         ClearKleinMotorSession();
         kleinMotorStepId = null;
@@ -906,6 +931,86 @@ public class RagSequenceAgentMover : MonoBehaviour
     {
         int retries = GetPressRetryCount(step);
         return Mathf.Max(-0.045f, physicalPressApproachStandOff - retries * PressRetryStandOffStepM);
+    }
+
+    /// <summary>Which approach-side attempt we're on for this press step (0 = natural first approach, then
+    /// one increment per <see cref="PressRetriesPerSide"/> failed contacts). Drives face re-selection.</summary>
+    int GetPressSideIndex(ActionSequenceStep step)
+    {
+        return GetPressRetryCount(step) / PressRetriesPerSide;
+    }
+
+    /// <summary>Counts how long the agent has been trying to walk to the current side-switch face without
+    /// arriving. Resets when the step, the side, or arrival changes. Read by <see cref="HasArrivedAtPhysicalPressTarget"/>
+    /// to give up relocating (press in place) so re-arrival is guaranteed on objects it can't circle.</summary>
+    void UpdatePressRelocateTimer(ActionSequenceStep step, bool arrived)
+    {
+        if (step == null)
+            return;
+
+        int sideIdx = GetPressSideIndex(step);
+        if (!string.Equals(_pressRelocateStepId, step.stepId, StringComparison.Ordinal) || _pressRelocateSideIndex != sideIdx)
+        {
+            _pressRelocateStepId = step.stepId;
+            _pressRelocateSideIndex = sideIdx;
+            _pressRelocateElapsed = 0f;
+        }
+
+        if (arrived || sideIdx == 0)
+        {
+            _pressRelocateElapsed = 0f;   // fresh budget for the next relocation
+        }
+        else
+        {
+            bool wasGivenUp = _pressRelocateElapsed >= pressRelocateGiveUpSeconds;
+            _pressRelocateElapsed += Time.deltaTime;
+            if (!wasGivenUp && _pressRelocateElapsed >= pressRelocateGiveUpSeconds)
+                Debug.Log($"[RagMover] {agentId} '{step.stepId}' → '{step.physicalTarget}' couldn't circle to side {sideIdx} in {pressRelocateGiveUpSeconds:F0}s — pressing from the nearest reachable hull instead (still re-arrives/retries).");
+        }
+    }
+
+    bool PressRelocateGaveUp(ActionSequenceStep step)
+    {
+        return step != null
+               && string.Equals(_pressRelocateStepId, step.stepId, StringComparison.Ordinal)
+               && _pressRelocateSideIndex == GetPressSideIndex(step)
+               && _pressRelocateElapsed >= pressRelocateGiveUpSeconds;
+    }
+
+    /// <summary>Outward horizontal approach direction for the <paramref name="rank"/>-th best parent face —
+    /// ordered so the face NEAREST the meronym (least arm reach-across) is rank 0, then next-nearest, etc.
+    /// Used by side-switching retries to circle the parent to a reachable face.</summary>
+    Vector3 GetPressApproachDir(GameObject root, GameObject meronym, int rank)
+    {
+        if (root == null)
+            return transform.forward;
+
+        Transform t = root.transform;
+        Vector3[] cand = { t.right, -t.right, t.forward, -t.forward };
+
+        Vector3 offDir = t.forward;
+        if (meronym != null && EnvironmentSolidCollider.TryGetVisibleBounds(root.transform, out Bounds rb))
+        {
+            Vector3 off = meronym.transform.position - rb.center;
+            off.y = 0f;
+            if (off.sqrMagnitude > 1e-4f)
+                offDir = off.normalized;
+        }
+
+        // Order the four faces by alignment with the meronym offset (most aligned = nearest edge first).
+        int[] order = { 0, 1, 2, 3 };
+        for (int i = 0; i < 4; i++)
+            for (int j = i + 1; j < 4; j++)
+                if (Vector3.Dot(cand[order[j]], offDir) > Vector3.Dot(cand[order[i]], offDir))
+                {
+                    int tmp = order[i];
+                    order[i] = order[j];
+                    order[j] = tmp;
+                }
+
+        Vector3 d = cand[order[((rank % 4) + 4) % 4]];
+        d.y = 0f;
+        return d.sqrMagnitude > 1e-6f ? d.normalized : transform.forward;
     }
 
     float GetPressArriveSlack(ActionSequenceStep step)
@@ -1943,8 +2048,23 @@ public class RagSequenceAgentMover : MonoBehaviour
             if (meronym != null && root != null && meronym != root)
             {
                 Vector3 keyTop = EnvironmentSolidCollider.GetTopContactPoint(meronym.transform, transform.position);
+
+                // Side 0 = natural approach from wherever the agent already is (unchanged). After repeated
+                // failed contacts the side index climbs and we synthesize a reference point far out along a
+                // different parent face, so GetVisibleApproachTowardPoint stands the agent on THAT face.
+                int sideIndex = GetPressSideIndex(step);
+                Vector3 fromRef = transform.position;
+                if (sideIndex >= 1)
+                {
+                    Vector3 dir = GetPressApproachDir(root, meronym, sideIndex - 1);
+                    float span = 2f;
+                    if (EnvironmentSolidCollider.TryGetVisibleBounds(root.transform, out Bounds rb))
+                        span = rb.extents.magnitude + 2f;
+                    fromRef = keyTop + dir * span;
+                }
+
                 close = EnvironmentSolidCollider.GetVisibleApproachTowardPoint(
-                    root.transform, keyTop, transform.position, standOff);
+                    root.transform, keyTop, fromRef, standOff);
             }
             else
             {
@@ -2068,23 +2188,40 @@ public class RagSequenceAgentMover : MonoBehaviour
         float arriveSlack = GetPressArriveSlack(step);
         float tight = GetPressContactStandDistance(step) + arriveSlack;
 
+        // On a side-switch retry (sideIndex >= 1) the agent must reach the NEW face before it counts as
+        // arrived — otherwise it just presses-and-misses from the same unreachable spot forever. We can NOT
+        // require the capsule centre to hit the stand point exactly (it sits ~capsule-radius off the hull and
+        // can't overlap a solid parent), so instead we keep the realistic "against the hull" arrival but gate
+        // it to being near the INTENDED face: the horizontal distance to this side's move goal must be within
+        // a capsule-scaled tolerance. On the old face that distance is ~the object's width, so it fails there
+        // and passes only once the agent has walked around. Side 0 keeps the original unconditional behavior.
+        bool naturalSide = GetPressSideIndex(step) == 0;
+        float sideReachTol = GetAgentCapsuleRadius() + 0.3f;
+        // Give up circling (press in place) once the relocation timer expires, so an object the agent can't
+        // walk around still re-arrives and keeps retrying instead of stranding with the step de-activated.
+        bool atIntendedFace = naturalSide || distToMoveGoal <= sideReachTol || PressRelocateGaveUp(step);
+
         // Meronym on a parent: arrive when the capsule is against the parent's visible hull (not the
         // inflated nav box). The arm/spine IK reaches onto the meronym from there.
-        if (root != null && approachObj != root)
+        if (atIntendedFace && root != null && approachObj != root)
         {
             float rootFootprint = GetVisibleFootprintDistance(root.transform, transform.position);
             if (rootFootprint <= tight)
                 return true;
         }
 
-        float footprint = GetVisibleFootprintDistance(approachObj.transform, transform.position);
-        if (footprint <= tight)
-            return true;
+        if (atIntendedFace)
+        {
+            float footprint = GetVisibleFootprintDistance(approachObj.transform, transform.position);
+            if (footprint <= tight)
+                return true;
+        }
 
         if (distToMoveGoal <= GetPressApproachStandOff(step) + arriveSlack)
             return true;
 
-        if (_groundMotor != null
+        if (atIntendedFace
+            && _groundMotor != null
             && _groundMotor.LastMoveBlockedFraction >= 0.65f
             && root != null
             && GetVisibleFootprintDistance(root.transform, transform.position) <= tight + 0.05f)

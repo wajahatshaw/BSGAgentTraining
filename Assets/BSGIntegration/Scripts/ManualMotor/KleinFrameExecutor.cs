@@ -27,8 +27,10 @@ public class KleinFrameExecutor : MonoBehaviour
     ButtonPressContact _pressContact;
     bool _pressFxEngaged;
 
-    [Tooltip("How close (m) the fingertip must get to the target object's top surface to count as a genuine press (button turns green). Tight (~3cm) so a finger still hovering in the air does NOT green — only a real touch does.")]
-    public float pressContactDistance = 0.03f;
+    [Tooltip("Fingertip pad-contact RADIUS (m) — NOT a hover distance. The button greens only when the finger pad's collider physically overlaps the meronym collider (or a downward ray lands on its top) within this radius, i.e. the visible pad is touching the visible surface. Set to the finger pad's own half-size (~1cm). Making it larger does NOT loosen a hover tolerance — it just fattens the pad; making it smaller requires the finger to seat more precisely. A hovering finger never greens at any value.")]
+    public float pressContactDistance = 0.01f;
+    [Tooltip("After first contact is detected, keep driving the hold pose for this long (seconds) so RefineMixamoPressReach seats the fingertip flush onto the surface before the press is recorded. Without this, the finger freezes at whatever gap first tripped pressContactDistance instead of settling onto the meronym.")]
+    public float pressSeatInSeconds = 0.18f;
     [Tooltip("Once the fingertip stops getting closer to the target for this long (seconds), stop waiting for contact — the step may still advance but the button stays un-pressed.")]
     public float pressSettleSeconds = 0.35f;
     [Tooltip("Hard safety cap (seconds) on a single press attempt so a genuinely unreachable target can't hold the coroutine open.")]
@@ -290,10 +292,22 @@ public class KleinFrameExecutor : MonoBehaviour
 
         if (_pressContacted)
         {
+            // Seat-in: contact fires the instant the pad first crosses pressContactDistance, so the finger
+            // is still ~that gap above the surface. Keep driving the hold pose (RefineMixamoPressReach runs
+            // each frame, targeting ~0.4cm) for a brief window so the finger presses flush onto the meronym
+            // before the press is recorded — otherwise it freezes at first-touch and leaves a visible gap.
+            float seatIn = 0f;
+            while (seatIn < pressSeatInSeconds && _poseHoldActive && _holdFrame != null)
+            {
+                ApplyMotorPose(_holdFrame, _holdTarget, 1f, _holdForce);
+                seatIn += Time.deltaTime;
+                yield return null;
+            }
+
             if (frame != null)
                 RecordMotorFrame(frame, _activeStepId);
             if (logVerbose)
-                Debug.Log($"[KleinPress] {_activeStepId} fingertip HIT the target top (gap {_minTipGap:F3}m) → state '{frame?.stateBefore}'→'{frame?.stateAfter}' recorded; button green.");
+                Debug.Log($"[KleinPress] {_activeStepId} fingertip SEATED on the target top (gap {_minTipGap:F3}m) → state '{frame?.stateBefore}'→'{frame?.stateAfter}' recorded; button green.");
         }
         else
         {
@@ -316,55 +330,54 @@ public class KleinFrameExecutor : MonoBehaviour
             return false;
         Vector3 p = _hand.GetEffectiveFingerTipWorld();
 
-        float gap = float.MaxValue;
-        bool onTop = false;
-        float contactTol = pressContactDistance;
+        // GREEN ONLY ON A GENUINE PHYSICAL HIT. There is no "distance to the surface" acceptance any more —
+        // a finger hovering above the meronym never greens no matter how close. The button turns green only
+        // when the fingertip pad actually intersects the meronym's collider (or a downward ray from the pad
+        // lands right on its top face). `pressContactDistance` is now the pad-contact RADIUS, not a hover
+        // tolerance: it is the finger pad's own half-size, so "overlap within it" means the visible pad is
+        // touching the visible surface. `diagGap` is for logging/settle only and never gates the green.
+        float diagGap = float.MaxValue;
+        bool physicalHit = false;
 
         if (_pressTargetRoot != null && EnvironmentSolidCollider.TryGetVisibleBounds(_pressTargetRoot, out Bounds b))
         {
-            gap = EnvironmentSolidCollider.GetTopSurfaceGap(b, p);
+            diagGap = EnvironmentSolidCollider.GetTopSurfaceGap(b, p);
             float topY = b.max.y;
-            // Fingertip must be at or slightly into the top face — hovering above does not count.
-            onTop = p.y <= topY + 0.003f && p.y >= topY - Mathf.Max(0.004f, b.size.y * 0.65f);
 
-            // Cylinder meronyms (scroll_wheel): accept cap-disk proximity in XZ when the tip is on the top cap.
-            if (!onTop && b.size.y < b.size.x * 0.85f)
+            // Hit #1: the fingertip pad sphere physically overlaps the meronym (trigger) collider.
+            if (TryFingerOverlapsMeronym(p, pressContactDistance))
             {
-                float dx = p.x - b.center.x;
-                float dz = p.z - b.center.z;
-                float capR = Mathf.Max(b.extents.x, b.extents.z) * 0.9f;
-                if (dx * dx + dz * dz <= capR * capR && p.y <= topY + 0.005f && p.y >= topY - 0.018f)
-                    onTop = true;
+                physicalHit = true;
+                diagGap = 0f;
             }
 
-            if (TryFingerOverlapsMeronym(p, 0.014f))
+            // Hit #2: a short downward ray from the pad lands on the meronym top AND the pad is at that
+            // surface (within the pad radius). Catches thin/flat parts the sphere can skim past.
+            if (!physicalHit
+                && p.y <= topY + pressContactDistance
+                && TryFingerRayHitsMeronymTop(p, topY, pressContactDistance + 0.006f))
             {
-                onTop = true;
-                gap = Mathf.Min(gap, 0f);
-            }
-
-            if (TryFingerRayHitsMeronymTop(p, topY, 0.09f))
-            {
-                onTop = true;
-                gap = Mathf.Min(gap, Vector3.Distance(p, new Vector3(p.x, topY, p.z)));
+                physicalHit = true;
+                diagGap = Mathf.Min(diagGap, Mathf.Max(0f, p.y - topY));
             }
         }
         else
         {
-            // No renderer bounds on the meronym — never treat "near the IK goal" as a physical touch.
-            gap = Vector3.Distance(p, _contactPoint);
-            onTop = p.y <= _contactPoint.y + 0.003f && p.y >= _contactPoint.y - 0.015f;
+            // No renderer bounds on the meronym — fall back to the IK contact point, but still require the
+            // pad to be AT it (within the pad radius), never merely "near".
+            diagGap = Vector3.Distance(p, _contactPoint);
+            physicalHit = diagGap <= pressContactDistance;
         }
 
-        if (gap < _minTipGap)
-            _minTipGap = gap;
+        if (diagGap < _minTipGap)
+            _minTipGap = diagGap;
 
-        if (gap <= contactTol && onTop)
+        if (physicalHit)
         {
             _pressContacted = true;
             EngagePressFx();
             if (logVerbose)
-                Debug.Log($"[KleinPress] {_activeStepId} verified meronym contact (gap {gap:F4}m, tip {p}).");
+                Debug.Log($"[KleinPress] {_activeStepId} fingertip HIT meronym surface (gap {diagGap:F4}m, tip {p}).");
             return true;
         }
         return false;

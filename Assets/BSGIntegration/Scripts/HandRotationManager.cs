@@ -77,7 +77,15 @@ public class HandRotationManager : MonoBehaviour
     bool _hasLockedReachTarget;
     float _smoothedReachWeight;
     float _measuredFingerReach = 0.11f;   // live hand→fingertip 3D length for wrist placement
-    const float FingertipPadExtensionM = 0.028f; // bone tip → fingertip pad when rig has no Index4_end
+    // Bridge from the LAST resolved index bone out to the visible pad surface. Two cases:
+    //  - Rig HAS a real tip-end bone (Index4/_end) → IndexFingerTip already sits at the visible fingertip,
+    //    so we only nudge out by the pad's own half-thickness (SurfaceM). Using the full BridgeM here put
+    //    the effective contact point ~2.8cm PAST the visible finger, so the press greened while the finger
+    //    still hovered ~2.8cm above the surface (the reported gap).
+    //  - Rig stops at a mid-bone (Index3) → bridge the missing last phalanx to reach the pad (BridgeM).
+    const float FingertipPadBridgeM = 0.028f;   // no real tip bone: bridge the missing phalanx
+    const float FingertipPadSurfaceM = 0.008f;  // real tip bone present: just reach the pad surface
+    float _fingertipPadExtension = FingertipPadBridgeM;
 
     /// <summary>0..1 — increases press depth and refinement from RagSequenceAgentMover retries.</summary>
     public float PressReachRetryBoost { get; set; }
@@ -98,7 +106,7 @@ public class HandRotationManager : MonoBehaviour
         else
             along.Normalize();
 
-        return IndexFingerTip.position + along * FingertipPadExtensionM;
+        return IndexFingerTip.position + along * _fingertipPadExtension;
     }
 
     public static HandRotationManager EnsureOnAgent(GameObject agent)
@@ -122,7 +130,10 @@ public class HandRotationManager : MonoBehaviour
         Transform j1 = FindDeepChild(root, HumanBodyBuilder.RightIndexJoint1);
         Transform j2 = FindDeepChild(root, HumanBodyBuilder.RightIndexJoint2);
         Transform j3 = FindDeepChild(root, HumanBodyBuilder.RightIndexJoint3);
-        IndexFingerTip = FindDeepChild(root, HumanBodyBuilder.RightIndexTip) ?? j3;
+        Transform indexTipBone = FindDeepChild(root, HumanBodyBuilder.RightIndexTip);
+        IndexFingerTip = indexTipBone ?? j3;
+        // Real tip bone → IndexFingerTip is the visible pad; else it fell back to j3 and needs the bridge.
+        _fingertipPadExtension = indexTipBone != null ? FingertipPadSurfaceM : FingertipPadBridgeM;
         RightArmPivot = FindDeepChild(root, HumanBodyBuilder.RightArmPivot);
         RightElbowPivot = FindDeepChild(root, HumanBodyBuilder.RightElbowPivot);
 
@@ -333,6 +344,8 @@ public class HandRotationManager : MonoBehaviour
             index.joints.Add(new JointRotationData { jointTransform = index3, rotation = Vector3.zero });
             fingers.Add(index);
             IndexFingerTip = index4 ?? index3;
+            // A real tip-end bone means IndexFingerTip is already the visible pad — don't over-extend past it.
+            _fingertipPadExtension = index4 != null ? FingertipPadSurfaceM : FingertipPadBridgeM;
 
             // Capture finger rest rotations ONCE, like the arm/shoulder/hand captures above.
             // Re-capturing on every re-wire would read the already-flexed pose as "rest", so each
@@ -659,6 +672,13 @@ public class HandRotationManager : MonoBehaviour
         float w = Mathf.Max(weight, goalWeight > 0.02f ? Mathf.Min(goalWeight, 0.3f) : 0f);
         float pressW = Mathf.Clamp01(_manualPressPhase);
 
+        // A pointing hand is a STATIC shape, not something that should morph in over the whole press ramp.
+        // Driving the finger curls off pressW made the agent approach the target with a flat/open hand and
+        // snap into the point only at contact (looked unnatural). Instead form the pointing shape EARLY: this
+        // weight saturates almost as soon as the arm engages (w climbs fast), so the hand is already pointing
+        // well before it reaches the surface, and only the final press push still rides pressW.
+        float poseShapeWeight = Mathf.Clamp01(w / 0.35f);
+
         // Right-arm shaping is data-driven from mannualBuffer2.json (arm_pose). When a frame omits it,
         // these defaults reproduce the previous reach — except the elbow pole now carries a forward term.
         KleinArmPose armPose = _manualFrame != null ? _manualFrame.armPose : null;
@@ -698,7 +718,7 @@ public class HandRotationManager : MonoBehaviour
 
             // Place the wrist so the fingertip PAD (not just the last bone) lands on the meronym top.
             Vector3 desiredTip = topContact - pressDir * pressDepth + pressDir * approachHover;
-            desiredTip -= pressDir * FingertipPadExtensionM;
+            desiredTip -= pressDir * _fingertipPadExtension;
             Vector3 wristGoal = desiredTip - pressDir * _measuredFingerReach;
 
             float armLen = Vector3.Distance(upper.position, forearm.position)
@@ -744,20 +764,23 @@ public class HandRotationManager : MonoBehaviour
         // raised wrist goal.
         ApplyMixamoHandAim(kleinFingerPress ? fingerContact : surfacePoint, w);
 
-        // True finger IK: CCD-solve the RAG's ik_chain (RightHand→Index1..Index4_end) so the index TIP
-        // lands on the actual contact (the meronym part), with the approach direction taken from the RAG's
-        // approach_angle_deg (90° = press straight down) and the sink scaled by contact_force_n. This
-        // replaces the old fixed-angle point so the finger follows the RAG, not a hardcoded bend table.
-        if (kleinFingerPress && _manualFrame != null && _manualFrame.UsesUnityIk)
-        {
-            ApplyMixamoIndexFingerContactIK(_manualFrame, fingerContact, approachNormal, pressW, w);
-        }
+        // Index finger = a mostly-STRAIGHT pointer (FK from hand_pose.index), NOT a CCD-to-contact solve.
+        // The CCD solver (ApplyMixamoIndexFingerContactIK) was allowed 55-78 deg/joint and curled the index
+        // into an unnatural hook to reach the target. A real finger presses a button STRAIGHT — the ARM
+        // lowers it. The arm IK already places the wrist exactly _measuredFingerReach (a straight-finger
+        // length) back from the contact along the approach dir, and RefineMixamoPressReach + spine-lean close
+        // any remaining gap, so a rigid pointing finger lands on the surface cleanly. approach_angle_deg is
+        // still honored — it shapes pressDir (wrist placement) and the hand aim, so the straight finger
+        // points along the approach. (CCD path kept for the non-mixamo fallback only.)
+        if (kleinFingerPress && _manualFrame != null)
+            ApplyMixamoIndexPoint(_manualFrame, poseShapeWeight);
         else
             ApplyMixamoIndexFingerContact(pressW, w);
 
-        // Curl the non-index fingers per the klein hand_pose so the hand forms a pointing press.
+        // Curl the non-index fingers per the klein hand_pose so the hand forms a pointing press. Use the
+        // early-saturating shape weight (not pressW) so the fist forms up front instead of morphing at contact.
         if (_manualFrame != null && _manualFrame.handPose != null && _manualFrame.handPose.hasData)
-            ApplyOtherFingerCurls(_manualFrame.handPose, pressW);
+            ApplyOtherFingerCurls(_manualFrame.handPose, poseShapeWeight);
 
         // Second/third pass: if the fingertip pad still hovers above the surface, lower the wrist goal
         // and re-solve arm + finger IK (fixes Mixamo rigs where Index4_end is missing).
@@ -766,7 +789,7 @@ public class HandRotationManager : MonoBehaviour
 
         if (kleinFingerPress && IndexFingerTip != null && RightHandRoot != null)
         {
-            float len = Vector3.Distance(RightHandRoot.position, IndexFingerTip.position) + FingertipPadExtensionM;
+            float len = Vector3.Distance(RightHandRoot.position, IndexFingerTip.position) + _fingertipPadExtension;
             _measuredFingerReach = Mathf.Clamp(Mathf.Lerp(_measuredFingerReach, len, 0.55f), 0.08f, 0.17f);
         }
     }
@@ -795,11 +818,10 @@ public class HandRotationManager : MonoBehaviour
                 rightShoulderRestRotation, rightArmRestRotation, rightElbowRestRotation,
                 surfacePoint, pole, w, shoulderLiftDeg);
             ApplyMixamoHandAim(fingerContact, w);
-            if (_manualFrame != null && _manualFrame.UsesUnityIk)
-            {
-                int iters = 6 + pass * 4;
-                ApplyMixamoIndexFingerContactIK(_manualFrame, fingerContact, approachNormal, pressW, w, iters);
-            }
+            // Keep the index a straight pointer while the ARM lowers it (matches the main pose) — do NOT
+            // re-run the CCD contact solve here or it re-curls the finger into a hook each refine pass.
+            if (_manualFrame != null)
+                ApplyMixamoIndexPoint(_manualFrame, Mathf.Clamp01(w / 0.35f));
         }
     }
 
@@ -915,7 +937,7 @@ public class HandRotationManager : MonoBehaviour
         float pressDepth = press * Mathf.Clamp(force, 0.05f, 1f) * (0.065f + reachBoost * 0.035f);
         float hover = 0.001f * (1f - press) * (1f - reachBoost * 0.8f);
         Vector3 pressDir = -approachNormal;
-        Vector3 ikTarget = contactPoint + pressDir * (pressDepth - hover) - pressDir * FingertipPadExtensionM;
+        Vector3 ikTarget = contactPoint + pressDir * (pressDepth - hover) - pressDir * _fingertipPadExtension;
 
         float maxStep = press > 0.85f ? 78f : 55f;
         FingerChainIKSolver.Solve(_rightIndexChain, ikTarget, approachNormal, iterations, maxStep);
