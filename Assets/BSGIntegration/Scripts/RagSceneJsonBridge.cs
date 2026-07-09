@@ -112,6 +112,8 @@ public static class RagSceneJsonBridge
             return false;
         }
 
+        ApplyWorkstationWorldPositionsFromRag(ragFullText, model.sceneEntities);
+
         string sceneId = string.IsNullOrWhiteSpace(model.sceneId) ? "rag_scene" : model.sceneId;
         PlanData plan = BuildPlanFromRagContext(model.taskContext, sceneId);
 
@@ -495,6 +497,53 @@ public static class RagSceneJsonBridge
             case 2: return new Vector3(-20f, 0f, 38f);
             case 3: return new Vector3( 20f, 0f, 38f);
             default: return Vector3.zero;
+        }
+    }
+
+    /// <summary>When the RAG carries <c>sceneLayout.workstation</c>, bake each physical entity's
+    /// <c>worldPosition</c> from restsOn + workstation offsets so spawn is data-driven.</summary>
+    static string ExtractSceneLayoutText(string ragText)
+    {
+        if (string.IsNullOrEmpty(ragText))
+            return string.Empty;
+        int keyIdx = ragText.IndexOf("\"sceneLayout\"", StringComparison.Ordinal);
+        if (keyIdx < 0)
+            return string.Empty;
+        int objStart = ragText.IndexOf('{', keyIdx);
+        if (objStart < 0)
+            return string.Empty;
+        int objEnd = FindMatchingBrace(ragText, objStart);
+        if (objEnd < 0)
+            return string.Empty;
+        return ragText.Substring(objStart, objEnd - objStart + 1);
+    }
+
+    static void ApplyWorkstationWorldPositionsFromRag(string ragFullText, RagSceneEntity[] sceneEntities)
+    {
+        if (sceneEntities == null || sceneEntities.Length == 0 || string.IsNullOrWhiteSpace(ragFullText))
+            return;
+
+        if (MeronymJsonParser.UsesAuthoredWorldPositions(ExtractSceneLayoutText(ragFullText)))
+            return;
+
+        WorkstationLayout layout = MeronymJsonParser.ParseLayout(ragFullText);
+        if (layout == null || layout.IsEmpty)
+            return;
+
+        foreach (RagSceneEntity entity in sceneEntities)
+        {
+            if (entity == null || string.IsNullOrWhiteSpace(entity.id))
+                continue;
+            LayoutEntity baked = layout.Get(entity.id.Trim());
+            if (baked == null)
+                continue;
+
+            entity.worldPosition = new RagVector3Json
+            {
+                x = baked.worldPosition.x,
+                y = baked.worldPosition.y,
+                z = baked.worldPosition.z,
+            };
         }
     }
 

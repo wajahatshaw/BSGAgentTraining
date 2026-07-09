@@ -227,9 +227,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": -9.0,
-                            "y": 0.5,
-                            "z": -16.0
+                            "x": -0.12,
+                            "y": 1.18,
+                            "z": -7.42
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -328,9 +328,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": -3.0,
-                            "y": 0.5,
-                            "z": -16.0
+                            "x": 0.12,
+                            "y": 1.18,
+                            "z": -7.42
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -516,9 +516,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 3.0,
-                            "y": 0.5,
-                            "z": -16.0
+                            "x": -0.08,
+                            "y": 1.18,
+                            "z": -7.42
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -642,7 +642,7 @@
                                     "z": 0.0
                                 },
                                 "interactive": false,
-                                "spawn": true
+                                "spawn": false
                             }
                         ],
                         "fieldState": {
@@ -662,9 +662,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 9.0,
-                            "y": 0.5,
-                            "z": -16.0
+                            "x": 0.08,
+                            "y": 1.18,
+                            "z": -7.42
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -800,8 +800,8 @@
                         "visible": true,
                         "worldPosition": {
                             "x": 0.0,
-                            "y": 0.5,
-                            "z": -11.0
+                            "y": 0.945,
+                            "z": -7.42
                         },
                         "placementRole": "display",
                         "restsOn": "office desk",
@@ -903,9 +903,9 @@
                                     "computer_key"
                                 ],
                                 "localOffset": {
-                                    "x": 0.32,
+                                    "x": 0.28,
                                     "y": 0.03,
-                                    "z": 0.06
+                                    "z": 0.08
                                 },
                                 "size": {
                                     "x": 0.18,
@@ -933,9 +933,9 @@
                                     "computer_key"
                                 ],
                                 "localOffset": {
-                                    "x": 0.05,
+                                    "x": 0.0,
                                     "y": 0.03,
-                                    "z": 0.02
+                                    "z": 0.05
                                 },
                                 "size": {
                                     "x": 0.11,
@@ -963,9 +963,9 @@
                                     "computer_key"
                                 ],
                                 "localOffset": {
-                                    "x": -0.32,
+                                    "x": -0.28,
                                     "y": 0.03,
-                                    "z": 0.06
+                                    "z": 0.08
                                 },
                                 "size": {
                                     "x": 0.14,
@@ -997,9 +997,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": -3.0,
-                            "y": 0.75,
-                            "z": -5.0
+                            "x": 0.0,
+                            "y": 0.745,
+                            "z": -7.62
                         },
                         "placementRole": "tool",
                         "restsOn": "office desk",
@@ -1080,9 +1080,9 @@
                                     "push_button"
                                 ],
                                 "localOffset": {
-                                    "x": -0.1,
+                                    "x": -0.06,
                                     "y": 0.03,
-                                    "z": 0.14
+                                    "z": 0.12
                                 },
                                 "size": {
                                     "x": 0.15,
@@ -1142,7 +1142,7 @@
                                 "localOffset": {
                                     "x": 0.0,
                                     "y": 0.04,
-                                    "z": 0.18
+                                    "z": 0.1
                                 },
                                 "size": {
                                     "x": 0.06,
@@ -1174,9 +1174,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 4.0,
-                            "y": 0.75,
-                            "z": -5.0
+                            "x": 0.28,
+                            "y": 0.745,
+                            "z": -7.58
                         },
                         "placementRole": "tool",
                         "restsOn": "office desk",
@@ -1305,8 +1305,8 @@
                         "visible": true,
                         "worldPosition": {
                             "x": 0.0,
-                            "y": 0.5,
-                            "z": -7.0
+                            "y": 0.0,
+                            "z": -7.25
                         },
                         "placementRole": "surface",
                         "restsOn": "floor",
@@ -1794,7 +1794,7 @@
                         "worldPosition": {
                             "x": 0.0,
                             "y": 0.5,
-                            "z": -1.0
+                            "z": -8.0
                         },
                         "placementRole": "worker",
                         "restsOn": "floor",
@@ -1959,9 +1959,9 @@
                                 "name": "CRM Database",
                                 "shape": "cube",
                                 "position": {
-                                    "x": -16.5,
-                                    "y": 0.5,
-                                    "z": -17.5
+                                    "x": -0.12,
+                                    "y": 1.18,
+                                    "z": -7.42
                                 }
                             },
                             {
@@ -1969,9 +1969,9 @@
                                 "name": "ERP Database",
                                 "shape": "cube",
                                 "position": {
-                                    "x": -10.75,
-                                    "y": 0.5,
-                                    "z": -17.5
+                                    "x": 0.12,
+                                    "y": 1.18,
+                                    "z": -7.42
                                 }
                             },
                             {
@@ -1979,9 +1979,9 @@
                                 "name": "SAP software",
                                 "shape": "cube",
                                 "position": {
-                                    "x": -5.0,
-                                    "y": 0.5,
-                                    "z": -17.5
+                                    "x": -0.08,
+                                    "y": 1.18,
+                                    "z": -7.42
                                 }
                             },
                             {
@@ -1989,9 +1989,9 @@
                                 "name": "Oracle PeopleSoft",
                                 "shape": "cube",
                                 "position": {
-                                    "x": 0.75,
-                                    "y": 0.5,
-                                    "z": -17.5
+                                    "x": 0.08,
+                                    "y": 1.18,
+                                    "z": -7.42
                                 }
                             },
                             {
@@ -1999,9 +1999,9 @@
                                 "name": "desktop computer",
                                 "shape": "cube",
                                 "position": {
-                                    "x": 6.5,
-                                    "y": 0.5,
-                                    "z": -17.5
+                                    "x": 0.0,
+                                    "y": 0.945,
+                                    "z": -7.42
                                 }
                             },
                             {
@@ -2009,9 +2009,9 @@
                                 "name": "computer keyboard",
                                 "shape": "cube",
                                 "position": {
-                                    "x": 12.25,
-                                    "y": 0.75,
-                                    "z": -17.5
+                                    "x": 0.0,
+                                    "y": 0.745,
+                                    "z": -7.62
                                 }
                             },
                             {
@@ -2019,9 +2019,9 @@
                                 "name": "computer mouse",
                                 "shape": "cube",
                                 "position": {
-                                    "x": 16.5,
-                                    "y": 0.75,
-                                    "z": -17.5
+                                    "x": 0.28,
+                                    "y": 0.745,
+                                    "z": -7.58
                                 }
                             },
                             {
@@ -2029,9 +2029,9 @@
                                 "name": "office desk",
                                 "shape": "cube",
                                 "position": {
-                                    "x": -16.5,
-                                    "y": 0.5,
-                                    "z": -11.2
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": -7.25
                                 }
                             },
                             {
@@ -2039,9 +2039,9 @@
                                 "name": "Marketing Manager",
                                 "shape": "sphere",
                                 "position": {
-                                    "x": -10.75,
+                                    "x": 0.0,
                                     "y": 0.5,
-                                    "z": -11.2
+                                    "z": -8.0
                                 }
                             }
                         ]
@@ -13379,7 +13379,6 @@
                                 "targetObjectId": "cognitive_005",
                                 "targetObjectName": "ManualModule",
                                 "description": "RESTING desktop_surface",
-                                
                                 "klein_frame_id": "KF-1-1",
                                 "expectedDuration": 2.0,
                                 "startTimeSec": 0.0,
@@ -13401,8 +13400,8 @@
                                 "target_id": "scene_008",
                                 "coordinates": {
                                     "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.75
+                                    "y": 0.74,
+                                    "z": -7.25
                                 },
                                 "forceNewtons": null,
                                 "frequency": 1,
@@ -13416,8 +13415,8 @@
                                     "ik_chain": [],
                                     "ik_target": {
                                         "x": 0.0,
-                                        "y": 0.0,
-                                        "z": 0.75
+                                        "y": 0.74,
+                                        "z": -7.25
                                     },
                                     "approach_angle_deg": null,
                                     "contact_force_n": null,
@@ -13488,9 +13487,9 @@
                                 "target": "left_mouse_button",
                                 "target_id": "scene_007",
                                 "coordinates": {
-                                    "x": 0.22,
-                                    "y": 0.75,
-                                    "z": 0.4
+                                    "x": 0.22000000000000003,
+                                    "y": 0.8,
+                                    "z": -7.46
                                 },
                                 "forceNewtons": 0.25,
                                 "frequency": 1,
@@ -13509,9 +13508,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.22,
-                                        "y": 0.75,
-                                        "z": 0.4
+                                        "x": 0.22000000000000003,
+                                        "y": 0.8,
+                                        "z": -7.46
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.25,
@@ -13582,9 +13581,9 @@
                                 "target": "enter_key",
                                 "target_id": "scene_006",
                                 "coordinates": {
-                                    "x": 0.0,
-                                    "y": 0.75,
-                                    "z": 0.38
+                                    "x": 0.28,
+                                    "y": 0.8,
+                                    "z": -7.54
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -13603,9 +13602,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.0,
-                                        "y": 0.75,
-                                        "z": 0.38
+                                        "x": 0.28,
+                                        "y": 0.8,
+                                        "z": -7.54
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -13677,8 +13676,8 @@
                                 "target_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
-                                    "y": 0.75,
-                                    "z": 0.38
+                                    "y": 0.8,
+                                    "z": -7.57
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -13698,8 +13697,8 @@
                                     ],
                                     "ik_target": {
                                         "x": 0.0,
-                                        "y": 0.75,
-                                        "z": 0.38
+                                        "y": 0.8,
+                                        "z": -7.57
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -14536,8 +14535,8 @@
                                 "target_id": "scene_008",
                                 "coordinates": {
                                     "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.75
+                                    "y": 0.74,
+                                    "z": -7.25
                                 },
                                 "forceNewtons": null,
                                 "frequency": 1,
@@ -14551,8 +14550,8 @@
                                     "ik_chain": [],
                                     "ik_target": {
                                         "x": 0.0,
-                                        "y": 0.0,
-                                        "z": 0.75
+                                        "y": 0.74,
+                                        "z": -7.25
                                     },
                                     "approach_angle_deg": null,
                                     "contact_force_n": null,
@@ -14623,9 +14622,9 @@
                                 "target": "left_mouse_button",
                                 "target_id": "scene_007",
                                 "coordinates": {
-                                    "x": 0.22,
-                                    "y": 0.75,
-                                    "z": 0.4
+                                    "x": 0.22000000000000003,
+                                    "y": 0.8,
+                                    "z": -7.46
                                 },
                                 "forceNewtons": 0.25,
                                 "frequency": 1,
@@ -14644,9 +14643,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.22,
-                                        "y": 0.75,
-                                        "z": 0.4
+                                        "x": 0.22000000000000003,
+                                        "y": 0.8,
+                                        "z": -7.46
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.25,
@@ -14717,9 +14716,9 @@
                                 "target": "enter_key",
                                 "target_id": "scene_006",
                                 "coordinates": {
-                                    "x": 0.0,
-                                    "y": 0.75,
-                                    "z": 0.38
+                                    "x": 0.28,
+                                    "y": 0.8,
+                                    "z": -7.54
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -14738,9 +14737,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.0,
-                                        "y": 0.75,
-                                        "z": 0.38
+                                        "x": 0.28,
+                                        "y": 0.8,
+                                        "z": -7.54
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -14812,8 +14811,8 @@
                                 "target_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
-                                    "y": 0.75,
-                                    "z": 0.38
+                                    "y": 0.8,
+                                    "z": -7.57
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -14833,8 +14832,8 @@
                                     ],
                                     "ik_target": {
                                         "x": 0.0,
-                                        "y": 0.75,
-                                        "z": 0.38
+                                        "y": 0.8,
+                                        "z": -7.57
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -15671,8 +15670,8 @@
                                 "target_id": "scene_008",
                                 "coordinates": {
                                     "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.75
+                                    "y": 0.74,
+                                    "z": -7.25
                                 },
                                 "forceNewtons": null,
                                 "frequency": 1,
@@ -15686,8 +15685,8 @@
                                     "ik_chain": [],
                                     "ik_target": {
                                         "x": 0.0,
-                                        "y": 0.0,
-                                        "z": 0.75
+                                        "y": 0.74,
+                                        "z": -7.25
                                     },
                                     "approach_angle_deg": null,
                                     "contact_force_n": null,
@@ -15758,9 +15757,9 @@
                                 "target": "left_mouse_button",
                                 "target_id": "scene_007",
                                 "coordinates": {
-                                    "x": 0.22,
-                                    "y": 0.75,
-                                    "z": 0.4
+                                    "x": 0.22000000000000003,
+                                    "y": 0.8,
+                                    "z": -7.46
                                 },
                                 "forceNewtons": 0.25,
                                 "frequency": 1,
@@ -15779,9 +15778,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.22,
-                                        "y": 0.75,
-                                        "z": 0.4
+                                        "x": 0.22000000000000003,
+                                        "y": 0.8,
+                                        "z": -7.46
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.25,
@@ -15852,9 +15851,9 @@
                                 "target": "enter_key",
                                 "target_id": "scene_006",
                                 "coordinates": {
-                                    "x": 0.0,
-                                    "y": 0.75,
-                                    "z": 0.38
+                                    "x": 0.28,
+                                    "y": 0.8,
+                                    "z": -7.54
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -15873,9 +15872,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.0,
-                                        "y": 0.75,
-                                        "z": 0.38
+                                        "x": 0.28,
+                                        "y": 0.8,
+                                        "z": -7.54
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -15947,8 +15946,8 @@
                                 "target_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
-                                    "y": 0.75,
-                                    "z": 0.38
+                                    "y": 0.8,
+                                    "z": -7.57
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -15968,8 +15967,8 @@
                                     ],
                                     "ik_target": {
                                         "x": 0.0,
-                                        "y": 0.75,
-                                        "z": 0.38
+                                        "y": 0.8,
+                                        "z": -7.57
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -16806,8 +16805,8 @@
                                 "target_id": "scene_008",
                                 "coordinates": {
                                     "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.75
+                                    "y": 0.74,
+                                    "z": -7.25
                                 },
                                 "forceNewtons": null,
                                 "frequency": 1,
@@ -16821,8 +16820,8 @@
                                     "ik_chain": [],
                                     "ik_target": {
                                         "x": 0.0,
-                                        "y": 0.0,
-                                        "z": 0.75
+                                        "y": 0.74,
+                                        "z": -7.25
                                     },
                                     "approach_angle_deg": null,
                                     "contact_force_n": null,
@@ -16893,9 +16892,9 @@
                                 "target": "left_mouse_button",
                                 "target_id": "scene_007",
                                 "coordinates": {
-                                    "x": 0.22,
-                                    "y": 0.75,
-                                    "z": 0.4
+                                    "x": 0.22000000000000003,
+                                    "y": 0.8,
+                                    "z": -7.46
                                 },
                                 "forceNewtons": 0.25,
                                 "frequency": 1,
@@ -16914,9 +16913,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.22,
-                                        "y": 0.75,
-                                        "z": 0.4
+                                        "x": 0.22000000000000003,
+                                        "y": 0.8,
+                                        "z": -7.46
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.25,
@@ -16987,9 +16986,9 @@
                                 "target": "enter_key",
                                 "target_id": "scene_006",
                                 "coordinates": {
-                                    "x": 0.0,
-                                    "y": 0.75,
-                                    "z": 0.38
+                                    "x": 0.28,
+                                    "y": 0.8,
+                                    "z": -7.54
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -17008,9 +17007,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.0,
-                                        "y": 0.75,
-                                        "z": 0.38
+                                        "x": 0.28,
+                                        "y": 0.8,
+                                        "z": -7.54
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -17082,8 +17081,8 @@
                                 "target_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
-                                    "y": 0.75,
-                                    "z": 0.38
+                                    "y": 0.8,
+                                    "z": -7.57
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -17103,8 +17102,8 @@
                                     ],
                                     "ik_target": {
                                         "x": 0.0,
-                                        "y": 0.75,
-                                        "z": 0.38
+                                        "y": 0.8,
+                                        "z": -7.57
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -17911,8 +17910,8 @@
                         "target_id": "scene_008",
                         "coordinates": {
                             "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.75
+                            "y": 0.74,
+                            "z": -7.25
                         },
                         "forceNewtons": null,
                         "durationMs": 2000,
@@ -17928,12 +17927,17 @@
                             "ik_chain": [],
                             "spine_chain": {
                                 "comment": "Spine bones the trunk pose shapes as the torso settles onto the seated, desk-facing rest posture.",
-                                "chain": ["mixamorig:Hips", "mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Hips",
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
                                 "x": 0.0,
-                                "y": 0.0,
-                                "z": 0.75
+                                "y": 0.74,
+                                "z": -7.25
                             },
                             "approach_angle_deg": null,
                             "contact_force_n": null,
@@ -18246,9 +18250,9 @@
                         "target": "left_mouse_button",
                         "target_id": "scene_007",
                         "coordinates": {
-                            "x": 0.22,
-                            "y": 0.75,
-                            "z": 0.4
+                            "x": 0.22000000000000003,
+                            "y": 0.8,
+                            "z": -7.46
                         },
                         "forceNewtons": 0.25,
                         "durationMs": 2000,
@@ -18277,20 +18281,45 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
-                                "x": 0.22,
-                                "y": 0.75,
-                                "z": 0.4
+                                "x": 0.22000000000000003,
+                                "y": 0.8,
+                                "z": -7.46
                             },
                             "approach_angle_deg": 90,
                             "contact_force_n": 0.25,
@@ -18309,11 +18338,31 @@
                         "hand_pose": {
                             "gesture": "index_point_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: left_mouse_button.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -18640,9 +18689,9 @@
                         "target": "enter_key",
                         "target_id": "scene_006",
                         "coordinates": {
-                            "x": 0.0,
-                            "y": 0.75,
-                            "z": 0.38
+                            "x": 0.28,
+                            "y": 0.8,
+                            "z": -7.54
                         },
                         "forceNewtons": 0.3,
                         "durationMs": 2000,
@@ -18671,20 +18720,45 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
-                                "x": 0.0,
-                                "y": 0.75,
-                                "z": 0.38
+                                "x": 0.28,
+                                "y": 0.8,
+                                "z": -7.54
                             },
                             "approach_angle_deg": 90,
                             "contact_force_n": 0.3,
@@ -18703,11 +18777,31 @@
                         "hand_pose": {
                             "gesture": "index_point_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: enter_key.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -19035,8 +19129,8 @@
                         "target_id": "scene_006",
                         "coordinates": {
                             "x": 0.0,
-                            "y": 0.75,
-                            "z": 0.38
+                            "y": 0.8,
+                            "z": -7.57
                         },
                         "forceNewtons": 0.3,
                         "durationMs": 2000,
@@ -19065,20 +19159,45 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
                                 "x": 0.0,
-                                "y": 0.75,
-                                "z": 0.38
+                                "y": 0.8,
+                                "z": -7.57
                             },
                             "approach_angle_deg": 90,
                             "contact_force_n": 0.3,
@@ -19097,11 +19216,31 @@
                         "hand_pose": {
                             "gesture": "index_point_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: enter_key.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -19459,15 +19598,40 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
                                 "x": 0.0,
@@ -19491,11 +19655,31 @@
                         "hand_pose": {
                             "gesture": "index_point_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: p_key.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -19853,15 +20037,40 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
                                 "x": 0.0,
@@ -19885,11 +20094,31 @@
                         "hand_pose": {
                             "gesture": "index_point_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: p_key.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -20247,15 +20476,40 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
                                 "x": 0.0,
@@ -20279,11 +20533,31 @@
                         "hand_pose": {
                             "gesture": "index_point_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: p_key.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -20641,15 +20915,40 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
                                 "x": 0.22,
@@ -20673,11 +20972,31 @@
                         "hand_pose": {
                             "gesture": "index_scroll_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: scroll_wheel.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -21035,15 +21354,40 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
                                 "x": 0.22,
@@ -21067,11 +21411,31 @@
                         "hand_pose": {
                             "gesture": "index_point_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: left_mouse_button.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -21429,15 +21793,40 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
                                 "x": 0.0,
@@ -21461,11 +21850,31 @@
                         "hand_pose": {
                             "gesture": "index_point_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: enter_key.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -21823,15 +22232,40 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
                                 "x": 0.0,
@@ -21855,11 +22289,31 @@
                         "hand_pose": {
                             "gesture": "index_point_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: enter_key.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -22217,15 +22671,40 @@
                             },
                             "finger_bones": {
                                 "comment": "Per-finger joint chains (base -> tip) the hand_pose angles bend. 'index' also drives the press contact (its last bone is the end_effector fingertip). These are the exact bones the rig wires for this frame.",
-                                "index":  ["mixamorig:RightHandIndex1",  "mixamorig:RightHandIndex2",  "mixamorig:RightHandIndex3",  "mixamorig:RightHandIndex4_end"],
-                                "middle": ["mixamorig:RightHandMiddle1", "mixamorig:RightHandMiddle2", "mixamorig:RightHandMiddle3"],
-                                "ring":   ["mixamorig:RightHandRing1",   "mixamorig:RightHandRing2",   "mixamorig:RightHandRing3"],
-                                "pinky":  ["mixamorig:RightHandPinky1",  "mixamorig:RightHandPinky2",  "mixamorig:RightHandPinky3"],
-                                "thumb":  ["mixamorig:RightHandThumb1",  "mixamorig:RightHandThumb2",  "mixamorig:RightHandThumb3"]
+                                "index": [
+                                    "mixamorig:RightHandIndex1",
+                                    "mixamorig:RightHandIndex2",
+                                    "mixamorig:RightHandIndex3",
+                                    "mixamorig:RightHandIndex4_end"
+                                ],
+                                "middle": [
+                                    "mixamorig:RightHandMiddle1",
+                                    "mixamorig:RightHandMiddle2",
+                                    "mixamorig:RightHandMiddle3"
+                                ],
+                                "ring": [
+                                    "mixamorig:RightHandRing1",
+                                    "mixamorig:RightHandRing2",
+                                    "mixamorig:RightHandRing3"
+                                ],
+                                "pinky": [
+                                    "mixamorig:RightHandPinky1",
+                                    "mixamorig:RightHandPinky2",
+                                    "mixamorig:RightHandPinky3"
+                                ],
+                                "thumb": [
+                                    "mixamorig:RightHandThumb1",
+                                    "mixamorig:RightHandThumb2",
+                                    "mixamorig:RightHandThumb3"
+                                ]
                             },
                             "spine_chain": {
                                 "comment": "Trunk bones the reach leans toward the contact when the arm alone can't reach (e.g. a target on a tall desk top or placed far forward). Starts at Spine (not Hips) so the feet/pelvis stay planted while the upper body bends over the target. The lean ANGLE is computed live from the reach deficit; body_pose.spine_lean_deg caps it.",
-                                "chain": ["mixamorig:Spine", "mixamorig:Spine1", "mixamorig:Spine2"]
+                                "chain": [
+                                    "mixamorig:Spine",
+                                    "mixamorig:Spine1",
+                                    "mixamorig:Spine2"
+                                ]
                             },
                             "ik_target": {
                                 "x": 0.0,
@@ -22249,11 +22728,31 @@
                         "hand_pose": {
                             "gesture": "index_point_press",
                             "comment": "Per-joint bend in DEGREES toward the palm. mcp = base knuckle, pip = middle joint, dip = tip joint. Index kept nearly straight to point; middle/ring/pinky curled into the palm; thumb relaxed. All angles read live from this file. Contact target for this frame: enter_key.",
-                            "index":  { "mcp": 14, "pip": 6,  "dip": 4  },
-                            "middle": { "mcp": 85, "pip": 100, "dip": 70 },
-                            "ring":   { "mcp": 85, "pip": 100, "dip": 70 },
-                            "pinky":  { "mcp": 80, "pip": 95,  "dip": 65 },
-                            "thumb":  { "mcp": 14, "pip": 10,  "dip": 6  }
+                            "index": {
+                                "mcp": 14,
+                                "pip": 6,
+                                "dip": 4
+                            },
+                            "middle": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "ring": {
+                                "mcp": 85,
+                                "pip": 100,
+                                "dip": 70
+                            },
+                            "pinky": {
+                                "mcp": 80,
+                                "pip": 95,
+                                "dip": 65
+                            },
+                            "thumb": {
+                                "mcp": 14,
+                                "pip": 10,
+                                "dip": 6
+                            }
                         },
                         "arm_pose": {
                             "comment": "Right-arm shaping ONLY (shoulder -> upper arm -> elbow -> wrist; NOT the full body rig). The arm two-bone IK reaches the contact from the FRONT with the elbow folded down-and-out, so the hand raises from the front instead of swinging up from the spine, and the limb never passes through the torso. All values read live from this file.",
@@ -37031,8 +37530,8 @@
                                     "target_object": "desktop_surface",
                                     "coordinates": {
                                         "x": 0.0,
-                                        "y": 0.0,
-                                        "z": 0.75
+                                        "y": 0.74,
+                                        "z": -7.25
                                     },
                                     "force_newtons": null,
                                     "duration_ms": 2000,
@@ -37044,8 +37543,8 @@
                                         "ik_chain": [],
                                         "ik_target": {
                                             "x": 0.0,
-                                            "y": 0.0,
-                                            "z": 0.75
+                                            "y": 0.74,
+                                            "z": -7.25
                                         },
                                         "approach_angle_deg": null,
                                         "contact_force_n": null,
@@ -37073,9 +37572,9 @@
                                     "manual_command": "REP PATH",
                                     "target_object": "left_mouse_button",
                                     "coordinates": {
-                                        "x": 0.22,
-                                        "y": 0.75,
-                                        "z": 0.4
+                                        "x": 0.22000000000000003,
+                                        "y": 0.8,
+                                        "z": -7.46
                                     },
                                     "force_newtons": 0.25,
                                     "duration_ms": 100,
@@ -37092,9 +37591,9 @@
                                             "mixamorig:RightHandIndex4_end"
                                         ],
                                         "ik_target": {
-                                            "x": 0.22,
-                                            "y": 0.75,
-                                            "z": 0.4
+                                            "x": 0.22000000000000003,
+                                            "y": 0.8,
+                                            "z": -7.46
                                         },
                                         "approach_angle_deg": 90,
                                         "contact_force_n": 0.25,
@@ -37122,9 +37621,9 @@
                                     "manual_command": "REP PATH",
                                     "target_object": "enter_key",
                                     "coordinates": {
-                                        "x": 0.0,
-                                        "y": 0.75,
-                                        "z": 0.38
+                                        "x": 0.28,
+                                        "y": 0.8,
+                                        "z": -7.54
                                     },
                                     "force_newtons": 0.3,
                                     "duration_ms": 90,
@@ -37141,9 +37640,9 @@
                                             "mixamorig:RightHandIndex4_end"
                                         ],
                                         "ik_target": {
-                                            "x": 0.0,
-                                            "y": 0.75,
-                                            "z": 0.38
+                                            "x": 0.28,
+                                            "y": 0.8,
+                                            "z": -7.54
                                         },
                                         "approach_angle_deg": 90,
                                         "contact_force_n": 0.3,
@@ -37172,8 +37671,8 @@
                                     "target_object": "enter_key",
                                     "coordinates": {
                                         "x": 0.0,
-                                        "y": 0.75,
-                                        "z": 0.38
+                                        "y": 0.8,
+                                        "z": -7.57
                                     },
                                     "force_newtons": 0.3,
                                     "duration_ms": 90,
@@ -37191,8 +37690,8 @@
                                         ],
                                         "ik_target": {
                                             "x": 0.0,
-                                            "y": 0.75,
-                                            "z": 0.38
+                                            "y": 0.8,
+                                            "z": -7.57
                                         },
                                         "approach_angle_deg": 90,
                                         "contact_force_n": 0.3,
@@ -39547,9 +40046,9 @@
                                                         "after": "supporting_1"
                                                     },
                                                     "coordinates": {
-                                                        "x": 150,
-                                                        "y": 480,
-                                                        "z": 720
+                                                        "x": 0.0,
+                                                        "y": 0.74,
+                                                        "z": -7.25
                                                     },
                                                     "imagined_outcome": {
                                                         "anticipated_state": {
@@ -39788,9 +40287,9 @@
                                                         "after": "pressed_1"
                                                     },
                                                     "coordinates": {
-                                                        "x": 290,
-                                                        "y": 515,
-                                                        "z": 736
+                                                        "x": 0.22000000000000003,
+                                                        "y": 0.8,
+                                                        "z": -7.46
                                                     },
                                                     "imagined_outcome": {
                                                         "anticipated_state": {
@@ -39836,9 +40335,9 @@
                                                         "after": "pressed_1"
                                                     },
                                                     "coordinates": {
-                                                        "x": 110,
-                                                        "y": 520,
-                                                        "z": 735
+                                                        "x": 0.28,
+                                                        "y": 0.8,
+                                                        "z": -7.54
                                                     },
                                                     "imagined_outcome": {
                                                         "anticipated_state": {
@@ -39884,9 +40383,9 @@
                                                         "after": "pressed_1"
                                                     },
                                                     "coordinates": {
-                                                        "x": 110,
-                                                        "y": 520,
-                                                        "z": 735
+                                                        "x": 0.0,
+                                                        "y": 0.8,
+                                                        "z": -7.57
                                                     },
                                                     "imagined_outcome": {
                                                         "anticipated_state": {
@@ -48902,9 +49401,9 @@
                                         "after": "supporting_1"
                                     },
                                     "coordinates": {
-                                        "x": 150,
-                                        "y": 480,
-                                        "z": 720
+                                        "x": 0.0,
+                                        "y": 0.74,
+                                        "z": -7.25
                                     },
                                     "imagined_outcome": {
                                         "anticipated_state": {
@@ -49143,9 +49642,9 @@
                                         "after": "pressed_1"
                                     },
                                     "coordinates": {
-                                        "x": 290,
-                                        "y": 515,
-                                        "z": 736
+                                        "x": 0.22000000000000003,
+                                        "y": 0.8,
+                                        "z": -7.46
                                     },
                                     "imagined_outcome": {
                                         "anticipated_state": {
@@ -49191,9 +49690,9 @@
                                         "after": "pressed_1"
                                     },
                                     "coordinates": {
-                                        "x": 110,
-                                        "y": 520,
-                                        "z": 735
+                                        "x": 0.28,
+                                        "y": 0.8,
+                                        "z": -7.54
                                     },
                                     "imagined_outcome": {
                                         "anticipated_state": {
@@ -49239,9 +49738,9 @@
                                         "after": "pressed_1"
                                     },
                                     "coordinates": {
-                                        "x": 110,
-                                        "y": 520,
-                                        "z": 735
+                                        "x": 0.0,
+                                        "y": 0.8,
+                                        "z": -7.57
                                     },
                                     "imagined_outcome": {
                                         "anticipated_state": {
@@ -50008,9 +50507,9 @@
                                 "after": "supporting_1"
                             },
                             "coordinates": {
-                                "x": 150,
-                                "y": 480,
-                                "z": 720
+                                "x": 0.0,
+                                "y": 0.74,
+                                "z": -7.25
                             },
                             "imagined_outcome": {
                                 "anticipated_state": {
@@ -50249,9 +50748,9 @@
                                 "after": "pressed_1"
                             },
                             "coordinates": {
-                                "x": 290,
-                                "y": 515,
-                                "z": 736
+                                "x": 0.22000000000000003,
+                                "y": 0.8,
+                                "z": -7.46
                             },
                             "imagined_outcome": {
                                 "anticipated_state": {
@@ -50297,9 +50796,9 @@
                                 "after": "pressed_1"
                             },
                             "coordinates": {
-                                "x": 110,
-                                "y": 520,
-                                "z": 735
+                                "x": 0.28,
+                                "y": 0.8,
+                                "z": -7.54
                             },
                             "imagined_outcome": {
                                 "anticipated_state": {
@@ -50345,9 +50844,9 @@
                                 "after": "pressed_1"
                             },
                             "coordinates": {
-                                "x": 110,
-                                "y": 520,
-                                "z": 735
+                                "x": 0.0,
+                                "y": 0.8,
+                                "z": -7.57
                             },
                             "imagined_outcome": {
                                 "anticipated_state": {
@@ -52078,9 +52577,9 @@
                     "units": "metres",
                     "singlePlayer": true,
                     "spawnOrigin": {
-                        "x": 0,
-                        "y": 0,
-                        "z": 0
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": -8.0
                     },
                     "spawnPoints": [
                         {
@@ -52158,9 +52657,9 @@
                             "z": 0.38
                         },
                         "computer mouse": {
-                            "x": 0.22,
+                            "x": 0.28,
                             "y": 0.75,
-                            "z": 0.4
+                            "z": 0.42
                         },
                         "SAP software": {
                             "x": -0.08,
@@ -52184,16 +52683,26 @@
                         }
                     },
                     "stacking": {
+                        "worker": "floor",
+                        "desk": "floor",
                         "keyboard": "office desk",
                         "mouse": "office desk",
                         "monitor": "office desk",
-                        "screen_ui": "desktop computer (monitor screen)",
-                        "desk": "floor",
-                        "worker": "floor"
+                        "screen_ui": "desktop computer"
                     },
                     "placedBy": "llm_layout_brain",
-                    "note": "Placed by the LLM spatial-layout brain (occupation-general). Pipeline source coords preserved on each entity (`position`) and action (`sourceCoordinates`).",
-                    "convention": "Unity world space, Y-up, metres. Worker spawns at origin facing +Z. Y = height off floor (floor y=0)."
+                    "note": "Compact office workstation on physical/agent band. worldPosition in sceneEntities is the restsOn bake snapshot; runtime WorkstationLayoutBaker recomputes from the same rules when authoritativeWorldPositions is false.",
+                    "convention": "Zone-local metres. spawnOrigin + sceneLayout.workstation + restsOn + geometry shape/size drive worldPosition (bakeWorldPositionsFromRestsOn). Only Marketing Manager and office desk rest on floor; keyboard/mouse/computer on desk; screen UIs on desktop computer.",
+                    "authoritativeWorldPositions": false,
+                    "physicalBand": {
+                        "side": "agent",
+                        "zoneLocalZRange": [
+                            -18.0,
+                            -4.0
+                        ],
+                        "note": "spawnOrigin anchors the worker-frame on the physical band (negative Z). Cognitive band uses +Z (~9)."
+                    },
+                    "bakeWorldPositionsFromRestsOn": true
                 }
             },
             "duration_seconds": 6.052173852920532

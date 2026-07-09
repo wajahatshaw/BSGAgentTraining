@@ -798,10 +798,30 @@ public class SceneGenerator : MonoBehaviour
         }
     }
 
+    static bool IsWorkstationSceneEntity(string objectId)
+    {
+        if (string.IsNullOrWhiteSpace(objectId))
+            return false;
+
+        string id = objectId.Trim();
+        int zoneIdx = id.IndexOf("_zone", System.StringComparison.OrdinalIgnoreCase);
+        if (zoneIdx > 0)
+            id = id.Substring(0, zoneIdx);
+
+        return id.StartsWith("scene_00", System.StringComparison.OrdinalIgnoreCase);
+    }
+
     void ApplyMultiplayerEnvironmentToolPresentation(GameObject toolGO, ToolState toolState)
     {
         if (toolGO == null)
             return;
+
+        // Workstation scene entities get real sizing + desk rig from MeronymPartSpawner — skip the tall env cube.
+        if (IsWorkstationSceneEntity(toolState?.objectId))
+        {
+            toolGO.transform.localScale = Vector3.one;
+            return;
+        }
 
         float scale = BsgIntegrationSettings.MultiplayerEnvironmentScaleMultiplier;
         if (scale < 0.01f)
