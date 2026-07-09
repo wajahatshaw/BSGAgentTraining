@@ -69,8 +69,11 @@ public class MeronymPartSpawner : MonoBehaviour
             _parsedFromRag = ragText;
             _entities.Clear();
             _entities.AddRange(MeronymJsonParser.ParseSpawnableEntities(ragText));
+            // ParseLayout already bakes worldPositions from sceneLayout.spawnOrigin + workstation offsets
+            // (or leaves authored positions untouched). Do NOT re-bake here: BakeWorldPositions with the
+            // default origin (0,0,0) would clobber the physical-band placement back to the world centre,
+            // dropping the office right under the cognitive stations instead of beside the P1 agent.
             _layout = MeronymJsonParser.ParseLayout(ragText);
-            WorkstationLayoutBaker.BakeWorldPositions(_layout);
             _laidOutParents.Clear();
             _resizedParents.Clear();
             MeronymPartRegistry.Clear();
@@ -179,8 +182,8 @@ public class MeronymPartSpawner : MonoBehaviour
     // ---------------------------------------------------------------------------------------------------
 
     const float DeskTopHeight    = WorkstationLayoutBaker.DeskTopHeight;
-    const float DeskWidth        = 1.4f;    // X (worker's left↔right)
-    const float DeskDepth        = 0.7f;    // Z (worker↔back)
+    const float DeskWidth        = 2.0f;    // X (worker's left↔right) — wide enough to seat the monitor at the wall end and keyboard+mouse at the far corner without overlap
+    const float DeskDepth        = 0.7f;    // Z (worker↔back) — shallow so items stay within an easy front reach
     const float DeskTopThickness = 0.04f;
     const float DeskLegThickness = 0.06f;
     const float PanelXOffset     = 0.13f;   // monitor-face 2×2 grid half-spacing (X)
@@ -188,6 +191,10 @@ public class MeronymPartSpawner : MonoBehaviour
 
     static readonly Color DeskWoodColor = new Color(0.42f, 0.29f, 0.16f);
     static readonly Color DeskLegColor  = new Color(0.20f, 0.14f, 0.09f);
+
+    // Visible Marketing Manager figure (the worker box, un-hidden on request). Standing-person proportions.
+    static readonly Vector3 WorkerFigureSize = new Vector3(0.5f, 1.7f, 0.35f);   // metres (W×H×D)
+    static readonly Color   WorkerColor      = new Color(0.16f, 0.20f, 0.34f);   // navy "suit"
 
     bool UsesWorkstationSizing(string parentId)
     {
@@ -217,7 +224,7 @@ public class MeronymPartSpawner : MonoBehaviour
 
             if (_layout.IsWorker(e))
             {
-                HideWorkerBox(tool);
+                ShowWorkerFigure(tool, e);
                 _laidOutParents.Add(e.id);
                 continue;
             }
@@ -236,6 +243,38 @@ public class MeronymPartSpawner : MonoBehaviour
             PlaceStackedEntity(tool, e, parent);
             _laidOutParents.Add(e.id);
         }
+
+        // Re-assert the desk is seated on the floor EVERY tick, not just once. The spawn pipeline lifts any
+        // object whose initialState y<=0 to y=0.5 (SceneGenerator.ResolveToolPosition), and the desk bakes to
+        // y=0, so that lift can be re-applied AFTER the one-shot BuildDeskRig — leaving the desk (and its legs)
+        // floating ~0.5m above the ground. Snapping down each tick keeps the legs on the floor; it only ever
+        // moves the desk DOWN (guarded by bottomY>0.02), so a correctly-grounded desk is untouched.
+        ReseatOnFloor(_layout.deskId);
+        ReseatOnFloor(_layout.workerId);   // keep the Marketing Manager figure's feet on the floor too
+
+        // Then re-seat everything resting on a surface onto its LIVE top (depth order: desk→computer→screens),
+        // so the computer/keyboard/mouse/screens follow the desk down onto the floor instead of floating where
+        // their baked Y (which assumed a floor at y=0) left them.
+        foreach (LayoutEntity e in _layout.OrderedByDepth())
+        {
+            if (e == null || !_laidOutParents.Contains(e.id))
+                continue;
+            if (_layout.IsDesk(e) || _layout.IsWorker(e) || WorkstationLayout.IsFloor(e.restsOn))
+                continue;
+            GameObject tool = FindParentTool(e.id);
+            if (tool != null)
+                PlaceStackedEntity(tool, e, _layout.ResolveRestsOnParent(e));
+        }
+    }
+
+    // Re-assert a laid-out floor entity (desk / worker figure) sits flush on the ground each tick.
+    void ReseatOnFloor(string id)
+    {
+        if (string.IsNullOrEmpty(id) || !_laidOutParents.Contains(id))
+            return;
+        GameObject tool = FindParentTool(id);
+        if (tool != null)
+            SnapDeskBottomToFloor(tool);
     }
 
     // Build the office desk as a real 4-leg table: the root cube becomes the (hidden) collider host and the
@@ -243,7 +282,7 @@ public class MeronymPartSpawner : MonoBehaviour
     void BuildDeskRig(GameObject deskTool)
     {
         LayoutEntity deskEntity = _layout?.Get(_layout.deskId);
-        Vector3 baked = deskEntity != null ? deskEntity.worldPosition : deskTool.transform.position;
+        Vector3 baked = ClampWorkstationXZ(deskEntity != null ? deskEntity.worldPosition : deskTool.transform.position);
 
         deskTool.transform.rotation   = Quaternion.identity;
         deskTool.transform.localScale = Vector3.one;
@@ -289,7 +328,9 @@ public class MeronymPartSpawner : MonoBehaviour
         Debug.Log($"[MeronymPartSpawner] Built office desk rig for '{deskTool.name}' at {deskTool.transform.position} (top {DeskTopHeight}m).");
     }
 
-    /// <summary>Seat the desk collider/rig bottom on the floor so it is not left floating after env height scaling.</summary>
+    /// <summary>Seat the desk collider/rig bottom on the ACTUAL floor beneath it — the same ground collider the
+    /// agent capsule stands on — so it sits flush regardless of where that floor is in world space (the RAG
+    /// world can be embedded/lifted, so the floor is NOT necessarily at y=0). Moves the desk up or down.</summary>
     static void SnapDeskBottomToFloor(GameObject deskTool)
     {
         if (deskTool == null)
@@ -297,7 +338,7 @@ public class MeronymPartSpawner : MonoBehaviour
 
         float bottomY = float.MaxValue;
         BoxCollider box = deskTool.GetComponent<BoxCollider>();
-        if (box != null)
+        if (box != null && box.enabled)   // a disabled collider (e.g. the visual worker figure) has stale bounds
             bottomY = box.bounds.min.y;
 
         foreach (Renderer r in deskTool.GetComponentsInChildren<Renderer>(true))
@@ -306,8 +347,41 @@ public class MeronymPartSpawner : MonoBehaviour
                 bottomY = Mathf.Min(bottomY, r.bounds.min.y);
         }
 
-        if (bottomY > 0.02f && bottomY < float.MaxValue)
-            deskTool.transform.position -= new Vector3(0f, bottomY, 0f);
+        if (bottomY >= float.MaxValue)
+            return;
+
+        float floorY = ResolveFloorYBeneath(deskTool, bottomY);
+        float delta = bottomY - floorY;   // >0 floating above floor, <0 sunk below it
+        if (Mathf.Abs(delta) > 0.02f)
+            deskTool.transform.position -= new Vector3(0f, delta, 0f);
+    }
+
+    /// <summary>World Y of the floor directly under the desk, found by a downward raycast against the ground
+    /// layers (same mask the agent's <see cref="AgentGroundMotor"/> uses). Skips the desk's own colliders and
+    /// walls. Falls back to 0 when nothing is hit.</summary>
+    static float ResolveFloorYBeneath(GameObject deskTool, float deskBottomY)
+    {
+        ScenePhysicsLayers.EnsureInitialized();
+        int mask = ScenePhysicsLayers.GroundMask | (1 << 0);
+        Vector3 c = deskTool.transform.position;
+        Vector3 start = new Vector3(c.x, deskBottomY + 3f, c.z);
+
+        RaycastHit[] hits = Physics.RaycastAll(start, Vector3.down, 30f, mask, QueryTriggerInteraction.Ignore);
+        float bestTop = float.NaN;
+        foreach (RaycastHit h in hits)
+        {
+            if (h.collider == null)
+                continue;
+            Transform t = h.collider.transform;
+            if (t == deskTool.transform || t.IsChildOf(deskTool.transform))
+                continue;   // the desk itself
+            if (h.collider.name.IndexOf("Wall", StringComparison.OrdinalIgnoreCase) >= 0)
+                continue;   // walls are not the floor
+            float top = h.collider.bounds.max.y;
+            if (top <= deskBottomY + 0.5f && (float.IsNaN(bestTop) || top > bestTop))
+                bestTop = top;   // highest floor surface at/below the desk
+        }
+        return float.IsNaN(bestTop) ? 0f : bestTop;
     }
 
     void AddDeskPiece(Transform parent, string name, Vector3 localPos, Vector3 size, Color color)
@@ -337,9 +411,35 @@ public class MeronymPartSpawner : MonoBehaviour
 
         tool.transform.rotation   = Quaternion.Euler(0f, e.rotationYDeg, 0f);
         tool.transform.localScale = size;
-        tool.transform.position   = e.worldPosition;
+        // Seat the item's BASE on the parent's LIVE top (not the baked Y, which assumed a floor at y=0). This
+        // makes the computer/keyboard/mouse ride the desk surface after the desk is snapped onto the real floor.
+        float surfaceTop = ParentVisibleTop(parent);
+
+        // Anchor XZ to the parent's ACTUAL (clamped/snapped) position + the item's baked offset FROM the parent,
+        // not the raw baked worldPosition. BuildDeskRig moves the desk to ClampWorkstationXZ(worldPosition) to
+        // keep it inside the walls, but the items' baked worldPositions are NOT clamped — so using them directly
+        // detaches the computer/keyboard/mouse from the desk whenever the clamp shifts it (the desk + its label
+        // drift away from the cluster). Preserving the relative offset keeps the whole workstation together
+        // wherever the desk lands.
+        Vector3 itemXZ = new Vector3(e.worldPosition.x, 0f, e.worldPosition.z);
+        GameObject parentTool = parent != null ? FindParentTool(parent.id) : null;
+        if (parentTool != null && parent != null)
+        {
+            Vector3 rel = e.worldPosition - parent.worldPosition;   // baked item offset relative to the desk anchor
+            itemXZ = parentTool.transform.position + new Vector3(rel.x, 0f, rel.z);
+        }
+        tool.transform.position   = new Vector3(itemXZ.x, surfaceTop + size.y * 0.5f, itemXZ.z);
+
+        // On-desk props (computer/keyboard/mouse) must NOT block navigation. Their solid colliders sit at
+        // desk-top height and — because these offsets bake OUTSIDE the shallow desk footprint (offset z 0.6–1.0
+        // vs desk half-depth ~0.3) — float in mid-air off the desk edge, walling the agent off ~1m out. The
+        // capsule then stalls before it can reach the desk face, nav-escape bounces it 1.2↔3.6m, and the press
+        // step never activates. The DESK is the sole nav blocker (see BuildDeskRig); the agent reaches OVER the
+        // surface onto the meronym, whose own trigger collider handles press contact. Disable like the screens.
+        Collider col = tool.GetComponent<Collider>();
+        if (col != null)
+            col.enabled = false;
         SetColor(tool, ColorFor(e));
-        Debug.Log($"[MeronymPartSpawner] Placed '{e.name}' ({e.id}) on '{parent?.name}' at {tool.transform.position} (size {size}).");
     }
 
     // Mount a database/software panel flat on the monitor's worker-facing (+Z) front face, in a 2×2 grid.
@@ -354,7 +454,9 @@ public class MeronymPartSpawner : MonoBehaviour
         int row = idx / 2;   // 0 = top, 1 = bottom
         float cx = b.center.x + (col == 0 ? PanelXOffset : -PanelXOffset);
         float cy = b.center.y + (row == 0 ? PanelYOffset : -PanelYOffset);
-        float cz = b.max.z + size.z * 0.5f + 0.006f;   // just proud of the monitor's front face
+        // Mount on the monitor's -Z (south) face — the side toward the agent, who approaches the desk front from
+        // the south. The monitor sits at the back of the desk, so its screens must face forward to be seen.
+        float cz = b.min.z - size.z * 0.5f - 0.006f;
 
         tool.transform.rotation   = Quaternion.identity;
         tool.transform.localScale = size;
@@ -364,7 +466,22 @@ public class MeronymPartSpawner : MonoBehaviour
         if (col2 != null)
             col2.enabled = false;   // purely visual — must not block navigation (reachable:false)
         SetColor(tool, ColorFor(e));
-        Debug.Log($"[MeronymPartSpawner] Mounted screen '{e.name}' ({e.id}) on the monitor face at {tool.transform.position}.");
+    }
+
+    // Keep a workstation object's XZ inside the zone-0 play area, clear of the walls, so nothing spawns in a
+    // wall or off the surface. Uses the SAME world bounds the agents are clamped to; no-op when those bounds
+    // are unknown (avoids moving objects using a wrong fallback rectangle).
+    const float ZoneWallMargin = 1.5f;
+
+    static Vector3 ClampWorkstationXZ(Vector3 pos)
+    {
+        ZonePlayAreaWorldRect? area = BsgIntegrationSettings.MultiplayerZone0PlayAreaWorld;
+        if (!area.HasValue || !area.Value.IsValid)
+            return pos;
+        ZonePlayAreaWorldRect r = area.Value;
+        pos.x = Mathf.Clamp(pos.x, r.minX + ZoneWallMargin, r.maxX - ZoneWallMargin);
+        pos.z = Mathf.Clamp(pos.z, r.minZ + ZoneWallMargin, r.maxZ - ZoneWallMargin);
+        return pos;
     }
 
     float ParentVisibleTop(LayoutEntity parent)
@@ -396,13 +513,23 @@ public class MeronymPartSpawner : MonoBehaviour
 
     // The worker (Marketing Manager) is represented by the acting agent capsule (Agent_P1); its duplicate
     // Tool box is hidden so it neither shows nor blocks navigation. Never touches Agent_P1.
-    void HideWorkerBox(GameObject tool)
+    void ShowWorkerFigure(GameObject tool, LayoutEntity worker)
     {
+        // Show the Marketing Manager as a standing figure at the desk. The acting Agent_P1 capsule also
+        // represents the manager, so this figure is VISUAL ONLY — its collider is disabled so it does not
+        // fight the overlapping (kinematic) agent capsule or block navigation.
         foreach (Renderer r in tool.GetComponentsInChildren<Renderer>(true))
-            r.enabled = false;
+            r.enabled = true;
         foreach (Collider c in tool.GetComponentsInChildren<Collider>(true))
             c.enabled = false;
-        Debug.Log($"[MeronymPartSpawner] Hid duplicate worker box '{tool.name}' — the agent capsule represents the Marketing Manager.");
+
+        Vector3 baked = ClampWorkstationXZ(worker != null ? worker.worldPosition : tool.transform.position);
+        tool.transform.rotation   = Quaternion.Euler(0f, worker != null ? worker.rotationYDeg : 0f, 0f);
+        tool.transform.localScale  = WorkerFigureSize;
+        tool.transform.position    = new Vector3(baked.x, WorkerFigureSize.y, baked.z);   // start above floor
+        SetColor(tool, WorkerColor);
+        SnapDeskBottomToFloor(tool);   // seat feet on the same real floor as the desk
+        Debug.Log($"[MeronymPartSpawner] Showing Marketing Manager figure '{tool.name}' at {tool.transform.position}.");
     }
 
     // The floating name label hovers just above the part's top. It lives under its own UNSCALED holder
@@ -411,14 +538,30 @@ public class MeronymPartSpawner : MonoBehaviour
     const float LabelWorldScale = 0.15f;
     const float LabelHoverMargin = 0.05f;
 
+    // Vertical stagger step (m) between labels so neighbours (e.g. adjacent keyboard keys) sit at different
+    // heights and don't overlap into an unreadable blur.
+    const float LabelStaggerStep = 0.07f;
+    const int   LabelStaggerLevels = 4;
+
     static void TrackLabel(GameObject part)
     {
         Transform label = LabelsHolder().Find(part.name + "::label");
         if (label == null)
             return;
         Vector3 pls = part.transform.lossyScale;
-        label.position = part.transform.position + Vector3.up * (pls.y * 0.5f + LabelHoverMargin);
+        float stagger = LabelStaggerLevel(part.name) * LabelStaggerStep;
+        label.position = part.transform.position + Vector3.up * (pls.y * 0.5f + LabelHoverMargin + stagger);
         label.localScale = Vector3.one * LabelWorldScale;
+    }
+
+    // Deterministic 0..LabelStaggerLevels-1 tier from the part name, so a given label always sits at the same
+    // height (stable across ticks) while neighbours land on different tiers.
+    static int LabelStaggerLevel(string name)
+    {
+        int h = 0;
+        if (!string.IsNullOrEmpty(name))
+            foreach (char c in name) h = unchecked(h * 31 + c);
+        return ((h % LabelStaggerLevels) + LabelStaggerLevels) % LabelStaggerLevels;
     }
 
     // Pressable-minimum footprint (world metres) for meronym parts on real-ish (flat) workstation props.
@@ -495,7 +638,31 @@ public class MeronymPartSpawner : MonoBehaviour
         tm.alignment = TextAlignment.Center;
         tm.color = Color.white;
 
+        // Swap the font material's shader for a depth-tested one so the label is hidden behind solid geometry
+        // (the default GUI/Text shader draws through everything). Falls back silently if the shader is absent.
+        MeshRenderer mr = labelGO.GetComponent<MeshRenderer>();
+        Material occ = OccludedTextMaterial(tm.font);
+        if (mr != null && occ != null)
+            mr.sharedMaterial = occ;
+
         labelGO.AddComponent<IndicatorBillboard>();
+    }
+
+    static Material _occludedTextMat;
+
+    // One shared depth-tested font material for all labels (per-label colour still works via TextMesh vertex
+    // colours). Cloned from the default font material so it keeps the glyph atlas texture, then re-shadered.
+    static Material OccludedTextMaterial(Font font)
+    {
+        if (_occludedTextMat != null)
+            return _occludedTextMat;
+        if (font == null || font.material == null)
+            return null;
+        Shader occ = Shader.Find("BSG/OccludedText");
+        if (occ == null)
+            return null;
+        _occludedTextMat = new Material(font.material) { shader = occ };
+        return _occludedTextMat;
     }
 
     static Transform LabelsHolder()
@@ -520,6 +687,29 @@ public class MeronymPartSpawner : MonoBehaviour
         if (go == null) go = GameObject.Find($"Tool_{parentId}");
         if (go == null) go = GameObject.Find($"{parentId}_zone{PhysicalZoneIndex}");
         return go;
+    }
+
+    /// <summary>The Tool GameObject of the floor-resting ROOT that <paramref name="parentId"/> (transitively)
+    /// rests on, per the RAG <c>restsOn</c> chain — e.g. mouse/keyboard/monitor all resolve to the office desk.
+    /// Data-driven replacement for hardcoding the desk id: the mover passes through this object's nav hull to
+    /// reach a small meronym sitting on top of it. Returns null if the layout/entity is unknown.</summary>
+    public static GameObject ResolveNavRootTool(string parentId)
+    {
+        MeronymPartSpawner self = _instance;
+        if (self == null || self._layout == null || string.IsNullOrWhiteSpace(parentId))
+            return null;
+        LayoutEntity e = self._layout.Get(parentId.Trim());
+        if (e == null)
+            return null;
+        var seen = new HashSet<string>();
+        while (e != null && !WorkstationLayout.IsFloor(e.restsOn) && seen.Add(e.id))
+        {
+            LayoutEntity parent = self._layout.GetByName(e.restsOn);
+            if (parent == null)
+                break;
+            e = parent;
+        }
+        return e != null ? FindParentTool(e.id) : null;
     }
 
     static string ResolveActiveRagJsonText()

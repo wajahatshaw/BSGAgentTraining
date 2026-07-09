@@ -7,11 +7,11 @@ using UnityEngine;
 /// </summary>
 public static class WorkstationLayoutBaker
 {
-    public const float DeskTopHeight = 0.72f;
+    public const float DeskTopHeight = 0.95f;   // raised to standing hand-height so the agent presses items on top without a deep downward reach (IK tuned ~1.05m)
     public const float FloorStandingCenterY = 0.5f;
 
-    /// <summary>Default worker origin on zone 0 physical band (south / agent side). Cognitive stations sit at +Z (~9).</summary>
-    public static readonly Vector3 DefaultPhysicalBandOrigin = new Vector3(0f, 0f, -8f);
+    /// <summary>Default worker origin on zone 0 physical band — south of cognitive (+Z ~9), near P1 spawn (~-18).</summary>
+    public static readonly Vector3 DefaultPhysicalBandOrigin = new Vector3(0f, 0f, -14f);
 
     /// <summary>Fill <see cref="LayoutEntity.worldPosition"/> for every entity that has a workstation offset.</summary>
     public static void BakeWorldPositions(WorkstationLayout layout, Vector3 spawnOrigin = default)
@@ -106,8 +106,8 @@ public static class WorkstationEntitySizing
             return new Vector3(0.55f, 0.45f, 0.10f);
         if (gt.Contains("input_device"))
             return gs.Contains("contour")
-                ? new Vector3(0.22f, 0.05f, 0.30f)
-                : new Vector3(0.62f, 0.05f, 0.20f);
+                ? new Vector3(0.5f, 0.06f, 0.35f)     // mouse — gameplay scale so its buttons are big enough to press
+                : new Vector3(0.62f, 0.05f, 0.20f);   // keyboard
         if (gt.Contains("support_furniture") || gs.Contains("rectangular"))
             return new Vector3(1.4f, WorkstationLayoutBaker.DeskTopHeight, 0.7f);
 

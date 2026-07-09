@@ -229,7 +229,7 @@
                         "worldPosition": {
                             "x": -0.12,
                             "y": 1.18,
-                            "z": -7.42
+                            "z": -13.42
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -330,7 +330,7 @@
                         "worldPosition": {
                             "x": 0.12,
                             "y": 1.18,
-                            "z": -7.42
+                            "z": -13.42
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -518,7 +518,7 @@
                         "worldPosition": {
                             "x": -0.08,
                             "y": 1.18,
-                            "z": -7.42
+                            "z": -13.42
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -664,7 +664,7 @@
                         "worldPosition": {
                             "x": 0.08,
                             "y": 1.18,
-                            "z": -7.42
+                            "z": -13.42
                         },
                         "placementRole": "screen_ui",
                         "restsOn": "desktop computer",
@@ -801,7 +801,7 @@
                         "worldPosition": {
                             "x": 0.0,
                             "y": 0.945,
-                            "z": -7.42
+                            "z": -13.42
                         },
                         "placementRole": "display",
                         "restsOn": "office desk",
@@ -999,7 +999,7 @@
                         "worldPosition": {
                             "x": 0.0,
                             "y": 0.745,
-                            "z": -7.62
+                            "z": -13.62
                         },
                         "placementRole": "tool",
                         "restsOn": "office desk",
@@ -1080,14 +1080,14 @@
                                     "push_button"
                                 ],
                                 "localOffset": {
-                                    "x": -0.06,
+                                    "x": -0.34,
                                     "y": 0.03,
                                     "z": 0.12
                                 },
                                 "size": {
-                                    "x": 0.15,
+                                    "x": 0.34,
                                     "y": 0.07,
-                                    "z": 0.22
+                                    "z": 0.5
                                 },
                                 "color": "#4A90D9",
                                 "renderShape": "cube",
@@ -1110,14 +1110,14 @@
                                     "push_button"
                                 ],
                                 "localOffset": {
-                                    "x": 0.1,
+                                    "x": 0.34,
                                     "y": 0.03,
-                                    "z": 0.14
+                                    "z": 0.12
                                 },
                                 "size": {
-                                    "x": 0.15,
+                                    "x": 0.34,
                                     "y": 0.07,
-                                    "z": 0.22
+                                    "z": 0.5
                                 },
                                 "color": "#7F8C9A",
                                 "renderShape": "cube",
@@ -1142,12 +1142,12 @@
                                 "localOffset": {
                                     "x": 0.0,
                                     "y": 0.04,
-                                    "z": 0.1
+                                    "z": 0.05
                                 },
                                 "size": {
-                                    "x": 0.06,
-                                    "y": 0.09,
-                                    "z": 0.1
+                                    "x": 0.22,
+                                    "y": 0.18,
+                                    "z": 0.2
                                 },
                                 "color": "#2C3E50",
                                 "renderShape": "cylinder",
@@ -1176,7 +1176,7 @@
                         "worldPosition": {
                             "x": 0.28,
                             "y": 0.745,
-                            "z": -7.58
+                            "z": -13.58
                         },
                         "placementRole": "tool",
                         "restsOn": "office desk",
@@ -1306,7 +1306,7 @@
                         "worldPosition": {
                             "x": 0.0,
                             "y": 0.0,
-                            "z": -7.25
+                            "z": -13.25
                         },
                         "placementRole": "surface",
                         "restsOn": "floor",
@@ -1792,9 +1792,9 @@
                         ],
                         "visible": true,
                         "worldPosition": {
-                            "x": 0.0,
+                            "x": -6.5,
                             "y": 0.5,
-                            "z": -8.0
+                            "z": -6.0
                         },
                         "placementRole": "worker",
                         "restsOn": "floor",
@@ -1961,7 +1961,7 @@
                                 "position": {
                                     "x": -0.12,
                                     "y": 1.18,
-                                    "z": -7.42
+                                    "z": -13.42
                                 }
                             },
                             {
@@ -1971,7 +1971,7 @@
                                 "position": {
                                     "x": 0.12,
                                     "y": 1.18,
-                                    "z": -7.42
+                                    "z": -13.42
                                 }
                             },
                             {
@@ -1981,7 +1981,7 @@
                                 "position": {
                                     "x": -0.08,
                                     "y": 1.18,
-                                    "z": -7.42
+                                    "z": -13.42
                                 }
                             },
                             {
@@ -1991,7 +1991,7 @@
                                 "position": {
                                     "x": 0.08,
                                     "y": 1.18,
-                                    "z": -7.42
+                                    "z": -13.42
                                 }
                             },
                             {
@@ -2001,7 +2001,7 @@
                                 "position": {
                                     "x": 0.0,
                                     "y": 0.945,
-                                    "z": -7.42
+                                    "z": -13.42
                                 }
                             },
                             {
@@ -2011,7 +2011,7 @@
                                 "position": {
                                     "x": 0.0,
                                     "y": 0.745,
-                                    "z": -7.62
+                                    "z": -13.62
                                 }
                             },
                             {
@@ -2021,7 +2021,7 @@
                                 "position": {
                                     "x": 0.28,
                                     "y": 0.745,
-                                    "z": -7.58
+                                    "z": -13.58
                                 }
                             },
                             {
@@ -2031,7 +2031,7 @@
                                 "position": {
                                     "x": 0.0,
                                     "y": 0.0,
-                                    "z": -7.25
+                                    "z": -13.25
                                 }
                             },
                             {
@@ -2041,7 +2041,7 @@
                                 "position": {
                                     "x": 0.0,
                                     "y": 0.5,
-                                    "z": -8.0
+                                    "z": -14.0
                                 }
                             }
                         ]
@@ -13401,7 +13401,7 @@
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.74,
-                                    "z": -7.25
+                                    "z": -13.25
                                 },
                                 "forceNewtons": null,
                                 "frequency": 1,
@@ -13416,7 +13416,7 @@
                                     "ik_target": {
                                         "x": 0.0,
                                         "y": 0.74,
-                                        "z": -7.25
+                                        "z": -13.25
                                     },
                                     "approach_angle_deg": null,
                                     "contact_force_n": null,
@@ -13487,9 +13487,9 @@
                                 "target": "left_mouse_button",
                                 "target_id": "scene_007",
                                 "coordinates": {
-                                    "x": 0.22000000000000003,
+                                    "x": 0.22,
                                     "y": 0.8,
-                                    "z": -7.46
+                                    "z": -13.46
                                 },
                                 "forceNewtons": 0.25,
                                 "frequency": 1,
@@ -13508,9 +13508,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.22000000000000003,
+                                        "x": 0.22,
                                         "y": 0.8,
-                                        "z": -7.46
+                                        "z": -13.46
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.25,
@@ -13583,7 +13583,7 @@
                                 "coordinates": {
                                     "x": 0.28,
                                     "y": 0.8,
-                                    "z": -7.54
+                                    "z": -13.54
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -13604,7 +13604,7 @@
                                     "ik_target": {
                                         "x": 0.28,
                                         "y": 0.8,
-                                        "z": -7.54
+                                        "z": -13.54
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -13677,7 +13677,7 @@
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.8,
-                                    "z": -7.57
+                                    "z": -13.57
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -13698,7 +13698,7 @@
                                     "ik_target": {
                                         "x": 0.0,
                                         "y": 0.8,
-                                        "z": -7.57
+                                        "z": -13.57
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -14536,7 +14536,7 @@
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.74,
-                                    "z": -7.25
+                                    "z": -13.25
                                 },
                                 "forceNewtons": null,
                                 "frequency": 1,
@@ -14551,7 +14551,7 @@
                                     "ik_target": {
                                         "x": 0.0,
                                         "y": 0.74,
-                                        "z": -7.25
+                                        "z": -13.25
                                     },
                                     "approach_angle_deg": null,
                                     "contact_force_n": null,
@@ -14622,9 +14622,9 @@
                                 "target": "left_mouse_button",
                                 "target_id": "scene_007",
                                 "coordinates": {
-                                    "x": 0.22000000000000003,
+                                    "x": 0.22,
                                     "y": 0.8,
-                                    "z": -7.46
+                                    "z": -13.46
                                 },
                                 "forceNewtons": 0.25,
                                 "frequency": 1,
@@ -14643,9 +14643,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.22000000000000003,
+                                        "x": 0.22,
                                         "y": 0.8,
-                                        "z": -7.46
+                                        "z": -13.46
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.25,
@@ -14718,7 +14718,7 @@
                                 "coordinates": {
                                     "x": 0.28,
                                     "y": 0.8,
-                                    "z": -7.54
+                                    "z": -13.54
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -14739,7 +14739,7 @@
                                     "ik_target": {
                                         "x": 0.28,
                                         "y": 0.8,
-                                        "z": -7.54
+                                        "z": -13.54
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -14812,7 +14812,7 @@
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.8,
-                                    "z": -7.57
+                                    "z": -13.57
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -14833,7 +14833,7 @@
                                     "ik_target": {
                                         "x": 0.0,
                                         "y": 0.8,
-                                        "z": -7.57
+                                        "z": -13.57
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -15671,7 +15671,7 @@
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.74,
-                                    "z": -7.25
+                                    "z": -13.25
                                 },
                                 "forceNewtons": null,
                                 "frequency": 1,
@@ -15686,7 +15686,7 @@
                                     "ik_target": {
                                         "x": 0.0,
                                         "y": 0.74,
-                                        "z": -7.25
+                                        "z": -13.25
                                     },
                                     "approach_angle_deg": null,
                                     "contact_force_n": null,
@@ -15757,9 +15757,9 @@
                                 "target": "left_mouse_button",
                                 "target_id": "scene_007",
                                 "coordinates": {
-                                    "x": 0.22000000000000003,
+                                    "x": 0.22,
                                     "y": 0.8,
-                                    "z": -7.46
+                                    "z": -13.46
                                 },
                                 "forceNewtons": 0.25,
                                 "frequency": 1,
@@ -15778,9 +15778,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.22000000000000003,
+                                        "x": 0.22,
                                         "y": 0.8,
-                                        "z": -7.46
+                                        "z": -13.46
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.25,
@@ -15853,7 +15853,7 @@
                                 "coordinates": {
                                     "x": 0.28,
                                     "y": 0.8,
-                                    "z": -7.54
+                                    "z": -13.54
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -15874,7 +15874,7 @@
                                     "ik_target": {
                                         "x": 0.28,
                                         "y": 0.8,
-                                        "z": -7.54
+                                        "z": -13.54
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -15947,7 +15947,7 @@
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.8,
-                                    "z": -7.57
+                                    "z": -13.57
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -15968,7 +15968,7 @@
                                     "ik_target": {
                                         "x": 0.0,
                                         "y": 0.8,
-                                        "z": -7.57
+                                        "z": -13.57
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -16806,7 +16806,7 @@
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.74,
-                                    "z": -7.25
+                                    "z": -13.25
                                 },
                                 "forceNewtons": null,
                                 "frequency": 1,
@@ -16821,7 +16821,7 @@
                                     "ik_target": {
                                         "x": 0.0,
                                         "y": 0.74,
-                                        "z": -7.25
+                                        "z": -13.25
                                     },
                                     "approach_angle_deg": null,
                                     "contact_force_n": null,
@@ -16892,9 +16892,9 @@
                                 "target": "left_mouse_button",
                                 "target_id": "scene_007",
                                 "coordinates": {
-                                    "x": 0.22000000000000003,
+                                    "x": 0.22,
                                     "y": 0.8,
-                                    "z": -7.46
+                                    "z": -13.46
                                 },
                                 "forceNewtons": 0.25,
                                 "frequency": 1,
@@ -16913,9 +16913,9 @@
                                         "mixamorig:RightHandIndex4_end"
                                     ],
                                     "ik_target": {
-                                        "x": 0.22000000000000003,
+                                        "x": 0.22,
                                         "y": 0.8,
-                                        "z": -7.46
+                                        "z": -13.46
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.25,
@@ -16988,7 +16988,7 @@
                                 "coordinates": {
                                     "x": 0.28,
                                     "y": 0.8,
-                                    "z": -7.54
+                                    "z": -13.54
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -17009,7 +17009,7 @@
                                     "ik_target": {
                                         "x": 0.28,
                                         "y": 0.8,
-                                        "z": -7.54
+                                        "z": -13.54
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -17082,7 +17082,7 @@
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.8,
-                                    "z": -7.57
+                                    "z": -13.57
                                 },
                                 "forceNewtons": 0.3,
                                 "frequency": 1,
@@ -17103,7 +17103,7 @@
                                     "ik_target": {
                                         "x": 0.0,
                                         "y": 0.8,
-                                        "z": -7.57
+                                        "z": -13.57
                                     },
                                     "approach_angle_deg": 90,
                                     "contact_force_n": 0.3,
@@ -17911,7 +17911,7 @@
                         "coordinates": {
                             "x": 0.0,
                             "y": 0.74,
-                            "z": -7.25
+                            "z": -13.25
                         },
                         "forceNewtons": null,
                         "durationMs": 2000,
@@ -17937,7 +17937,7 @@
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.74,
-                                "z": -7.25
+                                "z": -13.25
                             },
                             "approach_angle_deg": null,
                             "contact_force_n": null,
@@ -18250,9 +18250,9 @@
                         "target": "left_mouse_button",
                         "target_id": "scene_007",
                         "coordinates": {
-                            "x": 0.22000000000000003,
+                            "x": 0.22,
                             "y": 0.8,
-                            "z": -7.46
+                            "z": -13.46
                         },
                         "forceNewtons": 0.25,
                         "durationMs": 2000,
@@ -18317,9 +18317,9 @@
                                 ]
                             },
                             "ik_target": {
-                                "x": 0.22000000000000003,
+                                "x": 0.22,
                                 "y": 0.8,
-                                "z": -7.46
+                                "z": -13.46
                             },
                             "approach_angle_deg": 90,
                             "contact_force_n": 0.25,
@@ -18691,7 +18691,7 @@
                         "coordinates": {
                             "x": 0.28,
                             "y": 0.8,
-                            "z": -7.54
+                            "z": -13.54
                         },
                         "forceNewtons": 0.3,
                         "durationMs": 2000,
@@ -18758,7 +18758,7 @@
                             "ik_target": {
                                 "x": 0.28,
                                 "y": 0.8,
-                                "z": -7.54
+                                "z": -13.54
                             },
                             "approach_angle_deg": 90,
                             "contact_force_n": 0.3,
@@ -19130,7 +19130,7 @@
                         "coordinates": {
                             "x": 0.0,
                             "y": 0.8,
-                            "z": -7.57
+                            "z": -13.57
                         },
                         "forceNewtons": 0.3,
                         "durationMs": 2000,
@@ -19197,7 +19197,7 @@
                             "ik_target": {
                                 "x": 0.0,
                                 "y": 0.8,
-                                "z": -7.57
+                                "z": -13.57
                             },
                             "approach_angle_deg": 90,
                             "contact_force_n": 0.3,
@@ -37531,7 +37531,7 @@
                                     "coordinates": {
                                         "x": 0.0,
                                         "y": 0.74,
-                                        "z": -7.25
+                                        "z": -13.25
                                     },
                                     "force_newtons": null,
                                     "duration_ms": 2000,
@@ -37544,7 +37544,7 @@
                                         "ik_target": {
                                             "x": 0.0,
                                             "y": 0.74,
-                                            "z": -7.25
+                                            "z": -13.25
                                         },
                                         "approach_angle_deg": null,
                                         "contact_force_n": null,
@@ -37572,9 +37572,9 @@
                                     "manual_command": "REP PATH",
                                     "target_object": "left_mouse_button",
                                     "coordinates": {
-                                        "x": 0.22000000000000003,
+                                        "x": 0.22,
                                         "y": 0.8,
-                                        "z": -7.46
+                                        "z": -13.46
                                     },
                                     "force_newtons": 0.25,
                                     "duration_ms": 100,
@@ -37591,9 +37591,9 @@
                                             "mixamorig:RightHandIndex4_end"
                                         ],
                                         "ik_target": {
-                                            "x": 0.22000000000000003,
+                                            "x": 0.22,
                                             "y": 0.8,
-                                            "z": -7.46
+                                            "z": -13.46
                                         },
                                         "approach_angle_deg": 90,
                                         "contact_force_n": 0.25,
@@ -37623,7 +37623,7 @@
                                     "coordinates": {
                                         "x": 0.28,
                                         "y": 0.8,
-                                        "z": -7.54
+                                        "z": -13.54
                                     },
                                     "force_newtons": 0.3,
                                     "duration_ms": 90,
@@ -37642,7 +37642,7 @@
                                         "ik_target": {
                                             "x": 0.28,
                                             "y": 0.8,
-                                            "z": -7.54
+                                            "z": -13.54
                                         },
                                         "approach_angle_deg": 90,
                                         "contact_force_n": 0.3,
@@ -37672,7 +37672,7 @@
                                     "coordinates": {
                                         "x": 0.0,
                                         "y": 0.8,
-                                        "z": -7.57
+                                        "z": -13.57
                                     },
                                     "force_newtons": 0.3,
                                     "duration_ms": 90,
@@ -37691,7 +37691,7 @@
                                         "ik_target": {
                                             "x": 0.0,
                                             "y": 0.8,
-                                            "z": -7.57
+                                            "z": -13.57
                                         },
                                         "approach_angle_deg": 90,
                                         "contact_force_n": 0.3,
@@ -40048,7 +40048,7 @@
                                                     "coordinates": {
                                                         "x": 0.0,
                                                         "y": 0.74,
-                                                        "z": -7.25
+                                                        "z": -13.25
                                                     },
                                                     "imagined_outcome": {
                                                         "anticipated_state": {
@@ -40287,9 +40287,9 @@
                                                         "after": "pressed_1"
                                                     },
                                                     "coordinates": {
-                                                        "x": 0.22000000000000003,
+                                                        "x": 0.22,
                                                         "y": 0.8,
-                                                        "z": -7.46
+                                                        "z": -13.46
                                                     },
                                                     "imagined_outcome": {
                                                         "anticipated_state": {
@@ -40337,7 +40337,7 @@
                                                     "coordinates": {
                                                         "x": 0.28,
                                                         "y": 0.8,
-                                                        "z": -7.54
+                                                        "z": -13.54
                                                     },
                                                     "imagined_outcome": {
                                                         "anticipated_state": {
@@ -40385,7 +40385,7 @@
                                                     "coordinates": {
                                                         "x": 0.0,
                                                         "y": 0.8,
-                                                        "z": -7.57
+                                                        "z": -13.57
                                                     },
                                                     "imagined_outcome": {
                                                         "anticipated_state": {
@@ -49403,7 +49403,7 @@
                                     "coordinates": {
                                         "x": 0.0,
                                         "y": 0.74,
-                                        "z": -7.25
+                                        "z": -13.25
                                     },
                                     "imagined_outcome": {
                                         "anticipated_state": {
@@ -49642,9 +49642,9 @@
                                         "after": "pressed_1"
                                     },
                                     "coordinates": {
-                                        "x": 0.22000000000000003,
+                                        "x": 0.22,
                                         "y": 0.8,
-                                        "z": -7.46
+                                        "z": -13.46
                                     },
                                     "imagined_outcome": {
                                         "anticipated_state": {
@@ -49692,7 +49692,7 @@
                                     "coordinates": {
                                         "x": 0.28,
                                         "y": 0.8,
-                                        "z": -7.54
+                                        "z": -13.54
                                     },
                                     "imagined_outcome": {
                                         "anticipated_state": {
@@ -49740,7 +49740,7 @@
                                     "coordinates": {
                                         "x": 0.0,
                                         "y": 0.8,
-                                        "z": -7.57
+                                        "z": -13.57
                                     },
                                     "imagined_outcome": {
                                         "anticipated_state": {
@@ -50509,7 +50509,7 @@
                             "coordinates": {
                                 "x": 0.0,
                                 "y": 0.74,
-                                "z": -7.25
+                                "z": -13.25
                             },
                             "imagined_outcome": {
                                 "anticipated_state": {
@@ -50748,9 +50748,9 @@
                                 "after": "pressed_1"
                             },
                             "coordinates": {
-                                "x": 0.22000000000000003,
+                                "x": 0.22,
                                 "y": 0.8,
-                                "z": -7.46
+                                "z": -13.46
                             },
                             "imagined_outcome": {
                                 "anticipated_state": {
@@ -50798,7 +50798,7 @@
                             "coordinates": {
                                 "x": 0.28,
                                 "y": 0.8,
-                                "z": -7.54
+                                "z": -13.54
                             },
                             "imagined_outcome": {
                                 "anticipated_state": {
@@ -50846,7 +50846,7 @@
                             "coordinates": {
                                 "x": 0.0,
                                 "y": 0.8,
-                                "z": -7.57
+                                "z": -13.57
                             },
                             "imagined_outcome": {
                                 "anticipated_state": {
@@ -52579,7 +52579,7 @@
                     "spawnOrigin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": -8.0
+                        "z": -14.0
                     },
                     "spawnPoints": [
                         {
@@ -52637,7 +52637,7 @@
                     },
                     "workstation": {
                         "Marketing Manager": {
-                            "x": 0.0,
+                            "x": -1.5,
                             "y": 0.0,
                             "z": 0.0
                         },
@@ -52647,39 +52647,39 @@
                             "z": 0.75
                         },
                         "desktop computer": {
-                            "x": 0.0,
+                            "x": -0.7,
                             "y": 0.75,
-                            "z": 0.58
+                            "z": 0.95
                         },
                         "computer keyboard": {
-                            "x": 0.0,
+                            "x": 0.3,
                             "y": 0.75,
-                            "z": 0.38
+                            "z": 0.87
                         },
                         "computer mouse": {
-                            "x": 0.28,
+                            "x": 0.72,
                             "y": 0.75,
-                            "z": 0.42
+                            "z": 0.63
                         },
                         "SAP software": {
                             "x": -0.08,
                             "y": 1.18,
-                            "z": 0.58
+                            "z": 1.0
                         },
                         "Oracle PeopleSoft": {
                             "x": 0.08,
                             "y": 1.18,
-                            "z": 0.58
+                            "z": 1.0
                         },
                         "CRM Database": {
                             "x": -0.12,
                             "y": 1.18,
-                            "z": 0.58
+                            "z": 1.0
                         },
                         "ERP Database": {
                             "x": 0.12,
                             "y": 1.18,
-                            "z": 0.58
+                            "z": 1.0
                         }
                     },
                     "stacking": {
@@ -52691,7 +52691,7 @@
                         "screen_ui": "desktop computer"
                     },
                     "placedBy": "llm_layout_brain",
-                    "note": "Compact office workstation on physical/agent band. worldPosition in sceneEntities is the restsOn bake snapshot; runtime WorkstationLayoutBaker recomputes from the same rules when authoritativeWorldPositions is false.",
+                    "note": "Compact restsOn office layout shifted to physical/agent band (spawnOrigin z=-14). Relative workstation offsets unchanged; only the cluster anchor moved south toward P1.",
                     "convention": "Zone-local metres. spawnOrigin + sceneLayout.workstation + restsOn + geometry shape/size drive worldPosition (bakeWorldPositionsFromRestsOn). Only Marketing Manager and office desk rest on floor; keyboard/mouse/computer on desk; screen UIs on desktop computer.",
                     "authoritativeWorldPositions": false,
                     "physicalBand": {
@@ -52700,7 +52700,7 @@
                             -18.0,
                             -4.0
                         ],
-                        "note": "spawnOrigin anchors the worker-frame on the physical band (negative Z). Cognitive band uses +Z (~9)."
+                        "note": "spawnOrigin.z=-14 anchors compact office on physical band (south). Cognitive modules/buffers use +Z (~9..14)."
                     },
                     "bakeWorldPositionsFromRestsOn": true
                 }

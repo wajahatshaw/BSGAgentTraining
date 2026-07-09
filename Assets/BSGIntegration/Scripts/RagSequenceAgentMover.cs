@@ -986,7 +986,7 @@ public class RagSequenceAgentMover : MonoBehaviour
             return transform.forward;
 
         Transform t = root.transform;
-        Vector3[] cand = { t.right, -t.right, t.forward, -t.forward };
+        Vector3[] cand = { t.right, -t.right, t.forward, -t.forward };   // 0=E 1=W 2=N(back) 3=−forward(front/worker)
 
         Vector3 offDir = t.forward;
         if (meronym != null && EnvironmentSolidCollider.TryGetVisibleBounds(root.transform, out Bounds rb))
@@ -997,15 +997,20 @@ public class RagSequenceAgentMover : MonoBehaviour
                 offDir = off.normalized;
         }
 
-        // Order the four faces by alignment with the meronym offset (most aligned = nearest edge first).
+        // Rank ALL four faces by alignment with the meronym's offset from the parent centre, nearest FIRST, so
+        // side 0 is the face the meronym actually sits against and the agent reaches straight in. Do NOT force a
+        // fixed "front" face: the workstation offsets are baked WITHOUT a 180° rotation
+        // (WorkstationLayoutBaker.ComputeEntityCenter = origin + offset), so keyboard/mouse land on the +Z half,
+        // not the −Z worker edge — a hardcoded −Z-first sends the agent to the OPPOSITE side from the mouse, it
+        // never gets within the arrival gate, never activates (so IK/Klein never start), and — because side
+        // retries only advance on a post-activation press-miss — it hammers that one wrong face forever.
+        // Each rank is a DISTINCT face, so a genuine side-switch still circles to a new direction.
         int[] order = { 0, 1, 2, 3 };
-        for (int i = 0; i < 4; i++)
-            for (int j = i + 1; j < 4; j++)
+        for (int i = 0; i < order.Length; i++)
+            for (int j = i + 1; j < order.Length; j++)
                 if (Vector3.Dot(cand[order[j]], offDir) > Vector3.Dot(cand[order[i]], offDir))
                 {
-                    int tmp = order[i];
-                    order[i] = order[j];
-                    order[j] = tmp;
+                    int tmp = order[i]; order[i] = order[j]; order[j] = tmp;
                 }
 
         Vector3 d = cand[order[((rank % 4) + 4) % 4]];
@@ -2035,36 +2040,42 @@ public class RagSequenceAgentMover : MonoBehaviour
                 _groundMotor = GetComponent<AgentGroundMotor>();
             if (_groundMotor != null)
             {
-                // Desk nav hull blocks the capsule before small desk-top tools (mouse/keyboard); pass
-                // through desk nav so the agent can stand at the visible edge of the tool.
-                GameObject desk = FindStationRoot("scene_008");
-                _groundMotor.pressPassThroughNavRoot = desk != null ? desk.transform : root.transform;
+                // The surface the target rests on (desk) blocks the capsule before small tools on top of it
+                // (mouse/keyboard); pass through that surface's nav hull so the agent can stand at the visible
+                // edge of the tool. Derived from the RAG restsOn chain (mouse→desk, screen→monitor→desk) rather
+                // than hardcoding the desk id, so it generalises to any restsOn depth.
+                GameObject navRoot = MeronymPartSpawner.ResolveNavRootTool(targetObjectId) ?? FindStationRoot("scene_008");
+                _groundMotor.pressPassThroughNavRoot = navRoot != null ? navRoot.transform : root.transform;
             }
 
             GameObject meronym = ResolveMeronymPressTarget(step);
             GameObject approachObj = meronym ?? root;
+            // Walk to the hull of the restsOn ROOT (the desk) toward the meronym, NOT the tiny tool the meronym
+            // sits on. A small tool (mouse/keyboard) on the desk can't be approached directly — its hull is
+            // behind the desk collider, so the standoff point is unreachable and the agent oscillates 1.5–3m
+            // out. The desk hull is open on the agent's side, giving a stable, reachable stand point; the arm/
+            // Klein IK then reaches over the desk onto the meronym.
+            GameObject approachHull = MeronymPartSpawner.ResolveNavRootTool(targetObjectId) ?? root;
             float standOff = GetPressApproachStandOff(step);
             Vector3 close;
-            if (meronym != null && root != null && meronym != root)
+            if (meronym != null && approachHull != null && meronym != approachHull)
             {
                 Vector3 keyTop = EnvironmentSolidCollider.GetTopContactPoint(meronym.transform, transform.position);
 
-                // Side 0 = natural approach from wherever the agent already is (unchanged). After repeated
-                // failed contacts the side index climbs and we synthesize a reference point far out along a
-                // different parent face, so GetVisibleApproachTowardPoint stands the agent on THAT face.
+                float span = 2f;
+                if (EnvironmentSolidCollider.TryGetVisibleBounds(approachHull.transform, out Bounds rb))
+                    span = rb.extents.magnitude + 2f;
+
+                // Pick the approach face by side index: side 0 = FRONT/worker face (GetPressApproachDir ranks it
+                // first) so the agent stands where keyboard/mouse are and reaches straight in; each side-switch
+                // retry advances to a DISTINCT next face (front → nearest → … → last) so it circles the desk
+                // instead of hammering the same unreachable side. Reference is far out along that face.
                 int sideIndex = GetPressSideIndex(step);
-                Vector3 fromRef = transform.position;
-                if (sideIndex >= 1)
-                {
-                    Vector3 dir = GetPressApproachDir(root, meronym, sideIndex - 1);
-                    float span = 2f;
-                    if (EnvironmentSolidCollider.TryGetVisibleBounds(root.transform, out Bounds rb))
-                        span = rb.extents.magnitude + 2f;
-                    fromRef = keyTop + dir * span;
-                }
+                Vector3 dir = GetPressApproachDir(approachHull, meronym, sideIndex);
+                Vector3 fromRef = keyTop + dir * span;
 
                 close = EnvironmentSolidCollider.GetVisibleApproachTowardPoint(
-                    root.transform, keyTop, fromRef, standOff);
+                    approachHull.transform, keyTop, fromRef, standOff);
             }
             else
             {
@@ -2200,6 +2211,30 @@ public class RagSequenceAgentMover : MonoBehaviour
         // Give up circling (press in place) once the relocation timer expires, so an object the agent can't
         // walk around still re-arrives and keeps retrying instead of stranding with the step de-activated.
         bool atIntendedFace = naturalSide || distToMoveGoal <= sideReachTol || PressRelocateGaveUp(step);
+
+        // ROOT-SURFACE ARRIVAL: a meronym on a small tool (mouse/keyboard) that itself rests on a bigger
+        // surface (the desk) can't be reached by touching the TOOL's hull — the desk blocks the capsule at the
+        // desk edge. So arrive when the capsule is against the restsOn ROOT (desk) hull AND horizontally within
+        // reach of the meronym; the arm/Klein IK then reaches over the surface onto the part. Without this the
+        // agent never activates the step, never starts the arrived hard-cap, and circles the desk forever.
+        if (atIntendedFace && approachObj != null)
+        {
+            GameObject navRoot = MeronymPartSpawner.ResolveNavRootTool(targetObjectId);
+            if (navRoot != null && navRoot != root
+                && GetVisibleFootprintDistance(navRoot.transform, transform.position) <= tight)
+            {
+                Vector3 a = transform.position; a.y = 0f;
+                Vector3 m = approachObj.transform.position; m.y = 0f;
+                // Reach-OVER budget: the arm+spine IK reaches across the desk surface, so once the capsule is
+                // against the desk in front of the meronym we don't need pinpoint horizontal alignment. Allow a
+                // capsule-radius of extra slack over the walk-arrival distance. If the arm still can't physically
+                // reach, the press simply misses (v2 contact-first press never false-greens) and side-switch
+                // retries kick in — so this can't falsely complete a genuinely out-of-reach part.
+                float reachOver = GetPhysicalManualActArrivalDistance(step) + GetAgentCapsuleRadius();
+                if (Vector3.Distance(a, m) <= reachOver)
+                    return true;
+            }
+        }
 
         // Meronym on a parent: arrive when the capsule is against the parent's visible hull (not the
         // inflated nav box). The arm/spine IK reaches onto the meronym from there.
