@@ -33,8 +33,8 @@ public class KleinFrameExecutor : MonoBehaviour
     public float pressSeatInSeconds = 0.18f;
     [Tooltip("Once the fingertip stops getting closer to the target for this long (seconds), stop waiting for contact — the step may still advance but the button stays un-pressed.")]
     public float pressSettleSeconds = 0.35f;
-    [Tooltip("Hard safety cap (seconds) on a single press attempt so a genuinely unreachable target can't hold the coroutine open.")]
-    public float pressContactTimeout = 2.5f;
+    [Tooltip("Hard safety cap (seconds) on a single press attempt so a genuinely unreachable target can't hold the coroutine open. Kept short so a missed reach recycles quickly into the mover's reposition-and-retry (which re-aims the base at the target) instead of stalling ~2.5s per attempt.")]
+    public float pressContactTimeout = 1.4f;
     Vector3 _contactPoint;
     bool _pressContacted;
     Transform _pressTargetRoot;   // the station whose TOP the fingertip must touch (correct Klein target)

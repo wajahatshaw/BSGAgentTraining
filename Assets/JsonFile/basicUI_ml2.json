@@ -52579,7 +52579,7 @@
                     "spawnOrigin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": -14.0
+                        "z": -24.0
                     },
                     "spawnPoints": [
                         {
@@ -52637,7 +52637,7 @@
                     },
                     "workstation": {
                         "Marketing Manager": {
-                            "x": -1.5,
+                            "x": -5,
                             "y": 0.0,
                             "z": 0.0
                         },

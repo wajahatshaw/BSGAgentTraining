@@ -2277,11 +2277,19 @@ public class BSGMLAgent : Agent
                 _humanWalkAnim = GetComponent<HumanWalkAnimation>() ?? GetComponentInChildren<HumanWalkAnimation>(true);
             if (_humanWalkAnim != null)
             {
-                float actualMove = Vector3.Distance(transform.position, positionBeforeGroundMove);
-                if (moveAction != 0 || actualMove > 0.002f)
-                    _humanWalkAnim.StartWalking();
-                else
+                RagSequenceAgentMover ragMover = GetComponent<RagSequenceAgentMover>();
+                if (ragMover != null && ragMover.IsDwellingOnActivatedPhysicalStep)
+                {
                     _humanWalkAnim.StopWalking();
+                }
+                else
+                {
+                    float actualMove = Vector3.Distance(transform.position, positionBeforeGroundMove);
+                    if (moveAction != 0 || actualMove > 0.002f)
+                        _humanWalkAnim.StartWalking();
+                    else
+                        _humanWalkAnim.StopWalking();
+                }
             }
         }
         
@@ -3797,6 +3805,13 @@ public class BSGMLAgent : Agent
             _humanWalkAnim = GetComponent<HumanWalkAnimation>() ?? GetComponentInChildren<HumanWalkAnimation>(true);
         if (_humanWalkAnim == null)
             return;
+
+        RagSequenceAgentMover ragMover = GetComponent<RagSequenceAgentMover>();
+        if (ragMover != null && ragMover.IsDwellingOnActivatedPhysicalStep)
+        {
+            _humanWalkAnim.StopWalking();
+            return;
+        }
 
         if (!_inferenceWalkPosInitialized)
         {

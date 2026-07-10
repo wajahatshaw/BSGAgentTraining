@@ -165,6 +165,17 @@ public class RagSequenceAgentMover : MonoBehaviour
     /// </summary>
     public bool IsCognitivePhaseComplete { get; private set; }
 
+    /// <summary>True while a physical act step is activated and dwelling (RESTING / press / Klein motor).
+    /// Used by <see cref="BSGMLAgent"/> to suppress walk animation during in-place physical interaction.</summary>
+    public bool IsDwellingOnActivatedPhysicalStep
+    {
+        get
+        {
+            ActionSequenceStep step = active?.GetCurrentStep();
+            return step != null && step.isActivated && !step.isStepCompleted && IsPhysicalManualActStep(step);
+        }
+    }
+
     /// <summary>Inference scene: mark cognitive done so zone physical ONNX agents can unlock.</summary>
     public void SetCognitivePhaseCompleteForInference(bool complete = true)
     {
@@ -203,6 +214,9 @@ public class RagSequenceAgentMover : MonoBehaviour
     // Progressive press retry — each failed contact attempt walks closer and presses deeper.
     private string _pressRetryStepId;
     private int _pressRetryCount;
+    // Free-running reposition index (does NOT clamp like _pressRetryCount) so the retry probe keeps cycling
+    // through fresh spots around the part instead of freezing once the logged retry count saturates.
+    private int _pressRepositionTick;
     // Relocation give-up timer for side-switch retries — see pressRelocateGiveUpSeconds.
     private string _pressRelocateStepId;
     private int _pressRelocateSideIndex = -1;
@@ -500,7 +514,14 @@ public class RagSequenceAgentMover : MonoBehaviour
             return;
         }
         if (!isMentalAgent && mlAgent != null)
-            mlAgent.SetMlNavigationTarget(targetPos.Value, effectiveTargetId);
+        {
+            // Once a physical step is activated the agent performs in place — clear ML nav so ONNX /
+            // scripted ML locomotion does not keep driving walk animation toward the station centre.
+            if (step.isActivated && IsPhysicalManualActStep(step))
+                mlAgent.ClearMlNavigationTarget();
+            else
+                mlAgent.SetMlNavigationTarget(targetPos.Value, effectiveTargetId);
+        }
 
         // Backstop for the INTERACTION phase only: once the agent has ARRIVED, don't let the press/dwell
         // hang forever. It deliberately does NOT time the navigation phase — force-completing while the
@@ -565,6 +586,11 @@ public class RagSequenceAgentMover : MonoBehaviour
         bool arrived = step.isActivated;
         if (!arrived)
             arrived = HasArrivedAtStep(step, effectiveTargetId, stationCenter, dist);
+
+        // Physical step activated — stand still (RESTING / press / dwell). Stop walk before any branch that
+        // might still nudge the capsule (press-miss reposition) so legs don't keep cycling.
+        if (arrived && IsPhysicalManualActStep(step) && walkAnim != null)
+            walkAnim.StopWalking();
 
         // Advance the side-switch relocation timer so a large object the agent can't circle still re-arrives
         // (presses from where it can reach) instead of stranding with the step de-activated.
@@ -670,6 +696,8 @@ public class RagSequenceAgentMover : MonoBehaviour
         {
             step.isActivated = true;
             OnStepArrived(step);
+            // Stand directly in front of the meronym before the first press so the initial reach lands.
+            PreparePressBasePosition(step);
         }
 
         if (isMentalAgent && runningCognitive && GoalBufferTripleOrchestrator.IsTripleModeStep(step))
@@ -692,10 +720,11 @@ public class RagSequenceAgentMover : MonoBehaviour
         }
         else if (IsPhysicalManualActStep(step))
         {
-            // Ramp press reach while dwelling so a single attempt keeps driving the finger down.
+            // Ramp press reach while dwelling so a single attempt keeps driving the finger down. Ramp fast
+            // (~1s to full) so the finger seats onto the target quickly rather than creeping down over 2s+.
             if (hostPlayerMovement && RequiresPhysicalPressContact(step) && !HasAchievedPhysicalPressContact())
             {
-                float intraBoost = Mathf.Clamp01(dwellTimer / 2.2f) * 0.28f;
+                float intraBoost = Mathf.Clamp01(dwellTimer / 1.0f) * 0.32f;
                 ApplyPressReachRetryBoost(step, intraBoost);
             }
 
@@ -859,18 +888,14 @@ public class RagSequenceAgentMover : MonoBehaviour
         int attempt = RegisterPressRetryAttempt(step);
         float standOff = GetPressApproachStandOff(step);
         float boost = GetPressReachRetryBoost(step);
+        string gapText = float.IsNaN(lastGap) || lastGap >= float.MaxValue * 0.5f ? "?" : $"{lastGap:F3}m";
 
-        // Does this failure roll us onto a new approach side? If so, DON'T nudge toward the meronym — the
-        // agent must first walk around to the new face (nudging here would shove it into the parent from the
-        // old, unreachable spot). ResolveMoveGoalPosition + HasArrivedAtPhysicalPressTarget re-route it.
-        int prevSide = (attempt - 1) / PressRetriesPerSide;
-        int newSide = attempt / PressRetriesPerSide;
-        bool switchingSide = newSide != prevSide;
-        if (switchingSide)
-            Debug.Log($"[RagMover] {agentId} '{step?.stepId}' → '{step?.physicalTarget}' unreachable from side {prevSide} after {PressRetriesPerSide} tries — re-approaching from side {newSide}.");
-        else
-            NudgeAgentCloserToPressTarget(step, attempt);
-
+        // Reposition-in-place retry (fast path). KEEP the step ACTIVATED — do NOT de-activate it. De-activating
+        // used to send the agent on a full re-navigation back to the same desk on every miss, which is the slow
+        // behaviour we're fixing. Instead: reset only the Klein session + dwell so the motor re-fires this
+        // frame, move the agent CLOSER to the exact meronym part (collision-clamped at the root hull), and
+        // reach again. The progressive reach-boost / stand-off also scale up, so each retry presses deeper too.
+        // The step is never completed until a real fingertip-on-part contact fires (see FinishStepDwell…).
         ClearKleinMotorSession();
         kleinMotorStepId = null;
         kleinMotorCompleted = false;
@@ -878,17 +903,157 @@ public class RagSequenceAgentMover : MonoBehaviour
         _physicalStepElapsed = 0f;
         _physicalStepTimerId = null;
 
-        if (step != null)
+        RepositionAroundRootForPress(step, attempt);
+        ApplyPressReachRetryBoost(step);
+        if (walkAnim != null)
+            walkAnim.StopWalking();
+
+        Debug.LogWarning($"[RagMover] {agentId} '{step?.stepId}' → '{step?.physicalTarget}' {reason} — " +
+                         $"reposition retry #{attempt}: standOff={standOff:F3}m reachBoost={boost:F2} lastGap={gapText} (step stays ACTIVATED).");
+    }
+
+    /// <summary>
+    /// Reposition retry for a press step that missed contact: move the agent as CLOSE to the exact meronym
+    /// PART as the geometry allows while the step stays ACTIVATED, so the fingertip can actually land on it —
+    /// then retry the Klein reach without a full re-walk. It drives horizontally toward the part's world XZ
+    /// (minimising the arm's reach-across) and adds a small alternating side probe that cycles through fresh
+    /// spots along the root edge, so successive misses sample slightly different stand points until one seats
+    /// the finger. All motion goes through <see cref="ApplyMovementDelta"/> (AgentGroundMotor), so it stays
+    /// grounded and collision-aware — the capsule stops against the restsOn ROOT hull (desk) instead of
+    /// clipping through it, and the arm reaches over the surface onto the part.
+    /// </summary>
+    void RepositionAroundRootForPress(ActionSequenceStep step, int attempt)
+    {
+        if (step == null)
+            return;
+
+        string parentId = PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
+        GameObject meronym = ResolveMeronymPressTarget(step);
+        if (meronym == null)
         {
-            step.isActivated = false;
-            step.isStepCompleted = false;
+            NudgeAgentCloserToPressTarget(step, attempt);   // no part to home on — fall back to nudge-closer
+            return;
         }
 
-        ApplyPressReachRetryBoost(step);
+        // Home on the exact part's top-contact point (what the fingertip must touch), flattened to the ground.
+        Vector3 partTop = EnvironmentSolidCollider.GetTopContactPoint(meronym.transform, transform.position);
+        Vector3 toPart = partTop - transform.position;
+        toPart.y = 0f;
+        if (toPart.sqrMagnitude < 1e-6f)
+        {
+            NudgeAgentCloserToPressTarget(step, attempt);
+            return;
+        }
+        float distToPart = toPart.magnitude;
+        Vector3 inDir = toPart / distToPart;
 
-        string gapText = float.IsNaN(lastGap) || lastGap >= float.MaxValue * 0.5f ? "?" : $"{lastGap:F3}m";
-        Debug.LogWarning($"[RagMover] {agentId} '{step?.stepId}' → '{step?.physicalTarget}' {reason} — " +
-                         $"retry #{attempt}: standOff={standOff:F3}m reachBoost={boost:F2} lastGap={gapText} (step NOT completed).");
+        // Close most of the remaining horizontal gap to the part (bounded per miss so one retry can't lurch
+        // across the scene). The hull collision in ApplyMovementDelta clamps the final stop point, so the
+        // capsule ends up as close to the part as the desk edge permits — "close so it quickly hits it".
+        float inStep = Mathf.Clamp(distToPart - 0.04f, 0.04f, 0.5f);
+
+        // Cycling side probe (free-running tick, so it keeps sampling new spots even after the retry count
+        // saturates): alternate left/right of the straight-in approach, widening in rings, to slide along the
+        // root edge until the agent stands right in front of the part where the arm can seat the fingertip.
+        int tick = _pressRepositionTick++;
+        float sign = (tick % 2 == 0) ? 1f : -1f;
+        int ring = (tick / 2) % 4;                       // 0,1,2,3 → cycles, never freezes on one spot
+        float lateral = (0.05f + ring * 0.05f) * sign;   // ±5,10,15,20 cm probe, cycling
+        Vector3 side = Vector3.Cross(Vector3.up, inDir);
+
+        Vector3 delta = inDir * inStep + side * lateral;
+        ApplyMovementDelta(delta, parentId);
+        FaceTowardStation(meronym.transform.position);
+    }
+
+    /// <summary>
+    /// One-shot base placement run the moment a press step activates: slide the capsule to stand directly in
+    /// front of the exact meronym part (collision-clamped at the restsOn root hull) so the FIRST Klein reach
+    /// lands on the target. This is the "reach the target object then press it" setup — it removes the wasted
+    /// miss→reposition cycles that made a press step slow when it started pressing from wherever the previous
+    /// step left the agent. Rest steps (no fingertip contact) just stand, so they skip this.
+    /// </summary>
+    void PreparePressBasePosition(ActionSequenceStep step)
+    {
+        if (step == null || !hostPlayerMovement || !RequiresPhysicalPressContact(step))
+            return;
+
+        GameObject meronym = ResolveMeronymPressTarget(step);
+        if (meronym == null)
+            return;
+
+        string parentId = PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
+        Vector3 partTop = EnvironmentSolidCollider.GetTopContactPoint(meronym.transform, transform.position);
+        Vector3 toPart = partTop - transform.position;
+        toPart.y = 0f;
+        float d = toPart.magnitude;
+        if (d < 1e-4f)
+            return;
+
+        // Close the horizontal gap to the part, leaving a small standoff so the finger presses DOWN onto it
+        // rather than into its side. ApplyMovementDelta stops the capsule at the desk hull (physics-correct);
+        // the arm then reaches over the surface onto the part.
+        float inStep = Mathf.Clamp(d - 0.02f, 0f, 0.6f);
+        if (inStep > 0.005f)
+            ApplyMovementDelta(toPart.normalized * inStep, parentId);
+        FaceTowardStation(meronym.transform.position);
+    }
+
+    /// <summary>Nav ROOT (floor-resting restsOn ancestor, e.g. the desk) that a step's target sits on, or the
+    /// station root if there is no meronym chain. Used to detect consecutive steps that act on the same object
+    /// so the agent can skip walking between them.</summary>
+    GameObject ResolveStepNavRoot(ActionSequenceStep step)
+    {
+        if (step == null)
+            return null;
+        string parentId = PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
+        if (string.IsNullOrEmpty(parentId))
+            return null;
+        return MeronymPartSpawner.ResolveNavRootTool(parentId) ?? FindStationRoot(parentId);
+    }
+
+    /// <summary>
+    /// After a physical press step completes, if the NEXT step is another physical press on the SAME restsOn
+    /// root and the agent is still standing against that root, latch it activated in place — skipping the walk
+    /// away-and-back to the same desk. If the arm can't reach the new meronym from this exact spot, the normal
+    /// press-miss reposition (<see cref="RepositionAroundRootForPress"/>) orbits around the shared root while
+    /// activated — far cheaper than a full re-navigation. Only for the host physical agent's Klein press steps.
+    /// </summary>
+    void TryPreActivateNextStepOnSameRoot(ActionSequenceStep completedStep)
+    {
+        if (active == null)
+            return;
+
+        ActionSequenceStep next = active.GetCurrentStep();
+        if (next == null || next.isActivated || next.isStepCompleted)
+            return;
+        if (!IsCorrectKleinPressTarget(next))
+            return;
+
+        GameObject completedRoot = ResolveStepNavRoot(completedStep);
+        GameObject nextRoot = ResolveStepNavRoot(next);
+        if (completedRoot == null || nextRoot == null || completedRoot != nextRoot)
+            return;
+
+        // Confirm the agent is still near the shared root (it just acted here) before activating in place —
+        // generous, because we KNOW it just finished a step at this object, so any reasonable proximity means
+        // "still here". Otherwise fall through to a normal walk.
+        float here = GetInteractionStandDistance() + 0.25f;
+        if (GetVisibleFootprintDistance(nextRoot.transform, transform.position) > here)
+            return;
+
+        ResetPressRetry(next);
+        next.isActivated = true;
+        dwellTimer = 0f;
+        _physicalStepElapsed = 0f;
+        _physicalStepTimerId = null;
+        ResetNavStuckState();
+        OnStepArrived(next);
+        // Slide the base right in front of the next meronym (mouse button) so the very first Klein reach lands,
+        // instead of pressing from wherever the previous part happened to leave us and burning miss cycles.
+        PreparePressBasePosition(next);
+        Debug.Log($"[RagMover] {agentId} next step '{next.stepId}' → '{next.physicalTarget}' shares restsOn root " +
+                  $"'{nextRoot.name}' with completed '{completedStep?.stepId}' — activating in place (skipped walk).");
     }
 
     int GetPressRetryCount(ActionSequenceStep step)
@@ -923,6 +1088,7 @@ public class RagSequenceAgentMover : MonoBehaviour
         {
             _pressRetryStepId = null;
             _pressRetryCount = 0;
+            _pressRepositionTick = 0;
         }
         ApplyPressReachRetryBoost(step, 0f);
     }
@@ -1074,6 +1240,9 @@ public class RagSequenceAgentMover : MonoBehaviour
 
         _lastStepPhysicalContactVerified = !RequiresPhysicalPressContact(step) || HasAchievedPhysicalPressContact();
 
+        // A press step is NEVER completed without a verified fingertip-on-meronym contact — otherwise the step
+        // marks done on the wrong/untouched object and the target's press state never transitions. If contact
+        // hasn't happened, reposition and retry (HandlePhysicalPressMissed) instead of falsely finishing.
         if (RequiresPhysicalPressContact(step) && !HasAchievedPhysicalPressContact())
         {
             HandlePhysicalPressMissed(step, "finish blocked — no verified meronym contact");
@@ -1111,7 +1280,13 @@ public class RagSequenceAgentMover : MonoBehaviour
 
         active.MarkStepCompleted();
         if (!_orchestratorMode)
+        {
             active.MoveToNextStep();
+            // If the very next physical step acts on the SAME restsOn root (e.g. keyboard → mouse, both on the
+            // desk) and the agent is already standing at that root, latch it activated now so it starts the
+            // Klein reach in place instead of walking away and back to the same desk. See TryPreActivate…
+            TryPreActivateNextStepOnSameRoot(step);
+        }
         dwellTimer = 0f;
 
         if (_orchestratorMode && !string.IsNullOrEmpty(step.stepId))
@@ -1980,6 +2155,17 @@ public class RagSequenceAgentMover : MonoBehaviour
         return target;
     }
 
+    /// <summary>True when the step's parent entity rests directly on the floor (its restsOn chain ends at
+    /// floor). Navigation and arrival should target that parent root (e.g. office desk for step 1 RESTING),
+    /// not a meronym part sitting on top of it.</summary>
+    static bool TargetRestsDirectlyOnFloor(string targetObjectId, GameObject root)
+    {
+        if (root == null)
+            return false;
+        GameObject navRoot = MeronymPartSpawner.ResolveNavRootTool(targetObjectId);
+        return navRoot == null || navRoot == root;
+    }
+
     float GetAgentCapsuleRadius()
     {
         if (agentCapsule == null)
@@ -2014,6 +2200,9 @@ public class RagSequenceAgentMover : MonoBehaviour
 
         if (step != null && IsCorrectKleinPressTarget(step))
         {
+            if (TargetRestsDirectlyOnFloor(targetObjectId, root) && root != null)
+                return EnvironmentSolidCollider.GetHullDistance(root.transform, transform.position);
+
             GameObject approachObj = ResolveMeronymPressTarget(step) ?? root;
             if (approachObj != null)
                 return GetVisibleFootprintDistance(approachObj.transform, transform.position);
@@ -2048,6 +2237,18 @@ public class RagSequenceAgentMover : MonoBehaviour
                 _groundMotor.pressPassThroughNavRoot = navRoot != null ? navRoot.transform : root.transform;
             }
 
+            // Floor-resting parent (desk for RESTING desktop_surface): walk to the parent root hull, not the
+            // meronym centroid on its surface — arrival activates as soon as the capsule reaches the desk edge.
+            float standOff;
+            Vector3 close;
+            if (TargetRestsDirectlyOnFloor(targetObjectId, root))
+            {
+                standOff = Mathf.Max(GetPressApproachStandOff(step), GetAgentCapsuleRadius() * 0.35f);
+                close = EnvironmentSolidCollider.GetVisibleApproachPosition(
+                    root.transform, transform.position, standOff);
+                return ZonePlayAreaBounds.ClampPosition(zoneIndex, close);
+            }
+
             GameObject meronym = ResolveMeronymPressTarget(step);
             GameObject approachObj = meronym ?? root;
             // Walk to the hull of the restsOn ROOT (the desk) toward the meronym, NOT the tiny tool the meronym
@@ -2056,8 +2257,7 @@ public class RagSequenceAgentMover : MonoBehaviour
             // out. The desk hull is open on the agent's side, giving a stable, reachable stand point; the arm/
             // Klein IK then reaches over the desk onto the meronym.
             GameObject approachHull = MeronymPartSpawner.ResolveNavRootTool(targetObjectId) ?? root;
-            float standOff = GetPressApproachStandOff(step);
-            Vector3 close;
+            standOff = GetPressApproachStandOff(step);
             if (meronym != null && approachHull != null && meronym != approachHull)
             {
                 Vector3 keyTop = EnvironmentSolidCollider.GetTopContactPoint(meronym.transform, transform.position);
@@ -2211,6 +2411,21 @@ public class RagSequenceAgentMover : MonoBehaviour
         // Give up circling (press in place) once the relocation timer expires, so an object the agent can't
         // walk around still re-arrives and keeps retrying instead of stranding with the step de-activated.
         bool atIntendedFace = naturalSide || distToMoveGoal <= sideReachTol || PressRelocateGaveUp(step);
+
+        // FLOOR-RESTING TARGET: parent rests directly on floor (restsOn ends at floor) — e.g. office desk for
+        // step 1 RESTING desktop_surface. Walk target and arrival both use the parent root; do NOT require
+        // horizontal alignment with the meronym part (desktop_surface sits mid-desk and blocked the old gate).
+        if (atIntendedFace && TargetRestsDirectlyOnFloor(targetObjectId, root))
+        {
+            float reachStand = GetInteractionStandDistance() + arriveSlack;
+            if (EnvironmentSolidCollider.TryGetStationSolidCollider(root.transform, out _))
+            {
+                if (EnvironmentSolidCollider.GetHullDistance(root.transform, transform.position) <= reachStand)
+                    return true;
+            }
+            if (GetVisibleFootprintDistance(root.transform, transform.position) <= reachStand)
+                return true;
+        }
 
         // ROOT-SURFACE ARRIVAL: a meronym on a small tool (mouse/keyboard) that itself rests on a bigger
         // surface (the desk) can't be reached by touching the TOOL's hull — the desk blocks the capsule at the
