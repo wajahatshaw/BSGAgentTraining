@@ -36,6 +36,7 @@ public static class RagMultiplayerStatsHud
 
         TemporalBufferGaugeUI.GetOrCreate(0);
         DeclarativeMemoryGaugeUI.GetOrCreate(0);
+        CognitiveStationDetailPanelUI.GetOrCreate(0);
         ui.RebuildGaugesNow();
         ui.ApplyUserHudVisibility();
         RagTrainingHudSwitchController.EnsureInScene();

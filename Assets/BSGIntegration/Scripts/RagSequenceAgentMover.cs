@@ -267,6 +267,37 @@ public class RagSequenceAgentMover : MonoBehaviour
     /// <summary>Per-zone orchestrator reference — set in Start() via GetOrCreateForZone.</summary>
     private CognitivePhaseOrchestrator _zoneOrchestrator;
 
+    /// <summary>HUD helper: returns the mental agent's in-flight orchestrator step for a zone.</summary>
+    public static bool TryGetActiveMentalStepForZone(int forZoneIndex, out ActionSequenceStep step)
+    {
+        step = null;
+        RagSequenceAgentMover[] movers = UnityEngine.Object.FindObjectsOfType<RagSequenceAgentMover>(true);
+        for (int i = 0; i < movers.Length; i++)
+        {
+            RagSequenceAgentMover mover = movers[i];
+            if (mover == null || !mover.isMentalAgent || mover.zoneIndex != forZoneIndex)
+                continue;
+
+            ActionSequenceStep current = mover.GetActiveOrchestratorStepForHud();
+            if (current == null) continue;
+            step = current;
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>Current orchestrator step this mover is walking to or dwelling at (null if idle).</summary>
+    public ActionSequenceStep GetActiveOrchestratorStepForHud()
+    {
+        if (string.IsNullOrEmpty(_currentOrchestratorStepId) || active == null)
+            return null;
+
+        ActionSequenceStep step = active.GetCurrentStep();
+        if (step == null || step.isStepCompleted)
+            return null;
+        return step;
+    }
+
     /// <summary>World goal for current move step — obstacle system treats destination nav as solid until we are this close in XZ.</summary>
     Vector3 _navGoalForObstacles;
 
@@ -3746,6 +3777,8 @@ public class RagSequenceAgentMover : MonoBehaviour
     void HandleOrchestratorCognitiveStep(string stepId)
     {
         if (!isMentalAgent || !enabled) return;
+
+        CognitiveStationDetailPanelUI.EnsureForZone(zoneIndex);
 
         ActionSequenceStep step = FindStepById(stepId);
         if (step == null)

@@ -666,6 +666,14 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         return false;
     }
 
+    /// <summary>Returns the first active cognitive step object, if any.</summary>
+    public ActionSequenceStep GetFirstActiveCognitiveStep()
+    {
+        if (TryGetFirstActiveCognitiveStepId(out string stepId))
+            return GetStep(stepId);
+        return null;
+    }
+
     static bool IsPhysicalStep(ActionSequenceStep step) => RagStepRoleClassifier.IsPhysicalAgentStep(step);
 
     static bool IsCognitiveStep(ActionSequenceStep step) => RagStepRoleClassifier.IsMentalAgentStep(step);
@@ -898,6 +906,7 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         if (isCognitive)
         {
             Debug.Log($"[CognitivePhaseOrchestrator] 🧠 Dispatching COGNITIVE step: {step.stepId} → {step.targetObjectId} ({step.currentCognitiveState})");
+            CognitiveStationDetailPanelUI.EnsureForZone(zoneIndex);
             OnCognitiveStepDispatched?.Invoke(step.stepId);
         }
         else

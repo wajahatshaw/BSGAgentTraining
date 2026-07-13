@@ -18,6 +18,11 @@ public static class RagTrainingHudSuppressor
             if (declarative != null && declarative.zoneIndex != 0)
                 declarative.enabled = false;
         }
+        foreach (CognitiveStationDetailPanelUI stationDetail in Object.FindObjectsOfType<CognitiveStationDetailPanelUI>(true))
+        {
+            if (stationDetail != null && stationDetail.zoneIndex != 0)
+                stationDetail.enabled = false;
+        }
         DisableBehaviour<TrainingSpeedIndicator>();
         DisableBehaviour<StepEfficiencyIndicator>();
         DisableBehaviour<DistanceToTargetMeter>();

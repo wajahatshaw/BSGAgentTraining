@@ -197,7 +197,7 @@ public class ProductionMemoryCommandUI : MonoBehaviour
     /// Determines the human-readable command label and accent color from
     /// <c>productionMemoryConnections</c>.
     /// </summary>
-    static void ClassifyCommand(ActionSequenceStep step, out string label, out Color color)
+    public static void ClassifyCommand(ActionSequenceStep step, out string label, out Color color)
     {
         label = "COMMAND";
         color = Color.white;

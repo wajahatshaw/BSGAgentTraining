@@ -1594,6 +1594,7 @@ public class ReplicaSceneSetup : MonoBehaviour
         RagTrainingHudVisibility.Initialize(defaultVisible: false);
         TemporalBufferGaugeUI.GetOrCreate(0);
         DeclarativeMemoryGaugeUI.GetOrCreate(0);
+        CognitiveStationDetailPanelUI.GetOrCreate(0);
         ui.RebuildGaugesNow();
         ui.ApplyUserHudVisibility();
         if (RagTrainingHudSwitchController.IsAllowedScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name))
@@ -1650,6 +1651,7 @@ public class ReplicaSceneSetup : MonoBehaviour
             ui.showZone0StepIndicator = true;
             TemporalBufferGaugeUI.GetOrCreate(0);
             DeclarativeMemoryGaugeUI.GetOrCreate(0);
+            CognitiveStationDetailPanelUI.GetOrCreate(0);
             ui.RebuildGaugesNow();
             ui.ApplyUserHudVisibility();
             yield break;
