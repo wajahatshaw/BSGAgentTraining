@@ -747,7 +747,7 @@ public static class MeronymPartRegistry
     }
 
     /// <summary>Resolve a part by meronym name across any parent (physical steps carry the parent id as
-    /// target_id, but this also covers a bare name lookup).</summary>
+    /// main_target_object_id, but this also covers a bare name lookup).</summary>
     public static GameObject GetByName(string meronymName, int zone)
     {
         if (string.IsNullOrWhiteSpace(meronymName))

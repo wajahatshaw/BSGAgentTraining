@@ -2119,8 +2119,9 @@ public class RagSequenceAgentMover : MonoBehaviour
     }
 
     /// <summary>Resolve the spawned meronym PART GameObject a physical step targets (step.target =
-    /// meronym name, step.target_id = parent entity id), so the finger presses that exact part. Tries the
-    /// mover's zone then zone 0 (physical env is authored for zone 0). Null if the part isn't spawned.</summary>
+    /// meronym name, step.physicalTargetId / RAG main_target_object_id = parent entity id), so the finger
+    /// presses that exact part. Tries the mover's zone then zone 0 (physical env is authored for zone 0).
+    /// Null if the part isn't spawned.</summary>
     static string ResolveStepMeronymName(ActionSequenceStep step)
     {
         if (step == null)

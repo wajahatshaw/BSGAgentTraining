@@ -89,7 +89,7 @@ public class ActionSequenceStep
     public string targetObjectName;
     /// <summary>Physical-agent step: meronym / scene object name (RAG <c>target</c>).</summary>
     public string physicalTarget;
-    /// <summary>Physical-agent step: root sceneEntities[] id containing <see cref="physicalTarget"/> meronym (RAG <c>target_id</c>).</summary>
+    /// <summary>Physical-agent step: root sceneEntities[] id containing <see cref="physicalTarget"/> meronym (RAG <c>main_target_object_id</c>).</summary>
     public string physicalTargetId;
     /// <summary>Optional RAG subtype for physical/manual actions, e.g. menu_open.</summary>
     public string actionSubType;
@@ -1029,7 +1029,8 @@ public class AgentSequenceManager : MonoBehaviour
             step.targetObjectId = ExtractStringValue(stepJson, "targetObjectId");
             step.targetObjectName = ExtractStringValue(stepJson, "targetObjectName");
             step.physicalTarget = ExtractStringValue(stepJson, "target");
-            step.physicalTargetId = ExtractStringValue(stepJson, "target_id");
+            // Parent sceneEntities[] id that owns the meronym named by "target" (not the meronym's own id).
+            step.physicalTargetId = ExtractMainTargetObjectId(stepJson);
             step.actionSubType = ExtractStringValue(stepJson, "actionSubType");
             step.menuId = ExtractStringValue(stepJson, "menuId");
             step.menuOptions = ExtractStringArray(stepJson, "menuOptions");
@@ -1173,19 +1174,32 @@ public class AgentSequenceManager : MonoBehaviour
         string searchKey = $"\"{key}\":";
         int startIdx = json.IndexOf(searchKey);
         if (startIdx == -1) return "";
-        
+
         startIdx += searchKey.Length;
-        
+
         // Skip whitespace
         while (startIdx < json.Length && char.IsWhiteSpace(json[startIdx])) startIdx++;
-        
+
         if (startIdx >= json.Length || json[startIdx] != '"') return "";
-        
+
         startIdx++; // Skip opening quote
         int endIdx = json.IndexOf("\"", startIdx);
         if (endIdx == -1) return "";
-        
+
         return json.Substring(startIdx, endIdx - startIdx);
+    }
+
+    /// <summary>
+    /// Parent <c>sceneEntities[]</c> id for a physical step's meronym target.
+    /// Prefers <c>main_target_object_id</c>; falls back to legacy <c>target_parent_id</c> / <c>target_id</c>.
+    /// </summary>
+    string ExtractMainTargetObjectId(string stepJson)
+    {
+        string id = ExtractStringValue(stepJson, "main_target_object_id");
+        if (!string.IsNullOrWhiteSpace(id)) return id;
+        id = ExtractStringValue(stepJson, "target_parent_id");
+        if (!string.IsNullOrWhiteSpace(id)) return id;
+        return ExtractStringValue(stepJson, "target_id");
     }
     
     /// <summary>

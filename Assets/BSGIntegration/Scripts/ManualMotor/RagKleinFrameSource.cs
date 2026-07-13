@@ -380,6 +380,10 @@ class RagSceneStateEntryDto
     public string effector;
     public string manualCommand;
     public string target;
+    /// <summary>Parent sceneEntities[] id that owns <see cref="target"/> meronym.</summary>
+    public string main_target_object_id;
+    // Legacy aliases kept so older RAG snapshots still deserialize under JsonUtility.
+    public string target_parent_id;
     public string target_id;
     public KleinVec3Dto coordinates;
     public float forceNewtons;

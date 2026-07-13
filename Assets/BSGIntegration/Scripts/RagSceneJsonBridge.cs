@@ -364,18 +364,30 @@ public static class RagSceneJsonBridge
             pos = q2 + 1;
         }
 
-        pos = 0;
-        while (pos < stepsArrayJson.Length)
+        // Parent sceneEntities[] ids for physical meronym targets (current + legacy key names).
+        CollectQuotedFieldValues(stepsArrayJson, "main_target_object_id", into);
+        CollectQuotedFieldValues(stepsArrayJson, "target_parent_id", into);
+        CollectQuotedFieldValues(stepsArrayJson, "target_id", into);
+    }
+
+    static void CollectQuotedFieldValues(string json, string fieldName, HashSet<string> into)
+    {
+        if (string.IsNullOrEmpty(json) || string.IsNullOrEmpty(fieldName) || into == null)
+            return;
+
+        string needle = "\"" + fieldName + "\"";
+        int pos = 0;
+        while (pos < json.Length)
         {
-            int key = stepsArrayJson.IndexOf("\"target_id\"", pos, StringComparison.Ordinal);
+            int key = json.IndexOf(needle, pos, StringComparison.Ordinal);
             if (key < 0) break;
-            int colon = stepsArrayJson.IndexOf(':', key);
+            int colon = json.IndexOf(':', key);
             if (colon < 0) break;
-            int q1 = stepsArrayJson.IndexOf('"', colon + 1);
+            int q1 = json.IndexOf('"', colon + 1);
             if (q1 < 0) break;
-            int q2 = stepsArrayJson.IndexOf('"', q1 + 1);
+            int q2 = json.IndexOf('"', q1 + 1);
             if (q2 < 0) break;
-            string id = stepsArrayJson.Substring(q1 + 1, q2 - q1 - 1);
+            string id = json.Substring(q1 + 1, q2 - q1 - 1);
             if (!string.IsNullOrEmpty(id)) into.Add(id);
             pos = q2 + 1;
         }

@@ -13397,7 +13397,7 @@
                                 "agentRole": "P",
                                 "effector": "torso",
                                 "target": "desktop_surface",
-                                "target_id": "scene_008",
+                                "main_target_object_id": "scene_008",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.74,
@@ -13485,7 +13485,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "left_mouse_button",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.8,
@@ -13579,7 +13579,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.28,
                                     "y": 0.8,
@@ -13673,7 +13673,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.8,
@@ -13767,7 +13767,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -13861,7 +13861,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -13955,7 +13955,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -14049,7 +14049,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "scroll_wheel",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.75,
@@ -14143,7 +14143,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "left_mouse_button",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.75,
@@ -14237,7 +14237,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -14331,7 +14331,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -14425,7 +14425,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -14532,7 +14532,7 @@
                                 "agentRole": "P",
                                 "effector": "torso",
                                 "target": "desktop_surface",
-                                "target_id": "scene_008",
+                                "main_target_object_id": "scene_008",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.74,
@@ -14620,7 +14620,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "left_mouse_button",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.8,
@@ -14714,7 +14714,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.28,
                                     "y": 0.8,
@@ -14808,7 +14808,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.8,
@@ -14902,7 +14902,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -14996,7 +14996,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -15090,7 +15090,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -15184,7 +15184,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "scroll_wheel",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.75,
@@ -15278,7 +15278,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "left_mouse_button",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.75,
@@ -15372,7 +15372,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -15466,7 +15466,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -15560,7 +15560,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -15667,7 +15667,7 @@
                                 "agentRole": "P",
                                 "effector": "torso",
                                 "target": "desktop_surface",
-                                "target_id": "scene_008",
+                                "main_target_object_id": "scene_008",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.74,
@@ -15755,7 +15755,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "left_mouse_button",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.8,
@@ -15849,7 +15849,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.28,
                                     "y": 0.8,
@@ -15943,7 +15943,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.8,
@@ -16037,7 +16037,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -16131,7 +16131,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -16225,7 +16225,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -16319,7 +16319,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "scroll_wheel",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.75,
@@ -16413,7 +16413,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "left_mouse_button",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.75,
@@ -16507,7 +16507,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -16601,7 +16601,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -16695,7 +16695,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -16802,7 +16802,7 @@
                                 "agentRole": "P",
                                 "effector": "torso",
                                 "target": "desktop_surface",
-                                "target_id": "scene_008",
+                                "main_target_object_id": "scene_008",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.74,
@@ -16890,7 +16890,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "left_mouse_button",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.8,
@@ -16984,7 +16984,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.28,
                                     "y": 0.8,
@@ -17078,7 +17078,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.8,
@@ -17172,7 +17172,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -17266,7 +17266,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -17360,7 +17360,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "p_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -17454,7 +17454,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "scroll_wheel",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.75,
@@ -17548,7 +17548,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "left_mouse_button",
-                                "target_id": "scene_007",
+                                "main_target_object_id": "scene_007",
                                 "coordinates": {
                                     "x": 0.22,
                                     "y": 0.75,
@@ -17642,7 +17642,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -17736,7 +17736,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -17830,7 +17830,7 @@
                                 "agentRole": "P",
                                 "effector": "right_index_fingertip_pad",
                                 "target": "enter_key",
-                                "target_id": "scene_006",
+                                "main_target_object_id": "scene_006",
                                 "coordinates": {
                                     "x": 0.0,
                                     "y": 0.75,
@@ -17907,7 +17907,7 @@
                         "effector": "torso",
                         "manualCommand": "RESTING desktop_surface",
                         "target": "desktop_surface",
-                        "target_id": "scene_008",
+                        "main_target_object_id": "scene_008",
                         "coordinates": {
                             "x": 0.0,
                             "y": 0.74,
@@ -18248,7 +18248,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "PRESSING left_mouse_button",
                         "target": "left_mouse_button",
-                        "target_id": "scene_007",
+                        "main_target_object_id": "scene_007",
                         "coordinates": {
                             "x": 0.22,
                             "y": 0.8,
@@ -18687,7 +18687,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "DEPRESSING enter_key",
                         "target": "enter_key",
-                        "target_id": "scene_006",
+                        "main_target_object_id": "scene_006",
                         "coordinates": {
                             "x": 0.28,
                             "y": 0.8,
@@ -19126,7 +19126,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "DEPRESSING enter_key",
                         "target": "enter_key",
-                        "target_id": "scene_006",
+                        "main_target_object_id": "scene_006",
                         "coordinates": {
                             "x": 0.0,
                             "y": 0.8,
@@ -19565,7 +19565,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "DEPRESSING p_key",
                         "target": "p_key",
-                        "target_id": "scene_006",
+                        "main_target_object_id": "scene_006",
                         "coordinates": {
                             "x": 0.0,
                             "y": 0.75,
@@ -20004,7 +20004,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "DEPRESSING p_key",
                         "target": "p_key",
-                        "target_id": "scene_006",
+                        "main_target_object_id": "scene_006",
                         "coordinates": {
                             "x": 0.0,
                             "y": 0.75,
@@ -20443,7 +20443,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "DEPRESSING p_key",
                         "target": "p_key",
-                        "target_id": "scene_006",
+                        "main_target_object_id": "scene_006",
                         "coordinates": {
                             "x": 0.0,
                             "y": 0.75,
@@ -20882,7 +20882,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "PRESSING scroll_wheel",
                         "target": "scroll_wheel",
-                        "target_id": "scene_007",
+                        "main_target_object_id": "scene_007",
                         "coordinates": {
                             "x": 0.22,
                             "y": 0.75,
@@ -21321,7 +21321,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "PRESSING left_mouse_button",
                         "target": "left_mouse_button",
-                        "target_id": "scene_007",
+                        "main_target_object_id": "scene_007",
                         "coordinates": {
                             "x": 0.22,
                             "y": 0.75,
@@ -21760,7 +21760,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "DEPRESSING enter_key",
                         "target": "enter_key",
-                        "target_id": "scene_006",
+                        "main_target_object_id": "scene_006",
                         "coordinates": {
                             "x": 0.0,
                             "y": 0.75,
@@ -22199,7 +22199,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "DEPRESSING enter_key",
                         "target": "enter_key",
-                        "target_id": "scene_006",
+                        "main_target_object_id": "scene_006",
                         "coordinates": {
                             "x": 0.0,
                             "y": 0.75,
@@ -22638,7 +22638,7 @@
                         "effector": "right_index_fingertip_pad",
                         "manualCommand": "DEPRESSING enter_key",
                         "target": "enter_key",
-                        "target_id": "scene_006",
+                        "main_target_object_id": "scene_006",
                         "coordinates": {
                             "x": 0.0,
                             "y": 0.75,

@@ -16,7 +16,7 @@ public static class PhysicalStepTargetResolver
 
     /// <summary>
     /// Object id used for scene lookup / navigation for this step.
-    /// Physical P-steps prefer <c>target_id</c> then <c>target</c> name; never cognitive station ids.
+    /// Physical P-steps prefer <c>main_target_object_id</c> (parent entity) then <c>target</c> name; never cognitive station ids.
     /// </summary>
     public static string ResolveObjectId(ActionSequenceStep step, int zoneIndex = -1)
     {
@@ -37,7 +37,7 @@ public static class PhysicalStepTargetResolver
             return step.physicalTarget.Trim();
         }
 
-        // Legacy RAG without target / target_id — avoid navigating to ManualModule cognitive id.
+        // Legacy RAG without target / main_target_object_id — avoid navigating to ManualModule cognitive id.
         if (!string.IsNullOrWhiteSpace(step.targetObjectId)
             && !IsCognitiveStationId(step.targetObjectId))
             return step.targetObjectId.Trim();
