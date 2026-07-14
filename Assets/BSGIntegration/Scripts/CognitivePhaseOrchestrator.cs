@@ -547,6 +547,9 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         InvalidateCompletedStepCounts();
         RebuildCompletedStepCountsIfNeeded();
 
+        // Clear the captured actual operating paragraph so the next episode starts fresh.
+        BSG.OperatingParagraph.OperatingParagraphRuntime.ResetZone(zoneIndex);
+
         Debug.Log($"[CognitivePhaseOrchestrator] Zone {zoneIndex}: reset DAG progress for new ML episode.");
     }
 
@@ -584,11 +587,27 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
                 recMem.RecordStepCompletion(DeclarativeStepRecord.Build(step, recMem));
         }
 
+        // Capture the ACTUAL physical operating paragraph (physical steps only). Additive read-model.
+        if (step != null && IsPhysicalStep(step))
+            BSG.OperatingParagraph.OperatingParagraphRuntime.RecordPhysicalStep(zoneIndex, step);
+
         Debug.Log($"[CognitivePhaseOrchestrator] ✅ Step completed: {stepId} | completed={_completedSteps.Count} active={_activeSteps.Count}");
 
         _completedStepCountsDirty = true;
 
         OnStepCompleted?.Invoke(stepId);
+
+        // Generate + compare the operating paragraph as soon as ALL PHYSICAL steps are done — do NOT wait
+        // for trailing cognitive/mental steps (the operating paragraph is physical-only). Fired here, after
+        // OnStepCompleted, so the last physical step's measured completionTime is already recorded.
+        // Idempotent per zone (guarded by _reported), so the CheckAllComplete fallback below is harmless.
+        if (step != null && IsPhysicalStep(step))
+        {
+            GetCompletedStepCounts(out _, out int physicalCompleted);
+            GetTotalStepCounts(out _, out int physicalTotal);
+            if (physicalTotal > 0 && physicalCompleted >= physicalTotal)
+                BSG.OperatingParagraph.OperatingParagraphRuntime.GenerateAndCompare(zoneIndex);
+        }
 
         HandleBarrierIfNeeded(stepId, step);
         CheckAllComplete();
@@ -1006,6 +1025,9 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
             IsAllComplete = true;
             Debug.Log("[CognitivePhaseOrchestrator] 🎉 All steps completed.");
             OnAllStepsCompleted?.Invoke(zoneIndex);
+
+            // All physical steps are done → generate the actual operating paragraph and compare vs the RAG.
+            BSG.OperatingParagraph.OperatingParagraphRuntime.GenerateAndCompare(zoneIndex);
         }
     }
 

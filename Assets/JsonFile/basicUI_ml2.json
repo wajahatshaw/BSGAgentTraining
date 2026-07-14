@@ -51770,111 +51770,129 @@
                     }
                 },
                 "operatingParagraph": {
-                    "complete": "Over 2.0 seconds, I rested my torso against the desktop surface at x=150 y=480 z=720, and the desktop surface changed from clear to supporting. Then, over 0.5 seconds at x=120 y=260 z=740, I directed my gaze to the monitor screen, and the monitor screen changed from unfocused to focused. Next, over 1.8 seconds at x=120 y=260 z=740, I changed the customer record table from unread to read by taking in the CRM evidence it contained. After that, over 0.6 seconds at x=120 y=260 z=740, I focused on the SAP pricing dashboard, and the pricing dashboard changed from unfocused to focused. Then, while SAP software at x=120 y=260 z=740 ran for 120.0 seconds, it changed from idle to processing as it computed pricing strategies from CRM inputs and I monitored the generation of pricing strategy output. Next, over 0.1 seconds, I pressed the left mouse button at x=290 y=515 z=736 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. After that, over 0.09 seconds, I depressed the∑ enter key at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Then, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over another 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over another 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 0.14 seconds, I pressed the scroll wheel at x=290 y=515 z=736 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled. Then, over 1.7 seconds at x=120 y=260 z=740, I changed the resource planning table from unread to read by taking in the ERP evidence it contained. After that, over 0.6 seconds at x=120 y=260 z=740, I focused on the Oracle PeopleSoft pricing workspace, and the pricing workspace changed from unfocused to focused. Then, while Oracle PeopleSoft at x=120 y=260 z=740 ran for 120.0 seconds, it changed from idle to processing as it computed pricing strategies from ERP inputs and I monitored the imported resource-driven output. Next, over 0.1 seconds, I pressed the left mouse button at x=290 y=515 z=736 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. After that, over 0.09 seconds, I depressed the enter key at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Then, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Finally, over 1.2 seconds at x=120 y=260 z=740, I changed the analytics panel from unread to read by taking in the displayed analysis, and then over the next 2.4 seconds at x=140 y=760 z=0, I processed the final comparison in my frontal lobe so that its decision state changed from undecided to decided.",
+                    "scope": "physical",
+                    "agent_id": "P1",
+                    "agent": "Marketing Manager",
+                    "note": "Physical-only operating paragraph (RESTING/PRESSING/DEPRESSING). Positions are live RAG world metres; durations are captured at runtime (completionTime), not authored here.",
+                    "complete": "Over 2.00 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.74 z=-13.25, and the desktop surface changed from clear to supporting. Then, over 0.10 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.80 z=-13.46 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Next, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.28 y=0.80 z=-13.54 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.80 z=-13.57 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over 0.08 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 0.08 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over 0.14 seconds, it pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled. Over 0.10 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Then, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
                     "chunks": [
                         {
-                            "chunk_id": "CHUNK-1",
+                            "chunk_id": "PCHUNK-1",
                             "step_n": 1,
-                            "step_label": "compute pricing strategy data from CRM inputs in SAP software",
+                            "sub_task_id": "st_1",
+                            "step_label": "Analyze Pricing Strategy Data using SAP software",
+                            "physical_step_ids": [
+                                "t01_phy_s01",
+                                "t01_phy_s02",
+                                "t01_phy_s03",
+                                "t01_phy_s04"
+                            ],
                             "klein_frame_ids": [
                                 "KF-1-1",
-                                "KF-1-2",
-                                "KF-1-3",
-                                "KF-1-4",
-                                "KF-1-5",
                                 "KF-1-6",
                                 "KF-1-7",
                                 "KF-1-8"
                             ],
-                            "duration_ms": 125180,
+                            "duration_ms": 2280,
                             "actions": [
                                 {
                                     "klein_frame_id": "KF-1-1",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s01",
+                                    "action": "resting",
                                     "object": "desktop_surface",
+                                    "main_target_object_id": "scene_008",
                                     "state_before": "clear",
                                     "state_after": "supporting",
+                                    "effector": "torso",
+                                    "rig_bone": "mixamorig:Spine2",
+                                    "force_newtons": null,
                                     "duration_ms": 2000,
+                                    "coordinates": {
+                                        "x": 0.0,
+                                        "y": 0.74,
+                                        "z": -13.25
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
-                                },
-                                {
-                                    "klein_frame_id": "KF-1-2",
-                                    "action": "rep path",
-                                    "object": "monitor_screen",
-                                    "state_before": "unfocused",
-                                    "state_after": "focused",
-                                    "duration_ms": 500,
-                                    "tdp_category": "Things",
-                                    "frame_mode": "perceptual"
-                                },
-                                {
-                                    "klein_frame_id": "KF-1-3",
-                                    "action": "rep transition",
-                                    "object": "customer_record_table",
-                                    "state_before": "unread",
-                                    "state_after": "read",
-                                    "duration_ms": 1800,
-                                    "tdp_category": "Data",
-                                    "frame_mode": "cognitive"
-                                },
-                                {
-                                    "klein_frame_id": "KF-1-4",
-                                    "action": "rep path",
-                                    "object": "pricing_dashboard",
-                                    "state_before": "unfocused",
-                                    "state_after": "focused",
-                                    "duration_ms": 600,
-                                    "tdp_category": "Things",
-                                    "frame_mode": "perceptual"
-                                },
-                                {
-                                    "klein_frame_id": "KF-1-5",
-                                    "action": "rep transition",
-                                    "object": "SAP software",
-                                    "state_before": "idle",
-                                    "state_after": "processing",
-                                    "duration_ms": 120000,
-                                    "tdp_category": "Data",
-                                    "frame_mode": "cognitive"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 2.00 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.74 z=-13.25, and the desktop surface changed from clear to supporting."
                                 },
                                 {
                                     "klein_frame_id": "KF-1-6",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s02",
+                                    "action": "pressing",
                                     "object": "left_mouse_button",
+                                    "main_target_object_id": "scene_007",
                                     "state_before": "unpressed",
                                     "state_after": "pressed",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.25,
                                     "duration_ms": 100,
+                                    "coordinates": {
+                                        "x": 0.22,
+                                        "y": 0.8,
+                                        "z": -13.46
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.10 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.80 z=-13.46 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed."
                                 },
                                 {
                                     "klein_frame_id": "KF-1-7",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s03",
+                                    "action": "depressing",
                                     "object": "enter_key",
+                                    "main_target_object_id": "scene_006",
                                     "state_before": "unpressed",
                                     "state_after": "pressed",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.3,
                                     "duration_ms": 90,
+                                    "coordinates": {
+                                        "x": 0.28,
+                                        "y": 0.8,
+                                        "z": -13.54
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.09 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.28 y=0.80 z=-13.54 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
                                 },
                                 {
                                     "klein_frame_id": "KF-1-8",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s04",
+                                    "action": "depressing",
                                     "object": "enter_key",
+                                    "main_target_object_id": "scene_006",
                                     "state_before": "unpressed",
                                     "state_after": "pressed",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.3,
                                     "duration_ms": 90,
+                                    "coordinates": {
+                                        "x": 0.0,
+                                        "y": 0.8,
+                                        "z": -13.57
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.09 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.80 z=-13.57 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
                                 }
                             ],
-                            "narrative": "Over 2.0 seconds, I rested my torso against the desktop surface at x=150 y=480 z=720, and the desktop surface changed from clear to supporting. Then, over 0.5 seconds at x=120 y=260 z=740, I directed my gaze to the monitor screen, and the monitor screen changed from unfocused to focused. Next, over 1.8 seconds at x=120 y=260 z=740, I changed the customer record table from unread to read by taking in the CRM evidence it contained. After that, over 0.6 seconds at x=120 y=260 z=740, I focused on the SAP pricing dashboard, and the pricing dashboard changed from unfocused to focused. Then, while SAP software at x=120 y=260 z=740 ran for 120.0 seconds, it changed from idle to processing as it computed pricing strategies from CRM inputs and I monitored the generation of pricing strategy output. Next, over 0.1 seconds, I pressed the left mouse button at x=290 y=515 z=736 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. After that, over 0.09 seconds, I depressed the enter key at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Then, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+                            "narrative": "Over 2.00 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.74 z=-13.25, and the desktop surface changed from clear to supporting. Then, over 0.10 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.80 z=-13.46 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Next, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.28 y=0.80 z=-13.54 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.80 z=-13.57 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
                         },
                         {
-                            "chunk_id": "CHUNK-2",
+                            "chunk_id": "PCHUNK-2",
                             "step_n": 2,
-                            "step_label": "populate customer satisfaction evidence for pricing balance",
+                            "sub_task_id": "st_2",
+                            "step_label": "Evaluate Pricing Strategy Data using SAP software",
+                            "physical_step_ids": [
+                                "t01_phy_s05",
+                                "t01_phy_s06",
+                                "t01_phy_s07",
+                                "t01_phy_s08"
+                            ],
                             "klein_frame_ids": [
                                 "KF-2-9",
                                 "KF-2-10",
@@ -51885,175 +51903,423 @@
                             "actions": [
                                 {
                                     "klein_frame_id": "KF-2-9",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s05",
+                                    "action": "depressing",
                                     "object": "p_key",
+                                    "main_target_object_id": "scene_006",
                                     "state_before": "unpressed",
                                     "state_after": "pressed",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.3,
                                     "duration_ms": 80,
+                                    "coordinates": {
+                                        "x": 0.0,
+                                        "y": 0.75,
+                                        "z": 0.38
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed."
                                 },
                                 {
                                     "klein_frame_id": "KF-2-10",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s06",
+                                    "action": "depressing",
                                     "object": "p_key",
+                                    "main_target_object_id": "scene_006",
                                     "state_before": "unpressed",
                                     "state_after": "pressed",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.3,
                                     "duration_ms": 80,
+                                    "coordinates": {
+                                        "x": 0.0,
+                                        "y": 0.75,
+                                        "z": 0.38
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed."
                                 },
                                 {
                                     "klein_frame_id": "KF-2-11",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s07",
+                                    "action": "depressing",
                                     "object": "p_key",
+                                    "main_target_object_id": "scene_006",
                                     "state_before": "unpressed",
                                     "state_after": "pressed",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.3,
                                     "duration_ms": 80,
+                                    "coordinates": {
+                                        "x": 0.0,
+                                        "y": 0.75,
+                                        "z": 0.38
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed."
                                 },
                                 {
                                     "klein_frame_id": "KF-2-12",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s08",
+                                    "action": "pressing",
                                     "object": "scroll_wheel",
+                                    "main_target_object_id": "scene_007",
                                     "state_before": "stationary",
                                     "state_after": "scrolled",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.25,
                                     "duration_ms": 140,
+                                    "coordinates": {
+                                        "x": 0.22,
+                                        "y": 0.75,
+                                        "z": 0.4
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.14 seconds, the P1 physical agent (Marketing Manager) pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled."
                                 }
                             ],
-                            "narrative": "Over 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over another 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over another 0.08 seconds, I depressed the p key at x=110 y=520 z=735 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 0.14 seconds, I pressed the scroll wheel at x=290 y=515 z=736 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled."
+                            "narrative": "Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over 0.08 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 0.08 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over 0.14 seconds, it pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled."
                         },
                         {
-                            "chunk_id": "CHUNK-3",
+                            "chunk_id": "PCHUNK-3",
                             "step_n": 3,
-                            "step_label": "compute pricing strategy data from ERP inputs in Oracle PeopleSoft",
+                            "sub_task_id": "st_4",
+                            "step_label": "Analyze Pricing Strategy Data using Oracle PeopleSoft",
+                            "physical_step_ids": [
+                                "t01_phy_s09",
+                                "t01_phy_s10",
+                                "t01_phy_s11",
+                                "t01_phy_s12"
+                            ],
                             "klein_frame_ids": [
-                                "KF-4-13",
-                                "KF-4-14",
-                                "KF-4-15",
                                 "KF-4-16",
                                 "KF-4-17",
                                 "KF-4-18",
                                 "KF-4-19"
                             ],
-                            "duration_ms": 122670,
+                            "duration_ms": 370,
                             "actions": [
                                 {
-                                    "klein_frame_id": "KF-4-13",
-                                    "action": "rep transition",
-                                    "object": "resource_planning_table",
-                                    "state_before": "unread",
-                                    "state_after": "read",
-                                    "duration_ms": 1700,
-                                    "tdp_category": "Data",
-                                    "frame_mode": "cognitive"
-                                },
-                                {
-                                    "klein_frame_id": "KF-4-14",
-                                    "action": "rep path",
-                                    "object": "pricing_workspace",
-                                    "state_before": "unfocused",
-                                    "state_after": "focused",
-                                    "duration_ms": 600,
-                                    "tdp_category": "Things",
-                                    "frame_mode": "perceptual"
-                                },
-                                {
-                                    "klein_frame_id": "KF-4-15",
-                                    "action": "rep transition",
-                                    "object": "Oracle PeopleSoft",
-                                    "state_before": "idle",
-                                    "state_after": "processing",
-                                    "duration_ms": 120000,
-                                    "tdp_category": "Data",
-                                    "frame_mode": "cognitive"
-                                },
-                                {
                                     "klein_frame_id": "KF-4-16",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s09",
+                                    "action": "pressing",
                                     "object": "left_mouse_button",
+                                    "main_target_object_id": "scene_007",
                                     "state_before": "unpressed",
                                     "state_after": "pressed",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.25,
                                     "duration_ms": 100,
+                                    "coordinates": {
+                                        "x": 0.22,
+                                        "y": 0.75,
+                                        "z": 0.4
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.10 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed."
                                 },
                                 {
                                     "klein_frame_id": "KF-4-17",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s10",
+                                    "action": "depressing",
                                     "object": "enter_key",
+                                    "main_target_object_id": "scene_006",
                                     "state_before": "unpressed",
                                     "state_after": "pressed",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.3,
                                     "duration_ms": 90,
+                                    "coordinates": {
+                                        "x": 0.0,
+                                        "y": 0.75,
+                                        "z": 0.38
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.09 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
                                 },
                                 {
                                     "klein_frame_id": "KF-4-18",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s11",
+                                    "action": "depressing",
                                     "object": "enter_key",
+                                    "main_target_object_id": "scene_006",
                                     "state_before": "unpressed",
                                     "state_after": "pressed",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.3,
                                     "duration_ms": 90,
+                                    "coordinates": {
+                                        "x": 0.0,
+                                        "y": 0.75,
+                                        "z": 0.38
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.09 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
                                 },
                                 {
                                     "klein_frame_id": "KF-4-19",
-                                    "action": "rep path",
+                                    "physical_step_id": "t01_phy_s12",
+                                    "action": "depressing",
                                     "object": "enter_key",
+                                    "main_target_object_id": "scene_006",
                                     "state_before": "unpressed",
                                     "state_after": "pressed",
+                                    "effector": "right_index_fingertip_pad",
+                                    "rig_bone": "mixamorig:RightHandIndex4_end",
+                                    "force_newtons": 0.3,
                                     "duration_ms": 90,
+                                    "coordinates": {
+                                        "x": 0.0,
+                                        "y": 0.75,
+                                        "z": 0.38
+                                    },
                                     "tdp_category": "Things",
-                                    "frame_mode": "physical"
+                                    "frame_mode": "physical",
+                                    "step_narrative": "Over 0.09 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
                                 }
                             ],
-                            "narrative": "Over 1.7 seconds at x=120 y=260 z=740, I changed the resource planning table from unread to read by taking in the ERP evidence it contained. After that, over 0.6 seconds at x=120 y=260 z=740, I focused on the Oracle PeopleSoft pricing workspace, and the pricing workspace changed from unfocused to focused. Then, while Oracle PeopleSoft at x=120 y=260 z=740 ran for 120.0 seconds, it changed from idle to processing as it computed pricing strategies from ERP inputs and I monitored the imported resource-driven output. Next, over 0.1 seconds, I pressed the left mouse button at x=290 y=515 z=736 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. After that, over 0.09 seconds, I depressed the enter key at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Then, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over another 0.09 seconds, I depressed the enter key again at x=110 y=520 z=735 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
-                        },
-                        {
-                            "chunk_id": "CHUNK-4",
-                            "step_n": 4,
-                            "step_label": "consolidate balanced pricing decision across both tool outputs",
-                            "klein_frame_ids": [
-                                "KF-6-20",
-                                "KF-6-21"
-                            ],
-                            "duration_ms": 3600,
-                            "actions": [
-                                {
-                                    "klein_frame_id": "KF-6-20",
-                                    "action": "rep transition",
-                                    "object": "analytics_panel",
-                                    "state_before": "unread",
-                                    "state_after": "read",
-                                    "duration_ms": 1200,
-                                    "tdp_category": "Data",
-                                    "frame_mode": "cognitive"
-                                },
-                                {
-                                    "klein_frame_id": "KF-6-21",
-                                    "action": "rep transition",
-                                    "object": "frontal_lobe",
-                                    "state_before": "undecided",
-                                    "state_after": "decided",
-                                    "duration_ms": 2400,
-                                    "tdp_category": "Data",
-                                    "frame_mode": "cognitive"
-                                }
-                            ],
-                            "narrative": "Over 1.2 seconds at x=120 y=260 z=740, I changed the analytics panel from unread to read by taking in the displayed analysis, and then over the next 2.4 seconds at x=140 y=760 z=0, I processed the final comparison in my frontal lobe so that its decision state changed from undecided to decided."
+                            "narrative": "Over 0.10 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Then, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
                         }
                     ]
                 },
-                "identityStatements": {
-                    "overview": null,
-                    "perSubTask": [],
-                    "note": "identity_statements absent from phase_0_loaded"
-                },
+                "identityStatements": [
+                    {
+                        "id": "overview",
+                        "scope": "task",
+                        "sub_task_id": null,
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed the task across 6 sub-tasks, changing 5 objects: Pricing Strategy Data from instantiated_or_partial_1200_records_with_required_fields_not_fully_completed to complete_1500_records_with_pricing_model_strategy_effectiveness_and_market_segment_populated; Customer Satisfaction Data from non-existent_or_uninitialized_required_fields to complete_with_satisfaction_score_feedback_comments_and_response_rate_populated; SAP software from idle_0_or_processing_1_without_final_pricing_strategy_data_generated_1500 to pricing_strategy_data_generated_1500; Oracle PeopleSoft from idle_0_or_processing_1_without_final_pricing_strategy_data_generated_1500 to pricing_strategy_data_generated_1500; frontal_lobe from undecided_0 to decided_1.",
+                        "environment_state_changes": [
+                            {
+                                "object": "Pricing Strategy Data",
+                                "from": "instantiated_or_partial_1200_records_with_required_fields_not_fully_completed",
+                                "to": "complete_1500_records_with_pricing_model_strategy_effectiveness_and_market_segment_populated"
+                            },
+                            {
+                                "object": "Customer Satisfaction Data",
+                                "from": "non-existent_or_uninitialized_required_fields",
+                                "to": "complete_with_satisfaction_score_feedback_comments_and_response_rate_populated"
+                            },
+                            {
+                                "object": "SAP software",
+                                "from": "idle_0_or_processing_1_without_final_pricing_strategy_data_generated_1500",
+                                "to": "pricing_strategy_data_generated_1500"
+                            },
+                            {
+                                "object": "Oracle PeopleSoft",
+                                "from": "idle_0_or_processing_1_without_final_pricing_strategy_data_generated_1500",
+                                "to": "pricing_strategy_data_generated_1500"
+                            },
+                            {
+                                "object": "frontal_lobe",
+                                "from": "undecided_0",
+                                "to": "decided_1"
+                            }
+                        ],
+                        "duration_ms": 254520,
+                        "occupation": "Marketing Managers",
+                        "agent": "Marketing Manager"
+                    },
+                    {
+                        "id": "st_1",
+                        "scope": "sub_task",
+                        "sub_task_id": "1",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Analyze Pricing Strategy Data using SAP software', changing 7 objects: desktop_surface from clear to supporting; pricing_dashboard from unfocused to focused; SAP software from idle to pricing_strategy_data_generated; left_mouse_button from unpressed to pressed; tab_key from unpressed to pressed; p_key from unpressed to pressed; enter_key from unpressed to pressed.",
+                        "environment_state_changes": [
+                            {
+                                "object": "desktop_surface",
+                                "from": "clear",
+                                "to": "supporting"
+                            },
+                            {
+                                "object": "pricing_dashboard",
+                                "from": "unfocused",
+                                "to": "focused"
+                            },
+                            {
+                                "object": "SAP software",
+                                "from": "idle",
+                                "to": "pricing_strategy_data_generated"
+                            },
+                            {
+                                "object": "left_mouse_button",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "tab_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "enter_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            }
+                        ],
+                        "duration_ms": 122950
+                    },
+                    {
+                        "id": "st_2",
+                        "scope": "sub_task",
+                        "sub_task_id": "2",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Evaluate Pricing Strategy Data using SAP software', changing 5 objects: customer_record_table from unread to read; effectiveness_panel from unread to read; p_key from unpressed to pressed; enter_key from unpressed to pressed; market_segment_grid from unread to read.",
+                        "environment_state_changes": [
+                            {
+                                "object": "customer_record_table",
+                                "from": "unread",
+                                "to": "read"
+                            },
+                            {
+                                "object": "effectiveness_panel",
+                                "from": "unread",
+                                "to": "read"
+                            },
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "enter_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "market_segment_grid",
+                                "from": "unread",
+                                "to": "read"
+                            }
+                        ],
+                        "duration_ms": 4440
+                    },
+                    {
+                        "id": "st_4",
+                        "scope": "sub_task",
+                        "sub_task_id": "4",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Analyze Pricing Strategy Data using Oracle PeopleSoft', changing 6 objects: resource_planning_table from unread to read; pricing_workspace from unfocused to focused; Oracle PeopleSoft from idle to pricing_strategy_data_generated; left_mouse_button from unpressed to pressed; p_key from unpressed to pressed; enter_key from unpressed to pressed.",
+                        "environment_state_changes": [
+                            {
+                                "object": "resource_planning_table",
+                                "from": "unread",
+                                "to": "read"
+                            },
+                            {
+                                "object": "pricing_workspace",
+                                "from": "unfocused",
+                                "to": "focused"
+                            },
+                            {
+                                "object": "Oracle PeopleSoft",
+                                "from": "idle",
+                                "to": "pricing_strategy_data_generated"
+                            },
+                            {
+                                "object": "left_mouse_button",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "enter_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            }
+                        ],
+                        "duration_ms": 122570
+                    },
+                    {
+                        "id": "st_3",
+                        "scope": "sub_task",
+                        "sub_task_id": "3",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Decide Customer Satisfaction Data using SAP software', changing 2 objects: p_key from unpressed to pressed; scroll_wheel from stationary to scrolled.",
+                        "environment_state_changes": [
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "scroll_wheel",
+                                "from": "stationary",
+                                "to": "scrolled"
+                            }
+                        ],
+                        "duration_ms": 380
+                    },
+                    {
+                        "id": "st_5",
+                        "scope": "sub_task",
+                        "sub_task_id": "5",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Evaluate Pricing Strategy Data using Oracle PeopleSoft', changing 3 objects: analytics_panel from unread to read; p_key from unpressed to pressed; enter_key from unpressed to pressed.",
+                        "environment_state_changes": [
+                            {
+                                "object": "analytics_panel",
+                                "from": "unread",
+                                "to": "read"
+                            },
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "enter_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            }
+                        ],
+                        "duration_ms": 1540
+                    },
+                    {
+                        "id": "st_6",
+                        "scope": "sub_task",
+                        "sub_task_id": "6",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Decide Customer Satisfaction Data using Oracle PeopleSoft', changing 2 objects: p_key from unpressed to pressed; frontal_lobe from undecided to decided.",
+                        "environment_state_changes": [
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "frontal_lobe",
+                                "from": "undecided",
+                                "to": "decided"
+                            }
+                        ],
+                        "duration_ms": 2640
+                    }
+                ],
                 "objectStateTimelines": {
                     "desktop_surface": [
                         {

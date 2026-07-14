@@ -320,6 +320,17 @@ public class MLTrainingResultsWriter : MonoBehaviour
     /// Picks the most recently active results/&lt;runId&gt;/run_logs (by max mtime of timers.json and training_status.json),
     /// then reads --run-id from that folder's timers.json, or falls back to the directory name (matches ONNX layout).
     /// </summary>
+    /// <summary>Resolve the active results/&lt;runId&gt;/run_logs directory without needing an instance.
+    /// Mirrors GetCurrentRunId's env-var → latest-timers detection, with a persona_training fallback.
+    /// Used by side systems (e.g. Operating Paragraph export) that write into the same run_logs dir.</summary>
+    public static string ResolveRunLogsDirStatic()
+    {
+        string envRunId = System.Environment.GetEnvironmentVariable("MLAGENTS_RUN_ID");
+        string runId = !string.IsNullOrEmpty(envRunId) ? envRunId.Trim() : TryDetectRunIdFromLatestTimersJson();
+        if (string.IsNullOrWhiteSpace(runId))
+            runId = "persona_training";
+        return Path.GetFullPath(Path.Combine(Application.dataPath, "..", "results", runId, "run_logs"));
+    }
     private static string TryDetectRunIdFromLatestTimersJson()
     {
         try
@@ -1235,6 +1246,13 @@ public class MLTrainingResultsWriter : MonoBehaviour
                     finalStep.expectedDuration = step.expectedDuration;
                     finalStep.isCompleted = step.isCompleted;
                     finalStep.completionTime = step.completionTime;
+                    // Physical object state transition (before→after) from the operating-paragraph reference.
+                    if (BSG.OperatingParagraph.OperatingParagraphCatalog.EnsureLoaded() &&
+                        BSG.OperatingParagraph.OperatingParagraphCatalog.ExpectedByStepId.TryGetValue(step.stepId, out var opAction) && opAction != null)
+                    {
+                        finalStep.stateBefore = opAction.state_before;
+                        finalStep.stateAfter = opAction.state_after;
+                    }
                     finalStep.requiredSkillCodes = new List<string>(step.requiredSkillCodes);
                     finalStep.skillsLearned = new List<string>(step.skillsLearned);
                     agentFinal.stepProgress.Add(finalStep);
@@ -1938,7 +1956,11 @@ public class MLTrainingResultsWriter : MonoBehaviour
                 sb.Append($"                    \"expectedDuration\": {step.expectedDuration:F2},\n");
                 sb.Append($"                    \"isCompleted\": {step.isCompleted.ToString().ToLower()},\n");
                 sb.Append($"                    \"completionTime\": {step.completionTime:F2},\n");
-                
+                if (!string.IsNullOrEmpty(step.stateBefore))
+                    sb.Append($"                    \"stateBefore\": \"{EscapeJsonString(step.stateBefore)}\",\n");
+                if (!string.IsNullOrEmpty(step.stateAfter))
+                    sb.Append($"                    \"stateAfter\": \"{EscapeJsonString(step.stateAfter)}\",\n");
+
                 // Required skill codes (O*NET codes)
                 sb.Append("                    \"requiredSkillCodes\": [");
                 for (int k = 0; k < step.requiredSkillCodes.Count; k++)
@@ -2042,9 +2064,17 @@ public class MLTrainingResultsWriter : MonoBehaviour
             sb.Append("\n");
         }
         
-        sb.Append("    ]\n");
+        sb.Append("    ],\n");
+
+        // Operating Paragraph: predicted (RAG reference) + actual (built from completed physical steps) +
+        // comparison. Computed for whatever completed so far, so BOTH an ideal (all-physical-complete) and a
+        // mid-run/partial end are stored + compared here (every write path routes through this method).
+        sb.Append("    \"operatingParagraph\": ");
+        sb.Append(BSG.OperatingParagraph.OperatingParagraphRuntime.BuildFinalResultsBlockJson(0, "    ").TrimStart());
+        sb.Append("\n");
+
         sb.Append("}\n");
-        
+
         return sb.ToString();
     }
 }
@@ -2132,6 +2162,8 @@ public class FinalStepProgress
     public string targetObjectName;
     public string description;
     public string currentCognitiveState;
+    public string stateBefore;   // physical step: object state before (from operating paragraph)
+    public string stateAfter;    // physical step: object state after
     public float expectedDuration;
     public bool isCompleted;
     public float completionTime;
