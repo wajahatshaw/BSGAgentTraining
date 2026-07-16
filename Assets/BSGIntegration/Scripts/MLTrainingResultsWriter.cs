@@ -1250,8 +1250,10 @@ public class MLTrainingResultsWriter : MonoBehaviour
                     if (BSG.OperatingParagraph.OperatingParagraphCatalog.EnsureLoaded() &&
                         BSG.OperatingParagraph.OperatingParagraphCatalog.ExpectedByStepId.TryGetValue(step.stepId, out var opAction) && opAction != null)
                     {
+                        // stateBefore is always known; stateAfter is only reached once the step COMPLETES
+                        // successfully — leave it null until then so the result never claims an un-done outcome.
                         finalStep.stateBefore = opAction.state_before;
-                        finalStep.stateAfter = opAction.state_after;
+                        finalStep.stateAfter = step.isCompleted ? opAction.state_after : null;
                     }
                     finalStep.requiredSkillCodes = new List<string>(step.requiredSkillCodes);
                     finalStep.skillsLearned = new List<string>(step.skillsLearned);
@@ -1957,9 +1959,12 @@ public class MLTrainingResultsWriter : MonoBehaviour
                 sb.Append($"                    \"isCompleted\": {step.isCompleted.ToString().ToLower()},\n");
                 sb.Append($"                    \"completionTime\": {step.completionTime:F2},\n");
                 if (!string.IsNullOrEmpty(step.stateBefore))
+                {
                     sb.Append($"                    \"stateBefore\": \"{EscapeJsonString(step.stateBefore)}\",\n");
-                if (!string.IsNullOrEmpty(step.stateAfter))
-                    sb.Append($"                    \"stateAfter\": \"{EscapeJsonString(step.stateAfter)}\",\n");
+                    // stateAfter is null until the physical step completes successfully (see finalStep assignment).
+                    string after = string.IsNullOrEmpty(step.stateAfter) ? "null" : $"\"{EscapeJsonString(step.stateAfter)}\"";
+                    sb.Append($"                    \"stateAfter\": {after},\n");
+                }
 
                 // Required skill codes (O*NET codes)
                 sb.Append("                    \"requiredSkillCodes\": [");
@@ -2071,6 +2076,12 @@ public class MLTrainingResultsWriter : MonoBehaviour
         // mid-run/partial end are stored + compared here (every write path routes through this method).
         sb.Append("    \"operatingParagraph\": ");
         sb.Append(BSG.OperatingParagraph.OperatingParagraphRuntime.BuildFinalResultsBlockJson(0, "    ").TrimStart());
+        sb.Append(",\n");
+
+        // Identity Statement: predicted (RAG reference) + actual (built from completed physical steps) +
+        // comparison. Same partial-friendly contract as operatingParagraph — stored on every game end.
+        sb.Append("    \"identityStatement\": ");
+        sb.Append(BSG.IdentityStatement.IdentityStatementRuntime.BuildFinalResultsBlockJson(0, "    ").TrimStart());
         sb.Append("\n");
 
         sb.Append("}\n");

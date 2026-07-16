@@ -547,8 +547,10 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         InvalidateCompletedStepCounts();
         RebuildCompletedStepCountsIfNeeded();
 
-        // Clear the captured actual operating paragraph so the next episode starts fresh.
+        // Clear the captured actual operating paragraph + identity statement so the next episode starts fresh.
         BSG.OperatingParagraph.OperatingParagraphRuntime.ResetZone(zoneIndex);
+        BSG.IdentityStatement.IdentityStatementRuntime.ResetZone(zoneIndex);
+        BSG.IdentityStatement.ObjectStateRegistry.ResetZone(zoneIndex);
 
         Debug.Log($"[CognitivePhaseOrchestrator] Zone {zoneIndex}: reset DAG progress for new ML episode.");
     }
@@ -589,7 +591,12 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
 
         // Capture the ACTUAL physical operating paragraph (physical steps only). Additive read-model.
         if (step != null && IsPhysicalStep(step))
+        {
             BSG.OperatingParagraph.OperatingParagraphRuntime.RecordPhysicalStep(zoneIndex, step);
+            // Flip the live object state to its state_after now the step has completed with verified contact
+            // (press/depress can't reach here without KleinFrameExecutor.PressContactAchieved; RESTING is always verified).
+            BSG.IdentityStatement.ObjectStateRegistry.ApplyCompletedStep(zoneIndex, step.stepId, contactVerified: true);
+        }
 
         Debug.Log($"[CognitivePhaseOrchestrator] ✅ Step completed: {stepId} | completed={_completedSteps.Count} active={_activeSteps.Count}");
 
@@ -606,7 +613,10 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
             GetCompletedStepCounts(out _, out int physicalCompleted);
             GetTotalStepCounts(out _, out int physicalTotal);
             if (physicalTotal > 0 && physicalCompleted >= physicalTotal)
+            {
                 BSG.OperatingParagraph.OperatingParagraphRuntime.GenerateAndCompare(zoneIndex);
+                BSG.IdentityStatement.IdentityStatementRuntime.GenerateAndCompare(zoneIndex);
+            }
         }
 
         HandleBarrierIfNeeded(stepId, step);
@@ -1026,8 +1036,9 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
             Debug.Log("[CognitivePhaseOrchestrator] 🎉 All steps completed.");
             OnAllStepsCompleted?.Invoke(zoneIndex);
 
-            // All physical steps are done → generate the actual operating paragraph and compare vs the RAG.
+            // All physical steps are done → generate the actual operating paragraph + identity statement, compare vs the RAG.
             BSG.OperatingParagraph.OperatingParagraphRuntime.GenerateAndCompare(zoneIndex);
+            BSG.IdentityStatement.IdentityStatementRuntime.GenerateAndCompare(zoneIndex);
         }
     }
 

@@ -36896,11 +36896,230 @@
                         }
                     ]
                 },
-                "identityStatements": {
-                    "overview": null,
-                    "perSubTask": [],
-                    "note": "identity_statements absent from phase_0_loaded"
-                },
+                "identityStatements": [
+                    {
+                        "id": "overview",
+                        "scope": "task",
+                        "sub_task_id": null,
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed the task across 6 sub-tasks, changing 5 objects: Pricing Strategy Data from instantiated_or_partial_1200_records_with_required_fields_not_fully_completed to complete_1500_records_with_pricing_model_strategy_effectiveness_and_market_segment_populated; Customer Satisfaction Data from non-existent_or_uninitialized_required_fields to complete_with_satisfaction_score_feedback_comments_and_response_rate_populated; SAP software from idle_0_or_processing_1_without_final_pricing_strategy_data_generated_1500 to pricing_strategy_data_generated_1500; Oracle PeopleSoft from idle_0_or_processing_1_without_final_pricing_strategy_data_generated_1500 to pricing_strategy_data_generated_1500; frontal_lobe from undecided_0 to decided_1.",
+                        "environment_state_changes": [
+                            {
+                                "object": "Pricing Strategy Data",
+                                "from": "instantiated_or_partial_1200_records_with_required_fields_not_fully_completed",
+                                "to": "complete_1500_records_with_pricing_model_strategy_effectiveness_and_market_segment_populated"
+                            },
+                            {
+                                "object": "Customer Satisfaction Data",
+                                "from": "non-existent_or_uninitialized_required_fields",
+                                "to": "complete_with_satisfaction_score_feedback_comments_and_response_rate_populated"
+                            },
+                            {
+                                "object": "SAP software",
+                                "from": "idle_0_or_processing_1_without_final_pricing_strategy_data_generated_1500",
+                                "to": "pricing_strategy_data_generated_1500"
+                            },
+                            {
+                                "object": "Oracle PeopleSoft",
+                                "from": "idle_0_or_processing_1_without_final_pricing_strategy_data_generated_1500",
+                                "to": "pricing_strategy_data_generated_1500"
+                            },
+                            {
+                                "object": "frontal_lobe",
+                                "from": "undecided_0",
+                                "to": "decided_1"
+                            }
+                        ],
+                        "duration_ms": 254520,
+                        "occupation": "Marketing Managers",
+                        "agent": "Marketing Manager"
+                    },
+                    {
+                        "id": "st_1",
+                        "scope": "sub_task",
+                        "sub_task_id": "1",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Analyze Pricing Strategy Data using SAP software', changing 7 objects: desktop_surface from clear to supporting; pricing_dashboard from unfocused to focused; SAP software from idle to pricing_strategy_data_generated; left_mouse_button from unpressed to pressed; tab_key from unpressed to pressed; p_key from unpressed to pressed; enter_key from unpressed to pressed.",
+                        "environment_state_changes": [
+                            {
+                                "object": "desktop_surface",
+                                "from": "clear",
+                                "to": "supporting"
+                            },
+                            {
+                                "object": "pricing_dashboard",
+                                "from": "unfocused",
+                                "to": "focused"
+                            },
+                            {
+                                "object": "SAP software",
+                                "from": "idle",
+                                "to": "pricing_strategy_data_generated"
+                            },
+                            {
+                                "object": "left_mouse_button",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "tab_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "enter_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            }
+                        ],
+                        "duration_ms": 122950
+                    },
+                    {
+                        "id": "st_2",
+                        "scope": "sub_task",
+                        "sub_task_id": "2",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Evaluate Pricing Strategy Data using SAP software', changing 5 objects: customer_record_table from unread to read; effectiveness_panel from unread to read; p_key from unpressed to pressed; enter_key from unpressed to pressed; market_segment_grid from unread to read.",
+                        "environment_state_changes": [
+                            {
+                                "object": "customer_record_table",
+                                "from": "unread",
+                                "to": "read"
+                            },
+                            {
+                                "object": "effectiveness_panel",
+                                "from": "unread",
+                                "to": "read"
+                            },
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "enter_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "market_segment_grid",
+                                "from": "unread",
+                                "to": "read"
+                            }
+                        ],
+                        "duration_ms": 4440
+                    },
+                    {
+                        "id": "st_4",
+                        "scope": "sub_task",
+                        "sub_task_id": "4",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Analyze Pricing Strategy Data using Oracle PeopleSoft', changing 6 objects: resource_planning_table from unread to read; pricing_workspace from unfocused to focused; Oracle PeopleSoft from idle to pricing_strategy_data_generated; left_mouse_button from unpressed to pressed; p_key from unpressed to pressed; enter_key from unpressed to pressed.",
+                        "environment_state_changes": [
+                            {
+                                "object": "resource_planning_table",
+                                "from": "unread",
+                                "to": "read"
+                            },
+                            {
+                                "object": "pricing_workspace",
+                                "from": "unfocused",
+                                "to": "focused"
+                            },
+                            {
+                                "object": "Oracle PeopleSoft",
+                                "from": "idle",
+                                "to": "pricing_strategy_data_generated"
+                            },
+                            {
+                                "object": "left_mouse_button",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "enter_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            }
+                        ],
+                        "duration_ms": 122570
+                    },
+                    {
+                        "id": "st_3",
+                        "scope": "sub_task",
+                        "sub_task_id": "3",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Decide Customer Satisfaction Data using SAP software', changing 2 objects: p_key from unpressed to pressed; scroll_wheel from stationary to scrolled.",
+                        "environment_state_changes": [
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "scroll_wheel",
+                                "from": "stationary",
+                                "to": "scrolled"
+                            }
+                        ],
+                        "duration_ms": 380
+                    },
+                    {
+                        "id": "st_5",
+                        "scope": "sub_task",
+                        "sub_task_id": "5",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Evaluate Pricing Strategy Data using Oracle PeopleSoft', changing 3 objects: analytics_panel from unread to read; p_key from unpressed to pressed; enter_key from unpressed to pressed.",
+                        "environment_state_changes": [
+                            {
+                                "object": "analytics_panel",
+                                "from": "unread",
+                                "to": "read"
+                            },
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "enter_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            }
+                        ],
+                        "duration_ms": 1540
+                    },
+                    {
+                        "id": "st_6",
+                        "scope": "sub_task",
+                        "sub_task_id": "6",
+                        "status": "finalized",
+                        "statement": "The Marketing Managers completed 'Decide Customer Satisfaction Data using Oracle PeopleSoft', changing 2 objects: p_key from unpressed to pressed; frontal_lobe from undecided to decided.",
+                        "environment_state_changes": [
+                            {
+                                "object": "p_key",
+                                "from": "unpressed",
+                                "to": "pressed"
+                            },
+                            {
+                                "object": "frontal_lobe",
+                                "from": "undecided",
+                                "to": "decided"
+                            }
+                        ],
+                        "duration_ms": 2640
+                    }
+                ],
                 "objectStateTimelines": {
                     "desktop_surface": [
                         {
