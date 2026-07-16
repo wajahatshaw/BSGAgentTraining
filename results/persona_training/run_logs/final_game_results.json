@@ -1,5 +1,5 @@
 ﻿{
-    "timestamp": "2026-07-14 12:24:10",
+    "timestamp": "2026-07-16 16:44:43",
     "sceneId": "scene_warehouse_replica_001",
     "mlAgentsRunId": "persona_training",
     "resultsRunLogsRelativePath": "results/persona_training/run_logs/",
@@ -8,15 +8,15 @@
         {
             "agentId": "P1",
             "behaviorName": "PhysicalAgentZone0",
-            "skillLevel": 100.0,
+            "skillLevel": 10.0,
             "desireLevel": 100.0,
-            "skillPercentage": 100.00,
-            "isCompleted": true,
+            "skillPercentage": 10.00,
+            "isCompleted": false,
             "learnedSkillsCount": 0,
             "learnedSkillsNames": [],
             "episodes": 0,
-            "totalReward": 0.00,
-            "completedSteps": 12,
+            "totalReward": 10.00,
+            "completedSteps": 1,
             "totalSteps": 12,
             "cognitiveSequenceCompleted": false,
             "cognitiveCompletedSteps": 0,
@@ -32,7 +32,7 @@
                     "description": "RESTING desktop_surface",
                     "expectedDuration": 2.00,
                     "isCompleted": true,
-                    "completionTime": 2.89,
+                    "completionTime": 2.99,
                     "stateBefore": "clear",
                     "stateAfter": "supporting",
                     "requiredSkillCodes": [],
@@ -47,10 +47,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "PRESSING left_mouse_button",
                     "expectedDuration": 3.00,
-                    "isCompleted": true,
-                    "completionTime": 50.64,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "unpressed",
-                    "stateAfter": "pressed",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -63,10 +63,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "DEPRESSING enter_key",
                     "expectedDuration": 3.00,
-                    "isCompleted": true,
-                    "completionTime": 3.40,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "unpressed",
-                    "stateAfter": "pressed",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -79,10 +79,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "DEPRESSING enter_key",
                     "expectedDuration": 3.00,
-                    "isCompleted": true,
-                    "completionTime": 3.40,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "unpressed",
-                    "stateAfter": "pressed",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -95,10 +95,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "DEPRESSING p_key",
                     "expectedDuration": 0.08,
-                    "isCompleted": true,
-                    "completionTime": 3.40,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "unpressed",
-                    "stateAfter": "pressed",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -111,10 +111,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "DEPRESSING p_key",
                     "expectedDuration": 0.08,
-                    "isCompleted": true,
-                    "completionTime": 3.40,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "unpressed",
-                    "stateAfter": "pressed",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -127,10 +127,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "DEPRESSING p_key",
                     "expectedDuration": 0.08,
-                    "isCompleted": true,
-                    "completionTime": 3.40,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "unpressed",
-                    "stateAfter": "pressed",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -143,10 +143,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "PRESSING scroll_wheel",
                     "expectedDuration": 0.14,
-                    "isCompleted": true,
-                    "completionTime": 3.41,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "stationary",
-                    "stateAfter": "scrolled",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -159,10 +159,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "PRESSING left_mouse_button",
                     "expectedDuration": 0.10,
-                    "isCompleted": true,
-                    "completionTime": 6.80,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "unpressed",
-                    "stateAfter": "pressed",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -175,10 +175,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "DEPRESSING enter_key",
                     "expectedDuration": 0.09,
-                    "isCompleted": true,
-                    "completionTime": 3.41,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "unpressed",
-                    "stateAfter": "pressed",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -191,10 +191,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "DEPRESSING enter_key",
                     "expectedDuration": 0.09,
-                    "isCompleted": true,
-                    "completionTime": 3.40,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "unpressed",
-                    "stateAfter": "pressed",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -207,10 +207,10 @@
                     "targetObjectName": "ManualModule",
                     "description": "DEPRESSING enter_key",
                     "expectedDuration": 0.09,
-                    "isCompleted": true,
-                    "completionTime": 3.40,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "stateBefore": "unpressed",
-                    "stateAfter": "pressed",
+                    "stateAfter": null,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 }
@@ -906,18 +906,18 @@
         {
             "agentId": "M1",
             "behaviorName": "PhysicalAgentZone0",
-            "skillLevel": 100.0,
+            "skillLevel": 0.0,
             "desireLevel": 100.0,
-            "skillPercentage": 100.00,
-            "isCompleted": true,
+            "skillPercentage": 0.00,
+            "isCompleted": false,
             "learnedSkillsCount": 0,
             "learnedSkillsNames": [],
             "episodes": 0,
             "totalReward": 0.00,
-            "completedSteps": 46,
+            "completedSteps": 9,
             "totalSteps": 46,
-            "cognitiveSequenceCompleted": true,
-            "cognitiveCompletedSteps": 46,
+            "cognitiveSequenceCompleted": false,
+            "cognitiveCompletedSteps": 9,
             "cognitiveTotalSteps": 46,
             "stepProgress": [
                 {
@@ -1050,8 +1050,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives SAP software as idle_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1064,8 +1064,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes SAP software signal using production_memory sap-computation-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1078,8 +1078,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for SAP software.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1092,8 +1092,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_module commits KF-1-5 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                     "expectedDuration": 120.00,
-                    "isCompleted": true,
-                    "completionTime": 120.00,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1106,8 +1106,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives left_mouse_button as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1120,8 +1120,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes left_mouse_button signal using production_memory mouse-click-focus-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1134,8 +1134,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for left_mouse_button.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1148,8 +1148,8 @@
                     "targetObjectName": "ManualBuffer",
                     "description": "manual_buffer issues PRESSING command to right_index_fingertip_pad for Klein frame KF-1-6.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1162,8 +1162,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives enter_key as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1176,8 +1176,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1190,8 +1190,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1204,8 +1204,8 @@
                     "targetObjectName": "ManualBuffer",
                     "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-1-7.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1218,8 +1218,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives enter_key as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1232,8 +1232,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1246,8 +1246,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1260,8 +1260,8 @@
                     "targetObjectName": "ManualBuffer",
                     "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-1-8.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1274,8 +1274,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives p_key as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1288,8 +1288,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes p_key signal using production_memory typing-parameter-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1302,8 +1302,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for p_key.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1316,8 +1316,8 @@
                     "targetObjectName": "IntentionalModule",
                     "description": "intentional_module directs frontal_lobe of Marketing Manager to balance customer satisfaction evidence with pricing judgment through PROCESS",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1330,8 +1330,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives resource_planning_table as unread_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1344,8 +1344,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes resource_planning_table signal using production_memory erp-table-read-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1358,8 +1358,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for resource_planning_table.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1372,8 +1372,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_module commits KF-4-13 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
                     "expectedDuration": 1.70,
-                    "isCompleted": true,
-                    "completionTime": 1.70,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1386,8 +1386,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives Oracle PeopleSoft as idle_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1400,8 +1400,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes Oracle PeopleSoft signal using production_memory peoplesoft-computation-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1414,8 +1414,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for Oracle PeopleSoft.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1428,8 +1428,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_module commits KF-4-15 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                     "expectedDuration": 120.00,
-                    "isCompleted": true,
-                    "completionTime": 120.00,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1442,8 +1442,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives enter_key as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1456,8 +1456,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1470,8 +1470,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1484,8 +1484,8 @@
                     "targetObjectName": "ManualBuffer",
                     "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-4-18.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1498,8 +1498,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives enter_key as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1512,8 +1512,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1526,8 +1526,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1540,8 +1540,8 @@
                     "targetObjectName": "ManualBuffer",
                     "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-4-19.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -1554,8 +1554,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives analytics_panel as unread_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 }
@@ -1700,8 +1700,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives SAP software as idle_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1715,8 +1715,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes SAP software signal using production_memory sap-computation-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1730,8 +1730,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for SAP software.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1745,8 +1745,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_module commits KF-1-5 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                     "expectedDuration": 120.00,
-                    "isCompleted": true,
-                    "completionTime": 120.00,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1760,8 +1760,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives left_mouse_button as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1775,8 +1775,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes left_mouse_button signal using production_memory mouse-click-focus-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1790,8 +1790,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for left_mouse_button.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1805,8 +1805,8 @@
                     "targetObjectName": "ManualBuffer",
                     "description": "manual_buffer issues PRESSING command to right_index_fingertip_pad for Klein frame KF-1-6.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1820,8 +1820,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives enter_key as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1835,8 +1835,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1850,8 +1850,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1865,8 +1865,8 @@
                     "targetObjectName": "ManualBuffer",
                     "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-1-7.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1880,8 +1880,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives enter_key as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1895,8 +1895,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1910,8 +1910,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1925,8 +1925,8 @@
                     "targetObjectName": "ManualBuffer",
                     "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-1-8.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1940,8 +1940,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives p_key as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1955,8 +1955,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes p_key signal using production_memory typing-parameter-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1970,8 +1970,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for p_key.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -1985,8 +1985,8 @@
                     "targetObjectName": "IntentionalModule",
                     "description": "intentional_module directs frontal_lobe of Marketing Manager to balance customer satisfaction evidence with pricing judgment through PROCESS",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "IntentionalModule",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2000,8 +2000,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives resource_planning_table as unread_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2015,8 +2015,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes resource_planning_table signal using production_memory erp-table-read-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2030,8 +2030,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for resource_planning_table.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2045,8 +2045,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_module commits KF-4-13 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
                     "expectedDuration": 1.70,
-                    "isCompleted": true,
-                    "completionTime": 1.70,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2060,8 +2060,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives Oracle PeopleSoft as idle_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2075,8 +2075,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes Oracle PeopleSoft signal using production_memory peoplesoft-computation-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2090,8 +2090,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for Oracle PeopleSoft.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2105,8 +2105,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_module commits KF-4-15 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
                     "expectedDuration": 120.00,
-                    "isCompleted": true,
-                    "completionTime": 120.00,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2120,8 +2120,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives enter_key as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2135,8 +2135,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2150,8 +2150,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2165,8 +2165,8 @@
                     "targetObjectName": "ManualBuffer",
                     "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-4-18.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2180,8 +2180,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives enter_key as unpressed_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2195,8 +2195,8 @@
                     "targetObjectName": "RetrievalBuffer",
                     "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "RetrievalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2210,8 +2210,8 @@
                     "targetObjectName": "ImaginalBuffer",
                     "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ImaginalBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2225,8 +2225,8 @@
                     "targetObjectName": "ManualBuffer",
                     "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-4-19.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "ManualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2240,8 +2240,8 @@
                     "targetObjectName": "VisualBuffer",
                     "description": "visual_buffer perceives analytics_panel as unread_0.",
                     "expectedDuration": 0.05,
-                    "isCompleted": true,
-                    "completionTime": 0.05,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "currentCognitiveState": "VisualBuffer",
                     "requiredSkillCodes": [],
                     "skillsLearned": []
@@ -2253,19 +2253,22 @@
       "zoneIndex": 0,
       "agentId": "P1",
       "scope": "physical",
-      "allPhysicalComplete": true,
+      "allPhysicalComplete": false,
       "comparison": {
-        "pass": true,
-        "matched": 12,
+        "pass": false,
+        "matched": 1,
         "total": 12,
-        "missing": 0,
+        "missing": 11,
         "extra": 0,
         "orderMatch": true,
-        "coverage": 1.000,
-        "textSimilarity": 1.000,
+        "coverage": 0.083,
+        "textSimilarity": 0.649,
+        "completeParagraphSimilarity": 0.000,
+        "strictCompleteParagraphSimilarity": 0.000,
         "meanStepNarrativeSimilarity": 1.000,
-        "timedSteps": 12,
-        "meanAbsTimingDeltaMs": 7327.3
+        "meanStepNarrativeSimilarityStrict": 0.903,
+        "timedSteps": 1,
+        "meanAbsTimingDeltaMs": 995.0
       },
       "predicted": {
         "complete": "Over 2.00 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.74 z=-13.25, and the desktop surface changed from clear to supporting. Then, over 0.10 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.80 z=-13.46 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Next, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.28 y=0.80 z=-13.54 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.80 z=-13.57 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over 0.08 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 0.08 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over 0.14 seconds, it pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled. Over 0.10 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Then, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
@@ -2402,15 +2405,15 @@
         ]
       },
       "actual": {
-        "complete": "Over 2.89 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.05 z=-14.65, and the desktop surface changed from clear to supporting. Then, over 50.64 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Next, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed.  over 3.40 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over 3.40 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 3.40 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over 3.41 seconds, it pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.72 y=0.15 z=-14.75 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled.  over 6.80 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Then, over 3.41 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
+        "complete": "",
         "chunks": [
           {
             "subTaskId": "st_1",
             "stepLabel": "Analyze Pricing Strategy Data using SAP software",
-            "completed": true,
-            "completedSteps": 4,
+            "completed": false,
+            "completedSteps": 1,
             "totalSteps": 4,
-            "narrative": "Over 2.89 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.05 z=-14.65, and the desktop surface changed from clear to supporting. Then, over 50.64 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Next, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
+            "narrative": "",
             "steps": [
               {
                 "physical_step_id": "t01_phy_s01",
@@ -2419,178 +2422,809 @@
                 "state_after": "supporting",
                 "rig_bone": "mixamorig:Spine2",
                 "worldPos": "(0.00,0.05,-14.65)",
-                "durationMs": 2888,
+                "durationMs": 2995,
                 "expectedDurationMs": 2000,
-                "deltaMs": 888,
+                "deltaMs": 995,
                 "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 2.89 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.05 z=-14.65, and the desktop surface changed from clear to supporting."
-              },
-              {
-                "physical_step_id": "t01_phy_s02",
-                "object": "left_mouse_button",
-                "state_before": "unpressed",
-                "state_after": "pressed",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.55,0.20,-14.73)",
-                "durationMs": 50643,
-                "expectedDurationMs": 100,
-                "deltaMs": 50543,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 50.64 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed."
-              },
-              {
-                "physical_step_id": "t01_phy_s03",
-                "object": "enter_key",
-                "state_before": "unpressed",
-                "state_after": "pressed",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.47,0.12,-14.51)",
-                "durationMs": 3400,
-                "expectedDurationMs": 90,
-                "deltaMs": 3310,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
-              },
-              {
-                "physical_step_id": "t01_phy_s04",
-                "object": "enter_key",
-                "state_before": "unpressed",
-                "state_after": "pressed",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.47,0.12,-14.51)",
-                "durationMs": 3401,
-                "expectedDurationMs": 90,
-                "deltaMs": 3311,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+                "step_narrative": "Over 2.99 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.05 z=-14.65, and the desktop surface changed from clear to supporting."
               }
             ]
           },
           {
             "subTaskId": "st_2",
             "stepLabel": "Evaluate Pricing Strategy Data using SAP software",
-            "completed": true,
-            "completedSteps": 4,
+            "completed": false,
+            "completedSteps": 0,
             "totalSteps": 4,
-            "narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over 3.40 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 3.40 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over 3.41 seconds, it pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.72 y=0.15 z=-14.75 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled.",
+            "narrative": "",
             "steps": [
-              {
-                "physical_step_id": "t01_phy_s05",
-                "object": "p_key",
-                "state_before": "unpressed",
-                "state_after": "pressed",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.30,0.12,-14.52)",
-                "durationMs": 3396,
-                "expectedDurationMs": 80,
-                "deltaMs": 3316,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed."
-              },
-              {
-                "physical_step_id": "t01_phy_s06",
-                "object": "p_key",
-                "state_before": "unpressed",
-                "state_after": "pressed",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.30,0.12,-14.52)",
-                "durationMs": 3400,
-                "expectedDurationMs": 80,
-                "deltaMs": 3320,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed."
-              },
-              {
-                "physical_step_id": "t01_phy_s07",
-                "object": "p_key",
-                "state_before": "unpressed",
-                "state_after": "pressed",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.30,0.12,-14.52)",
-                "durationMs": 3400,
-                "expectedDurationMs": 80,
-                "deltaMs": 3320,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed."
-              },
-              {
-                "physical_step_id": "t01_phy_s08",
-                "object": "scroll_wheel",
-                "state_before": "stationary",
-                "state_after": "scrolled",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.72,0.15,-14.75)",
-                "durationMs": 3413,
-                "expectedDurationMs": 140,
-                "deltaMs": 3273,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 3.41 seconds, the P1 physical agent (Marketing Manager) pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.72 y=0.15 z=-14.75 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled."
-              }
             ]
           },
           {
             "subTaskId": "st_4",
             "stepLabel": "Analyze Pricing Strategy Data using Oracle PeopleSoft",
-            "completed": true,
-            "completedSteps": 4,
+            "completed": false,
+            "completedSteps": 0,
             "totalSteps": 4,
-            "narrative": "Over 6.80 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Then, over 3.41 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
+            "narrative": "",
             "steps": [
-              {
-                "physical_step_id": "t01_phy_s09",
-                "object": "left_mouse_button",
-                "state_before": "unpressed",
-                "state_after": "pressed",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.55,0.20,-14.73)",
-                "durationMs": 6801,
-                "expectedDurationMs": 100,
-                "deltaMs": 6701,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 6.80 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed."
-              },
-              {
-                "physical_step_id": "t01_phy_s10",
-                "object": "enter_key",
-                "state_before": "unpressed",
-                "state_after": "pressed",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.47,0.12,-14.51)",
-                "durationMs": 3411,
-                "expectedDurationMs": 90,
-                "deltaMs": 3321,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 3.41 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
-              },
-              {
-                "physical_step_id": "t01_phy_s11",
-                "object": "enter_key",
-                "state_before": "unpressed",
-                "state_after": "pressed",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.47,0.12,-14.51)",
-                "durationMs": 3403,
-                "expectedDurationMs": 90,
-                "deltaMs": 3313,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
-              },
-              {
-                "physical_step_id": "t01_phy_s12",
-                "object": "enter_key",
-                "state_before": "unpressed",
-                "state_after": "pressed",
-                "rig_bone": "mixamorig:RightHandIndex4_end",
-                "worldPos": "(0.47,0.12,-14.51)",
-                "durationMs": 3402,
-                "expectedDurationMs": 90,
-                "deltaMs": 3312,
-                "narrativeSimilarity": 1.000,
-                "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
-              }
             ]
           }
         ]
       }
+    },
+    "identityStatement": {
+      "agentId": "P1",
+      "agent": "Marketing Manager",
+      "allPhysicalComplete": false,
+      "comparison": {
+        "pass": false,
+        "objectsExpected": 5,
+        "objectsMatched": 1,
+        "objectsMissing": 4,
+        "objectsExtra": 0,
+        "transitionMismatches": 0,
+        "coverage": 0.200,
+        "overviewStatementSimilarity": 0.600,
+        "meanSubTaskStatementSimilarity": 0.288,
+        "subTasksExpected": 3,
+        "subTasksComplete": 0
+      },
+      "predicted": [
+        {
+          "id": "overview",
+          "scope": "task",
+          "sub_task_id": "",
+          "status": "finalized",
+          "agentId": "P1",
+          "agent": "Marketing Manager",
+          "occupation": "Marketing Managers",
+          "statement": "The P1 physical agent (Marketing Manager) completed 3 physical sub-tasks, changing 5 objects: desktop_surface from clear to supporting; left_mouse_button from unpressed to pressed; enter_key from unpressed to pressed; p_key from unpressed to pressed; scroll_wheel from stationary to scrolled.",
+          "environment_state_changes": [
+            {
+              "object": "desktop_surface",
+              "parent": "office desk",
+              "parentId": "scene_008",
+              "from": "clear",
+              "to": "supporting",
+              "physical_step_ids": ["t01_phy_s01"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s01",
+                  "seq": 1,
+                  "from": "clear",
+                  "to": "supporting"
+                }
+              ]
+            },
+            {
+              "object": "enter_key",
+              "parent": "computer keyboard",
+              "parentId": "scene_006",
+              "from": "unpressed",
+              "to": "pressed",
+              "physical_step_ids": ["t01_phy_s03", "t01_phy_s04", "t01_phy_s10", "t01_phy_s11", "t01_phy_s12"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s03",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s04",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s10",
+                  "seq": 3,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s11",
+                  "seq": 4,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s12",
+                  "seq": 5,
+                  "from": "unpressed",
+                  "to": "pressed"
+                }
+              ]
+            },
+            {
+              "object": "left_mouse_button",
+              "parent": "computer mouse",
+              "parentId": "scene_007",
+              "from": "unpressed",
+              "to": "pressed",
+              "physical_step_ids": ["t01_phy_s02", "t01_phy_s09"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s02",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s09",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": "pressed"
+                }
+              ]
+            },
+            {
+              "object": "p_key",
+              "parent": "computer keyboard",
+              "parentId": "scene_006",
+              "from": "unpressed",
+              "to": "pressed",
+              "physical_step_ids": ["t01_phy_s05", "t01_phy_s06", "t01_phy_s07"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s05",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s06",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s07",
+                  "seq": 3,
+                  "from": "unpressed",
+                  "to": "pressed"
+                }
+              ]
+            },
+            {
+              "object": "scroll_wheel",
+              "parent": "computer mouse",
+              "parentId": "scene_007",
+              "from": "stationary",
+              "to": "scrolled",
+              "physical_step_ids": ["t01_phy_s08"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s08",
+                  "seq": 1,
+                  "from": "stationary",
+                  "to": "scrolled"
+                }
+              ]
+            }
+          ],
+          "physical_step_ids": ["t01_phy_s01", "t01_phy_s03", "t01_phy_s04", "t01_phy_s10", "t01_phy_s11", "t01_phy_s12", "t01_phy_s02", "t01_phy_s09", "t01_phy_s05", "t01_phy_s06", "t01_phy_s07", "t01_phy_s08"],
+          "duration_ms": 254520
+        },
+        {
+          "id": "st_1",
+          "scope": "sub_task",
+          "sub_task_id": "1",
+          "status": "finalized",
+          "agentId": "P1",
+          "agent": "Marketing Manager",
+          "step_label": "Analyze Pricing Strategy Data using SAP software",
+          "statement": "The P1 physical agent (Marketing Manager) completed 'Analyze Pricing Strategy Data using SAP software', changing 3 object(s): desktop_surface from clear to supporting; left_mouse_button from unpressed to pressed; enter_key from unpressed to pressed.",
+          "environment_state_changes": [
+            {
+              "object": "desktop_surface",
+              "parent": "office desk",
+              "parentId": "scene_008",
+              "from": "clear",
+              "to": "supporting",
+              "physical_step_ids": ["t01_phy_s01"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s01",
+                  "seq": 1,
+                  "from": "clear",
+                  "to": "supporting"
+                }
+              ]
+            },
+            {
+              "object": "enter_key",
+              "parent": "computer keyboard",
+              "parentId": "scene_006",
+              "from": "unpressed",
+              "to": "pressed",
+              "physical_step_ids": ["t01_phy_s03", "t01_phy_s04"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s03",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s04",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": "pressed"
+                }
+              ]
+            },
+            {
+              "object": "left_mouse_button",
+              "parent": "computer mouse",
+              "parentId": "scene_007",
+              "from": "unpressed",
+              "to": "pressed",
+              "physical_step_ids": ["t01_phy_s02"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s02",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": "pressed"
+                }
+              ]
+            }
+          ],
+          "physical_step_ids": ["t01_phy_s01", "t01_phy_s03", "t01_phy_s04", "t01_phy_s02"],
+          "duration_ms": 122950
+        },
+        {
+          "id": "st_2",
+          "scope": "sub_task",
+          "sub_task_id": "2",
+          "status": "finalized",
+          "agentId": "P1",
+          "agent": "Marketing Manager",
+          "step_label": "Evaluate Pricing Strategy Data using SAP software",
+          "statement": "The P1 physical agent (Marketing Manager) completed 'Evaluate Pricing Strategy Data using SAP software', changing 2 object(s): p_key from unpressed to pressed; scroll_wheel from stationary to scrolled.",
+          "environment_state_changes": [
+            {
+              "object": "p_key",
+              "parent": "computer keyboard",
+              "parentId": "scene_006",
+              "from": "unpressed",
+              "to": "pressed",
+              "physical_step_ids": ["t01_phy_s05", "t01_phy_s06", "t01_phy_s07"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s05",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s06",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s07",
+                  "seq": 3,
+                  "from": "unpressed",
+                  "to": "pressed"
+                }
+              ]
+            },
+            {
+              "object": "scroll_wheel",
+              "parent": "computer mouse",
+              "parentId": "scene_007",
+              "from": "stationary",
+              "to": "scrolled",
+              "physical_step_ids": ["t01_phy_s08"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s08",
+                  "seq": 1,
+                  "from": "stationary",
+                  "to": "scrolled"
+                }
+              ]
+            }
+          ],
+          "physical_step_ids": ["t01_phy_s05", "t01_phy_s06", "t01_phy_s07", "t01_phy_s08"],
+          "duration_ms": 4440
+        },
+        {
+          "id": "st_4",
+          "scope": "sub_task",
+          "sub_task_id": "4",
+          "status": "finalized",
+          "agentId": "P1",
+          "agent": "Marketing Manager",
+          "step_label": "Analyze Pricing Strategy Data using Oracle PeopleSoft",
+          "statement": "The P1 physical agent (Marketing Manager) completed 'Analyze Pricing Strategy Data using Oracle PeopleSoft', changing 2 object(s): left_mouse_button from unpressed to pressed; enter_key from unpressed to pressed.",
+          "environment_state_changes": [
+            {
+              "object": "enter_key",
+              "parent": "computer keyboard",
+              "parentId": "scene_006",
+              "from": "unpressed",
+              "to": "pressed",
+              "physical_step_ids": ["t01_phy_s10", "t01_phy_s11", "t01_phy_s12"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s10",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s11",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": "pressed"
+                },
+                {
+                  "physical_step_id": "t01_phy_s12",
+                  "seq": 3,
+                  "from": "unpressed",
+                  "to": "pressed"
+                }
+              ]
+            },
+            {
+              "object": "left_mouse_button",
+              "parent": "computer mouse",
+              "parentId": "scene_007",
+              "from": "unpressed",
+              "to": "pressed",
+              "physical_step_ids": ["t01_phy_s09"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s09",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": "pressed"
+                }
+              ]
+            }
+          ],
+          "physical_step_ids": ["t01_phy_s10", "t01_phy_s11", "t01_phy_s12", "t01_phy_s09"],
+          "duration_ms": 122570
+        }
+      ],
+      "actual": [
+        {
+          "id": "overview",
+          "scope": "task",
+          "sub_task_id": "",
+          "status": "finalized",
+          "agentId": "P1",
+          "agent": "Marketing Manager",
+          "occupation": "Marketing Managers",
+          "completed": false,
+          "completedObjects": 1,
+          "totalObjects": 5,
+          "statementSimilarity": 0.600,
+          "statement": "The P1 physical agent (Marketing Manager) completed 0 sub-task(s), changing 1 object(s): desktop_surface from clear to supporting.",
+          "environment_state_changes": [
+            {
+              "object": "desktop_surface",
+              "parent": "office desk",
+              "parentId": "scene_008",
+              "from": "clear",
+              "to": "supporting",
+              "finalState": "supporting",
+              "durationMs": 2995,
+              "physical_step_ids": ["t01_phy_s01"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s01",
+                  "seq": 1,
+                  "from": "clear",
+                  "to": "supporting",
+                  "completed": true,
+                  "contactVerified": true,
+                  "durationMs": 2995
+                }
+              ]
+            },
+            {
+              "object": "enter_key",
+              "parent": "computer keyboard",
+              "parentId": "scene_006",
+              "from": "unpressed",
+              "to": null,
+              "finalState": "unpressed",
+              "durationMs": null,
+              "physical_step_ids": ["t01_phy_s03", "t01_phy_s04", "t01_phy_s10", "t01_phy_s11", "t01_phy_s12"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s03",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s04",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s10",
+                  "seq": 3,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s11",
+                  "seq": 4,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s12",
+                  "seq": 5,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                }
+              ]
+            },
+            {
+              "object": "left_mouse_button",
+              "parent": "computer mouse",
+              "parentId": "scene_007",
+              "from": "unpressed",
+              "to": null,
+              "finalState": "unpressed",
+              "durationMs": null,
+              "physical_step_ids": ["t01_phy_s02", "t01_phy_s09"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s02",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s09",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                }
+              ]
+            },
+            {
+              "object": "p_key",
+              "parent": "computer keyboard",
+              "parentId": "scene_006",
+              "from": "unpressed",
+              "to": null,
+              "finalState": "unpressed",
+              "durationMs": null,
+              "physical_step_ids": ["t01_phy_s05", "t01_phy_s06", "t01_phy_s07"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s05",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s06",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s07",
+                  "seq": 3,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                }
+              ]
+            },
+            {
+              "object": "scroll_wheel",
+              "parent": "computer mouse",
+              "parentId": "scene_007",
+              "from": "stationary",
+              "to": null,
+              "finalState": "stationary",
+              "durationMs": null,
+              "physical_step_ids": ["t01_phy_s08"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s08",
+                  "seq": 1,
+                  "from": "stationary",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                }
+              ]
+            }
+          ],
+          "physical_step_ids": ["t01_phy_s01", "t01_phy_s03", "t01_phy_s04", "t01_phy_s10", "t01_phy_s11", "t01_phy_s12", "t01_phy_s02", "t01_phy_s09", "t01_phy_s05", "t01_phy_s06", "t01_phy_s07", "t01_phy_s08"],
+          "duration_ms": 2995
+        },
+        {
+          "id": "st_1",
+          "scope": "sub_task",
+          "sub_task_id": "1",
+          "status": "finalized",
+          "agentId": "P1",
+          "agent": "Marketing Manager",
+          "step_label": "Analyze Pricing Strategy Data using SAP software",
+          "completed": false,
+          "completedObjects": 1,
+          "totalObjects": 3,
+          "statementSimilarity": 0.863,
+          "statement": "The P1 physical agent (Marketing Manager) completed 'Analyze Pricing Strategy Data using SAP software', changing 1 object(s): desktop_surface from clear to supporting.",
+          "environment_state_changes": [
+            {
+              "object": "desktop_surface",
+              "parent": "office desk",
+              "parentId": "scene_008",
+              "from": "clear",
+              "to": "supporting",
+              "finalState": "supporting",
+              "durationMs": 2995,
+              "physical_step_ids": ["t01_phy_s01"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s01",
+                  "seq": 1,
+                  "from": "clear",
+                  "to": "supporting",
+                  "completed": true,
+                  "contactVerified": true,
+                  "durationMs": 2995
+                }
+              ]
+            },
+            {
+              "object": "enter_key",
+              "parent": "computer keyboard",
+              "parentId": "scene_006",
+              "from": "unpressed",
+              "to": null,
+              "finalState": "unpressed",
+              "durationMs": null,
+              "physical_step_ids": ["t01_phy_s03", "t01_phy_s04"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s03",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s04",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                }
+              ]
+            },
+            {
+              "object": "left_mouse_button",
+              "parent": "computer mouse",
+              "parentId": "scene_007",
+              "from": "unpressed",
+              "to": null,
+              "finalState": "unpressed",
+              "durationMs": null,
+              "physical_step_ids": ["t01_phy_s02"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s02",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                }
+              ]
+            }
+          ],
+          "physical_step_ids": ["t01_phy_s01", "t01_phy_s03", "t01_phy_s04", "t01_phy_s02"],
+          "duration_ms": 2995
+        },
+        {
+          "id": "st_2",
+          "scope": "sub_task",
+          "sub_task_id": "2",
+          "status": "finalized",
+          "agentId": "P1",
+          "agent": "Marketing Manager",
+          "step_label": "Evaluate Pricing Strategy Data using SAP software",
+          "completed": false,
+          "completedObjects": 0,
+          "totalObjects": 2,
+          "statementSimilarity": 0.000,
+          "statement": "",
+          "environment_state_changes": [
+            {
+              "object": "p_key",
+              "parent": "computer keyboard",
+              "parentId": "scene_006",
+              "from": "unpressed",
+              "to": null,
+              "finalState": "unpressed",
+              "durationMs": null,
+              "physical_step_ids": ["t01_phy_s05", "t01_phy_s06", "t01_phy_s07"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s05",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s06",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s07",
+                  "seq": 3,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                }
+              ]
+            },
+            {
+              "object": "scroll_wheel",
+              "parent": "computer mouse",
+              "parentId": "scene_007",
+              "from": "stationary",
+              "to": null,
+              "finalState": "stationary",
+              "durationMs": null,
+              "physical_step_ids": ["t01_phy_s08"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s08",
+                  "seq": 1,
+                  "from": "stationary",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                }
+              ]
+            }
+          ],
+          "physical_step_ids": ["t01_phy_s05", "t01_phy_s06", "t01_phy_s07", "t01_phy_s08"],
+          "duration_ms": null
+        },
+        {
+          "id": "st_4",
+          "scope": "sub_task",
+          "sub_task_id": "4",
+          "status": "finalized",
+          "agentId": "P1",
+          "agent": "Marketing Manager",
+          "step_label": "Analyze Pricing Strategy Data using Oracle PeopleSoft",
+          "completed": false,
+          "completedObjects": 0,
+          "totalObjects": 2,
+          "statementSimilarity": 0.000,
+          "statement": "",
+          "environment_state_changes": [
+            {
+              "object": "enter_key",
+              "parent": "computer keyboard",
+              "parentId": "scene_006",
+              "from": "unpressed",
+              "to": null,
+              "finalState": "unpressed",
+              "durationMs": null,
+              "physical_step_ids": ["t01_phy_s10", "t01_phy_s11", "t01_phy_s12"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s10",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s11",
+                  "seq": 2,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                },
+                {
+                  "physical_step_id": "t01_phy_s12",
+                  "seq": 3,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                }
+              ]
+            },
+            {
+              "object": "left_mouse_button",
+              "parent": "computer mouse",
+              "parentId": "scene_007",
+              "from": "unpressed",
+              "to": null,
+              "finalState": "unpressed",
+              "durationMs": null,
+              "physical_step_ids": ["t01_phy_s09"],
+              "updates": [
+                {
+                  "physical_step_id": "t01_phy_s09",
+                  "seq": 1,
+                  "from": "unpressed",
+                  "to": null,
+                  "completed": false,
+                  "contactVerified": false,
+                  "durationMs": null
+                }
+              ]
+            }
+          ],
+          "physical_step_ids": ["t01_phy_s10", "t01_phy_s11", "t01_phy_s12", "t01_phy_s09"],
+          "duration_ms": null
+        }
+      ]
     }
 }

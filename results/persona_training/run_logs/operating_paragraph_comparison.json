@@ -1,0 +1,346 @@
+{
+  "zoneIndex": 0,
+  "agentId": "P1",
+  "scope": "physical",
+  "allPhysicalComplete": true,
+  "comparison": {
+    "pass": true,
+    "matched": 12,
+    "total": 12,
+    "missing": 0,
+    "extra": 0,
+    "orderMatch": true,
+    "coverage": 1.000,
+    "textSimilarity": 1.000,
+    "strictTextSimilarity": 0.760,
+    "meanStepNarrativeSimilarity": 1.000,
+    "meanStepNarrativeSimilarityStrict": 0.895,
+    "timedSteps": 12,
+    "meanAbsTimingDeltaMs": 7246.0
+  },
+  "predicted": {
+    "complete": "Over 2.00 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.74 z=-13.25, and the desktop surface changed from clear to supporting. Then, over 0.10 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.80 z=-13.46 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Next, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.28 y=0.80 z=-13.54 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.80 z=-13.57 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over 0.08 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 0.08 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over 0.14 seconds, it pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled. Over 0.10 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Then, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
+    "chunks": [
+      {
+        "subTaskId": "st_1",
+        "stepLabel": "Analyze Pricing Strategy Data using SAP software",
+        "narrative": "Over 2.00 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.74 z=-13.25, and the desktop surface changed from clear to supporting. Then, over 0.10 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.80 z=-13.46 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Next, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.28 y=0.80 z=-13.54 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.80 z=-13.57 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
+        "steps": [
+          {
+            "physical_step_id": "t01_phy_s01",
+            "object": "desktop_surface",
+            "state_before": "clear",
+            "state_after": "supporting",
+            "rig_bone": "mixamorig:Spine2",
+            "duration_ms": 2000,
+            "step_narrative": "Over 2.00 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.74 z=-13.25, and the desktop surface changed from clear to supporting."
+          },
+          {
+            "physical_step_id": "t01_phy_s02",
+            "object": "left_mouse_button",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 100,
+            "step_narrative": "Over 0.10 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.80 z=-13.46 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s03",
+            "object": "enter_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 90,
+            "step_narrative": "Over 0.09 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.28 y=0.80 z=-13.54 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s04",
+            "object": "enter_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 90,
+            "step_narrative": "Over 0.09 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.80 z=-13.57 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+          }
+        ]
+      },
+      {
+        "subTaskId": "st_2",
+        "stepLabel": "Evaluate Pricing Strategy Data using SAP software",
+        "narrative": "Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over 0.08 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 0.08 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over 0.14 seconds, it pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled.",
+        "steps": [
+          {
+            "physical_step_id": "t01_phy_s05",
+            "object": "p_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 80,
+            "step_narrative": "Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s06",
+            "object": "p_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 80,
+            "step_narrative": "Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s07",
+            "object": "p_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 80,
+            "step_narrative": "Over 0.08 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the p key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s08",
+            "object": "scroll_wheel",
+            "state_before": "stationary",
+            "state_after": "scrolled",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 140,
+            "step_narrative": "Over 0.14 seconds, the P1 physical agent (Marketing Manager) pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled."
+          }
+        ]
+      },
+      {
+        "subTaskId": "st_4",
+        "stepLabel": "Analyze Pricing Strategy Data using Oracle PeopleSoft",
+        "narrative": "Over 0.10 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Then, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 0.09 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
+        "steps": [
+          {
+            "physical_step_id": "t01_phy_s09",
+            "object": "left_mouse_button",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 100,
+            "step_narrative": "Over 0.10 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.22 y=0.75 z=0.40 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s10",
+            "object": "enter_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 90,
+            "step_narrative": "Over 0.09 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s11",
+            "object": "enter_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 90,
+            "step_narrative": "Over 0.09 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s12",
+            "object": "enter_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "duration_ms": 90,
+            "step_narrative": "Over 0.09 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.00 y=0.75 z=0.38 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+          }
+        ]
+      }
+    ]
+  },
+  "actual": {
+    "complete": "Over 3.02 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.05 z=-14.65, and the desktop surface changed from clear to supporting. Then, over 29.08 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Next, over 3.41 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 10.24 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed.  over 3.40 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over 3.41 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 3.40 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over 17.02 seconds, it pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.72 y=0.15 z=-14.75 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled.  over 3.40 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Then, over 6.81 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
+    "chunks": [
+      {
+        "subTaskId": "st_1",
+        "stepLabel": "Analyze Pricing Strategy Data using SAP software",
+        "completed": true,
+        "completedSteps": 4,
+        "totalSteps": 4,
+        "narrative": "Over 3.02 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.05 z=-14.65, and the desktop surface changed from clear to supporting. Then, over 29.08 seconds, it pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Next, over 3.41 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 10.24 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
+        "steps": [
+          {
+            "physical_step_id": "t01_phy_s01",
+            "object": "desktop_surface",
+            "state_before": "clear",
+            "state_after": "supporting",
+            "rig_bone": "mixamorig:Spine2",
+            "worldPos": "(0.00,0.05,-14.65)",
+            "durationMs": 3017,
+            "expectedDurationMs": 2000,
+            "deltaMs": 1017,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 3.02 seconds, the P1 physical agent (Marketing Manager) rested its torso (rig bone mixamorig:Spine2) on the desktop surface at x=0.00 y=0.05 z=-14.65, and the desktop surface changed from clear to supporting."
+          },
+          {
+            "physical_step_id": "t01_phy_s02",
+            "object": "left_mouse_button",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.55,0.20,-14.73)",
+            "durationMs": 29078,
+            "expectedDurationMs": 100,
+            "deltaMs": 28978,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 29.08 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s03",
+            "object": "enter_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.47,0.12,-14.51)",
+            "durationMs": 3409,
+            "expectedDurationMs": 90,
+            "deltaMs": 3319,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 3.41 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s04",
+            "object": "enter_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.47,0.12,-14.51)",
+            "durationMs": 10241,
+            "expectedDurationMs": 90,
+            "deltaMs": 10151,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 10.24 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+          }
+        ]
+      },
+      {
+        "subTaskId": "st_2",
+        "stepLabel": "Evaluate Pricing Strategy Data using SAP software",
+        "completed": true,
+        "completedSteps": 4,
+        "totalSteps": 4,
+        "narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. Then, over 3.41 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. Next, over 3.40 seconds, it depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed. After that, over 17.02 seconds, it pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.72 y=0.15 z=-14.75 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled.",
+        "steps": [
+          {
+            "physical_step_id": "t01_phy_s05",
+            "object": "p_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.30,0.12,-14.52)",
+            "durationMs": 3400,
+            "expectedDurationMs": 80,
+            "deltaMs": 3320,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s06",
+            "object": "p_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.30,0.12,-14.52)",
+            "durationMs": 3406,
+            "expectedDurationMs": 80,
+            "deltaMs": 3326,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 3.41 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s07",
+            "object": "p_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.30,0.12,-14.52)",
+            "durationMs": 3400,
+            "expectedDurationMs": 80,
+            "deltaMs": 3320,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the p key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.30 y=0.12 z=-14.52 with about 0.3 N of force, and the p key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s08",
+            "object": "scroll_wheel",
+            "state_before": "stationary",
+            "state_after": "scrolled",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.72,0.15,-14.75)",
+            "durationMs": 17019,
+            "expectedDurationMs": 140,
+            "deltaMs": 16879,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 17.02 seconds, the P1 physical agent (Marketing Manager) pressed the scroll wheel with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.72 y=0.15 z=-14.75 with about 0.25 N of force, and the scroll wheel changed from stationary to scrolled."
+          }
+        ]
+      },
+      {
+        "subTaskId": "st_4",
+        "stepLabel": "Analyze Pricing Strategy Data using Oracle PeopleSoft",
+        "completed": true,
+        "completedSteps": 4,
+        "totalSteps": 4,
+        "narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed. Then, over 6.81 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. Next, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed. After that, over 3.40 seconds, it depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed.",
+        "steps": [
+          {
+            "physical_step_id": "t01_phy_s09",
+            "object": "left_mouse_button",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.55,0.20,-14.73)",
+            "durationMs": 3399,
+            "expectedDurationMs": 100,
+            "deltaMs": 3299,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) pressed the left mouse button with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.55 y=0.20 z=-14.73 with about 0.25 N of force, and the left mouse button changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s10",
+            "object": "enter_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.47,0.12,-14.51)",
+            "durationMs": 6811,
+            "expectedDurationMs": 90,
+            "deltaMs": 6721,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 6.81 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s11",
+            "object": "enter_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.47,0.12,-14.51)",
+            "durationMs": 3401,
+            "expectedDurationMs": 90,
+            "deltaMs": 3311,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+          },
+          {
+            "physical_step_id": "t01_phy_s12",
+            "object": "enter_key",
+            "state_before": "unpressed",
+            "state_after": "pressed",
+            "rig_bone": "mixamorig:RightHandIndex4_end",
+            "worldPos": "(0.47,0.12,-14.51)",
+            "durationMs": 3401,
+            "expectedDurationMs": 90,
+            "deltaMs": 3311,
+            "narrativeSimilarity": 1.000,
+            "step_narrative": "Over 3.40 seconds, the P1 physical agent (Marketing Manager) depressed the enter key with its right index fingertip (rig bone mixamorig:RightHandIndex4_end) at x=0.47 y=0.12 z=-14.51 with about 0.3 N of force, and the enter key changed from unpressed to pressed."
+          }
+        ]
+      }
+    ]
+  }
+}

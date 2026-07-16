@@ -72,7 +72,7 @@ namespace BSG.OperatingParagraph
             public bool pass;
             public int matched, total, missing, extra;
             public bool orderMatch;
-            public float coverage, textSim, meanStepSim, meanAbsTimingDeltaMs;
+            public float coverage, textSim, completeSim, meanStepSim, meanAbsTimingDeltaMs;
             public int timedSteps;
             public string predictedComplete = "";
             public string actualComplete = "";   // only when all sub-tasks complete
@@ -257,6 +257,9 @@ namespace BSG.OperatingParagraph
             res.orderMatch = SequenceEqual(actualExpectedSeq, expectedCompletedSeq);
             res.coverage = res.total > 0 ? (float)res.matched / res.total : (actual.Count == 0 ? 1f : 0f);
             res.textSim = OperatingParagraphText.Similarity(actualFlow, res.predictedComplete);
+            // Direct paragraph-vs-paragraph: the assembled actual `complete` (fully-completed sub-tasks) vs the
+            // predicted `complete`. 0 when nothing fully completed; == textSim on a full run.
+            res.completeSim = OperatingParagraphText.Similarity(res.actualComplete, res.predictedComplete);
             res.meanStepSim = simCount > 0 ? simSum / simCount : -1f;
             res.meanAbsTimingDeltaMs = timed > 0 ? totalAbsDeltaMs / timed : -1f;
             res.timedSteps = timed;
@@ -332,10 +335,11 @@ namespace BSG.OperatingParagraph
         static void LogResult(Result res)
         {
             string textSimStr = (res.textSim * 100f).ToString("0.0", CultureInfo.InvariantCulture);
+            string completeSimStr = (res.completeSim * 100f).ToString("0.0", CultureInfo.InvariantCulture);
             string stepSimStr = res.meanStepSim >= 0f ? (res.meanStepSim * 100f).ToString("0.0", CultureInfo.InvariantCulture) + "%" : "-";
             string timingStr = res.meanAbsTimingDeltaMs >= 0f ? $"{res.meanAbsTimingDeltaMs.ToString("0", CultureInfo.InvariantCulture)}ms" : "n/a";
 
-            Debug.Log($"[OperatingParagraph] RESULT Zone {res.zoneIndex} ({res.agentId}): {(res.pass ? "PASS ✅" : "MISMATCH ⚠")} | steps {res.matched}/{res.total} | order {(res.orderMatch ? "MATCH" : "MISMATCH")} | textSim {textSimStr}% | stepSim {stepSimStr} | timing {timingStr} | extra {res.extra} | allPhysicalComplete {res.allPhysicalComplete} → see run_logs/operating_paragraph_comparison.json");
+            Debug.Log($"[OperatingParagraph] RESULT Zone {res.zoneIndex} ({res.agentId}): {(res.pass ? "PASS ✅" : "MISMATCH ⚠")} | steps {res.matched}/{res.total} | order {(res.orderMatch ? "MATCH" : "MISMATCH")} | textSim {textSimStr}% | completeParaSim {completeSimStr}% | stepSim {stepSimStr} | timing {timingStr} | extra {res.extra} | allPhysicalComplete {res.allPhysicalComplete} → see run_logs/operating_paragraph_comparison.json");
 
             string actualShown = !string.IsNullOrEmpty(res.actualComplete) ? res.actualComplete : BuildActualFlowForLog(res);
             Debug.Log($"[OperatingParagraph] Generate Actual Operating Paragraph (Zone {res.zoneIndex}):\n" +
@@ -386,6 +390,7 @@ namespace BSG.OperatingParagraph
             FRaw(sb, i2, "orderMatch", B(res.orderMatch), true);
             FRaw(sb, i2, "coverage", res.coverage.ToString("0.000", CultureInfo.InvariantCulture), true);
             FRaw(sb, i2, "textSimilarity", res.textSim.ToString("0.000", CultureInfo.InvariantCulture), true);
+            FRaw(sb, i2, "completeParagraphSimilarity", res.completeSim.ToString("0.000", CultureInfo.InvariantCulture), true);
             FRaw(sb, i2, "meanStepNarrativeSimilarity", res.meanStepSim >= 0f ? res.meanStepSim.ToString("0.000", CultureInfo.InvariantCulture) : "-1", true);
             FRaw(sb, i2, "timedSteps", res.timedSteps.ToString(CultureInfo.InvariantCulture), true);
             FRaw(sb, i2, "meanAbsTimingDeltaMs", res.meanAbsTimingDeltaMs >= 0f ? res.meanAbsTimingDeltaMs.ToString("0.0", CultureInfo.InvariantCulture) : "-1", false);
