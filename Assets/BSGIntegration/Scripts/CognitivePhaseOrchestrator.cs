@@ -596,6 +596,13 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
             // Flip the live object state to its state_after now the step has completed with verified contact
             // (press/depress can't reach here without KleinFrameExecutor.PressContactAchieved; RESTING is always verified).
             BSG.IdentityStatement.ObjectStateRegistry.ApplyCompletedStep(zoneIndex, step.stepId, contactVerified: true);
+
+            // Mirror the keystroke onto the on-screen virtual keyboard straight from step completion, using the
+            // step's own target meronym (p_key / enter_key). Driven by the completed physical step — NOT by the
+            // operatingParagraph state flip above — so an OP parsing/catalog error can never suppress typing.
+            // Covers both the agent's IK press and P1's hardware key (both reach here). VirtualKeyboard maps the
+            // meronym to text; non-key meronyms (surface, mouse, wheel) map to null and are ignored.
+            WorkstationKeyPressEvents.Raise(step.physicalTarget);
         }
 
         Debug.Log($"[CognitivePhaseOrchestrator] ✅ Step completed: {stepId} | completed={_completedSteps.Count} active={_activeSteps.Count}");
