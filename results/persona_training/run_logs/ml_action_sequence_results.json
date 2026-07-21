@@ -1,5 +1,5 @@
 ﻿{
-    "timestamp": "2026-06-18 11:28:11",
+    "timestamp": "2026-06-18 14:51:58",
     "sceneId": "scene_warehouse_replica_001",
     "mlAgentsRunId": "persona_training",
     "type": "ML_Action_Sequence_Results",
@@ -21,9 +21,9 @@
                 "currentStepIndex": 0
             },
             "skillsSummary": {
-                "skillLevel": 1.0,
+                "skillLevel": 13.0,
                 "desireLevel": 100.0,
-                "skillPercentage": 1.00,
+                "skillPercentage": 13.00,
                 "learnedSkillsCount": 0,
                 "learnedSkills": []
             },
@@ -458,9 +458,9 @@
                 "totalEpisodes": 0,
                 "totalReward": 0.00,
                 "averageRewardPerEpisode": 0.00,
-                "completedSteps": 1,
+                "completedSteps": 13,
                 "totalSteps": 105,
-                "completionPercentage": 0.95,
+                "completionPercentage": 12.38,
                 "sequenceCompleted": false,
                 "currentStepIndex": 0
             },
@@ -505,9 +505,9 @@
                     },
                     "expectedDuration": 2.00,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": [],
@@ -526,9 +526,9 @@
                     },
                     "expectedDuration": 2.00,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": [],
@@ -547,9 +547,9 @@
                     },
                     "expectedDuration": 3.00,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 3.00,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": [],
@@ -568,9 +568,9 @@
                     },
                     "expectedDuration": 2.00,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": [],
@@ -589,9 +589,9 @@
                     },
                     "expectedDuration": 0.10,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": [],
@@ -610,9 +610,9 @@
                     },
                     "expectedDuration": 0.10,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": [],
@@ -631,9 +631,9 @@
                     },
                     "expectedDuration": 0.10,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": [],
@@ -652,9 +652,9 @@
                     },
                     "expectedDuration": 0.10,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": ["critical_thinking"],
@@ -673,9 +673,9 @@
                     },
                     "expectedDuration": 0.10,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": ["technology_design"],
@@ -694,9 +694,9 @@
                     },
                     "expectedDuration": 0.10,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": [],
@@ -715,9 +715,9 @@
                     },
                     "expectedDuration": 0.10,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": [],
@@ -736,9 +736,9 @@
                     },
                     "expectedDuration": 0.10,
                     "executionStatus": {
-                        "isCompleted": false,
-                        "completionTime": 0.00,
-                        "timeEfficiency": 0.00
+                        "isCompleted": true,
+                        "completionTime": 0.10,
+                        "timeEfficiency": 100.00
                     },
                     "skills": {
                         "required": [],

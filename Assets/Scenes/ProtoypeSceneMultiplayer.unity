@@ -38644,6 +38644,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e8f1a29b3d4e6f8a0c2d5e7b9f1a3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MultiplayerRagZone0Anchor
+  enableZone0LocomotionTraining: 1
+  enableMlTrainingForCognitiveAgents: 0
   wallInteriorMargin: 1
   maxLayoutScale: 0.46
   fitMargin: 0.95

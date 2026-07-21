@@ -75,32 +75,51 @@ public static class PlayerRagPhysicalBridge
         return null;
     }
 
+    static bool IsZone0LocomotionTrainingActive() => BsgIntegrationSettings.Zone0LocomotionTrainingActive;
+
     static bool TryBindPlayer(PlayerMovement playerMovement, MonoBehaviour host)
     {
         if (playerMovement == null || IsBound)
             return false;
 
+        bool locomotion = IsZone0LocomotionTrainingActive();
         GameObject playerGo = playerMovement.gameObject;
-        AgentGroundMotor motor = PlayerRagPhysicalAgentSetup.Configure(playerGo, ZoneIndex);
-        playerMovement.EnableRagGroundMotorMovement(motor);
-        HandRotationManager.EnsureOnAgent(playerGo)?.RefreshRigWire();
+
+        if (!locomotion)
+        {
+            AgentGroundMotor motor = PlayerRagPhysicalAgentSetup.Configure(playerGo, ZoneIndex);
+            playerMovement.EnableRagGroundMotorMovement(motor);
+            HandRotationManager.EnsureOnAgent(playerGo)?.RefreshRigWire();
+        }
+        else
+        {
+            DesignatedPhysicalPlayerAppearance.ApplyScale(playerGo.transform);
+        }
 
         RagSequenceAgentMover existingMover = playerGo.GetComponent<RagSequenceAgentMover>();
         if (existingMover != null)
         {
             existingMover.hostPlayerMovement = true;
-            KleinFrameExecutor kleinExisting = KleinFrameExecutor.EnsureOnAgent(playerGo, ZoneIndex);
-            string ragTextExisting = ResolveActiveRagJsonText();
-            if (kleinExisting != null)
+            if (locomotion)
             {
-                kleinExisting.BootstrapFromRagText(ragTextExisting);
-                existingMover.BindKleinFrameExecutor(kleinExisting, ragTextExisting);
+                existingMover.DetachForLocomotion();
+            }
+            else
+            {
+                KleinFrameExecutor kleinExisting = KleinFrameExecutor.EnsureOnAgent(playerGo, ZoneIndex);
+                string ragTextExisting = ResolveActiveRagJsonText();
+                if (kleinExisting != null)
+                {
+                    kleinExisting.BootstrapFromRagText(ragTextExisting);
+                    existingMover.BindKleinFrameExecutor(kleinExisting, ragTextExisting);
+                }
             }
 
             IsBound = true;
             BoundMover = existingMover;
             ApplyDesignatedPlayerNavTuning(existingMover);
-            existingMover.RefreshHostPlayerGroundMotor();
+            if (!locomotion)
+                existingMover.RefreshHostPlayerGroundMotor();
             RagPhysicalAgentLocalMode.ApplyForLocalClient(playerMovement);
             host.StartCoroutine(FinalizeBindAfterMoverStart(existingMover));
             return true;
@@ -119,21 +138,31 @@ public static class PlayerRagPhysicalBridge
         mover.moveSpeed = moveSpeed;
         mover.mentalLeaderAgentId = ResolveZone0MentalLeaderId();
 
-        HandRotationManager.EnsureOnAgent(playerGo);
-
-        KleinFrameExecutor kleinExec = KleinFrameExecutor.EnsureOnAgent(playerGo, ZoneIndex);
-        string ragText = ResolveActiveRagJsonText();
-        if (kleinExec != null)
+        if (locomotion)
         {
-            kleinExec.BootstrapFromRagText(ragText);
-            mover.BindKleinFrameExecutor(kleinExec, ragText);
+            mover.DetachForLocomotion();
+        }
+        else
+        {
+            HandRotationManager.EnsureOnAgent(playerGo);
+
+            KleinFrameExecutor kleinExec = KleinFrameExecutor.EnsureOnAgent(playerGo, ZoneIndex);
+            string ragText = ResolveActiveRagJsonText();
+            if (kleinExec != null)
+            {
+                kleinExec.BootstrapFromRagText(ragText);
+                mover.BindKleinFrameExecutor(kleinExec, ragText);
+            }
         }
 
         IsBound = true;
         BoundMover = mover;
-        mover.RefreshHostPlayerGroundMotor();
+        if (!locomotion)
+            mover.RefreshHostPlayerGroundMotor();
         RagPhysicalAgentLocalMode.ApplyForLocalClient(playerMovement);
-        Debug.Log($"[PlayerRagPhysicalBridge] Local Photon player bound as {physicalAgentId} (zone {ZoneIndex}) — RAG drives movement.");
+        Debug.Log(locomotion
+            ? $"[PlayerRagPhysicalBridge] Local Photon player bound as {physicalAgentId} (zone {ZoneIndex}) — locomotion training (RAG detached)."
+            : $"[PlayerRagPhysicalBridge] Local Photon player bound as {physicalAgentId} (zone {ZoneIndex}) — RAG drives movement.");
         Debug.Log("[PlayerRagPhysicalBridge] You are the physical agent for this session.");
         host.StartCoroutine(FinalizeBindAfterMoverStart(mover));
         return true;
@@ -149,6 +178,14 @@ public static class PlayerRagPhysicalBridge
         }
 
         yield return null;
+
+        if (IsZone0LocomotionTrainingActive())
+        {
+            if (mover != null)
+                RelocateDesignatedPlayerToPhysicalSpawn(mover.transform, force: true);
+            TryPrepareLocomotionForDesignatedPlayer(mover);
+            yield break;
+        }
 
         CognitivePhaseOrchestrator orch = CognitivePhaseOrchestrator.GetOrCreateForZone(ZoneIndex);
         orch?.EnsureInitializedFromSceneAgents();
@@ -219,9 +256,106 @@ public static class PlayerRagPhysicalBridge
     /// <summary>
     /// SceneGenerator skips P1 in multiplayer — attach PhysicalAgentZone0 after the Photon player binds.
     /// </summary>
+    /// <summary>
+    /// When zone-0 locomotion training is enabled on the scene anchor, detaches the designated
+    /// player from RAG and preps it for ArticulationBody locomotion: forces unit scale (the AB
+    /// solver assumes scale = 1), stops RAG autopilot + procedural gait, and disables the static
+    /// Animator. Camera-safe — the drone camera reads only this transform, which is left intact.
+    /// Runs before ApplyScale so the unit-scale gate is live when the avatar is rescaled.
+    /// </summary>
+    /// <summary>
+    /// Returns true when locomotion mode handled the designated player (caller must then skip the
+    /// RAG scale/hand-posing finalize steps). Order is important:
+    ///   1. force unit scale + Y-Bot visual (AB solver assumes scale = 1)
+    ///   2. detach from RAG and disable the hand/arm IK (Klein/HandRotation) so nothing poses the bones
+    ///   3. disable the static Animator
+    ///   4. STRIP the Rigidbody chain — an ArticulationBody root must NOT live under a Rigidbody or
+    ///      the articulation destabilizes and the limbs scatter. PlayerMovement/AgentGroundMotor
+    ///      RequireComponent it, so they are removed too (neither is Photon-synced; the drone camera
+    ///      resolves the player via the mover's hostPlayerMovement flag, which survives).
+    ///   5. build the AB rig.
+    /// </summary>
+    static bool TryPrepareLocomotionForDesignatedPlayer(RagSequenceAgentMover mover)
+    {
+        if (mover == null || !RagPhysicalAgentAssignment.IsLocalPlayerRagPhysicalAgent())
+            return false;
+
+        MultiplayerRagZone0Anchor anchor = MultiplayerRagZone0Anchor.Instance;
+        if (anchor == null || !anchor.enableZone0LocomotionTraining)
+            return false;
+
+        // 1. Unit scale + Y-Bot visual, with the gate active so GetScale() returns 1.
+        DesignatedPhysicalPlayerAppearance.LocomotionRigActive = true;
+        DesignatedPhysicalPlayerAppearance.ApplyScale(mover.transform);
+
+        // 2. Stop RAG driving + the hand/arm IK (DetachForLocomotion disables Klein/HandRotation).
+        mover.DetachForLocomotion();
+
+        // 3. Disable the static Animator (camera reads transform only).
+        foreach (Animator anim in mover.GetComponentsInChildren<Animator>(true))
+            anim.enabled = false;
+
+        // 4. Remove the Rigidbody chain so the AB root is clean.
+        StripPlayerPhysicsForLocomotion(mover.gameObject);
+
+        // 5. Build the ArticulationBody locomotion rig + walker agent on the Y-Bot skeleton.
+        YBotLocomotionScenePrep.Apply();
+        SuppressTaskRagBridgeForLocomotion();
+        YBotLocomotionInstaller.StripConflictingMlComponentsFromPlayerRoot(mover.gameObject);
+        YBotWalkerAgent agent = YBotLocomotionInstaller.Install(mover.gameObject);
+        Debug.Log(agent != null
+            ? "[PlayerRagPhysicalBridge] Zone0 locomotion: detached from RAG, Rigidbody chain stripped, AB rig installed."
+            : "[PlayerRagPhysicalBridge] Zone0 locomotion: prep done but AB rig install FAILED (see prior error).");
+        return true;
+    }
+
+    /// <summary>
+    /// Removes the player-root Rigidbody and the components that RequireComponent it, so the Hips
+    /// ArticulationBody is not nested under a Rigidbody. DestroyImmediate is used so the Rigidbody is
+    /// gone before the articulation is built this same frame. Dependents are destroyed before the
+    /// Rigidbody to satisfy RequireComponent.
+    /// </summary>
+    static void StripPlayerPhysicsForLocomotion(GameObject root)
+    {
+        if (root == null) return;
+
+        DestroyImmediateIfPresent(root.GetComponent<AgentGroundMotor>());          // requires RB + Capsule
+        DestroyImmediateIfPresent(root.GetComponent<PlayerMovement>());            // requires RB + InputProcessor
+        DestroyImmediateIfPresent(root.GetComponent<PlayerMovementInputProcessor>());
+        DestroyImmediateIfPresent(root.GetComponent<Rigidbody>());                 // now nothing requires it
+
+        CapsuleCollider cap = root.GetComponent<CapsuleCollider>();
+        if (cap != null) cap.enabled = false; // keep, but stop it colliding with the AB rig
+
+        Debug.Log("[PlayerRagPhysicalBridge] Stripped Rigidbody/PlayerMovement/AgentGroundMotor and disabled root CapsuleCollider for clean ArticulationBody root.");
+    }
+
+    static void DestroyImmediateIfPresent(Component c)
+    {
+        if (c != null) Object.DestroyImmediate(c);
+    }
+
+    static void SuppressTaskRagBridgeForLocomotion()
+    {
+        foreach (TaskRagBridge bridge in Object.FindObjectsOfType<TaskRagBridge>(true))
+        {
+            if (bridge != null && bridge.enabled)
+            {
+                bridge.enabled = false;
+                Debug.Log("[PlayerRagPhysicalBridge] Disabled TaskRagBridge — locomotion training owns P1.");
+            }
+        }
+    }
+
     static void TryAttachMlTrainingForDesignatedPlayer(RagSequenceAgentMover mover)
     {
         if (mover == null || !RagPhysicalAgentAssignment.IsLocalPlayerRagPhysicalAgent())
+            return;
+
+        // Locomotion mode owns the designated player's actions — don't also attach the
+        // RAG cognitive/physical ML brain to the same body.
+        MultiplayerRagZone0Anchor locoAnchor = MultiplayerRagZone0Anchor.Instance;
+        if (locoAnchor != null && locoAnchor.enableZone0LocomotionTraining)
             return;
 
         if (!RagRuntimeMLBootstrap.TryBootstrapPhotonPlayerPhysical(mover))

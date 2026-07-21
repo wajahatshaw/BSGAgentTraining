@@ -947,6 +947,11 @@ public class CognitivePhaseOrchestrator : MonoBehaviour
         }
         else
         {
+            // During Zone0 locomotion (PPO) training the designated player is detached from the
+            // RAG physical flow, so don't dispatch physical steps to it.
+            if (zoneIndex == 0 && BsgIntegrationSettings.Zone0LocomotionTrainingActive)
+                return;
+
             string physTarget = PhysicalStepTargetResolver.ResolveObjectId(step, zoneIndex);
             string physLabel = !string.IsNullOrWhiteSpace(step.physicalTarget)
                 ? step.physicalTarget

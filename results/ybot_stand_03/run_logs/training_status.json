@@ -1,0 +1,65 @@
+{
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.11.0"
+    },
+    "PhysicalAgentZone0": {
+        "checkpoints": [
+            {
+                "steps": 1079434,
+                "file_path": "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1079434.onnx",
+                "reward": 1434.2347133159637,
+                "creation_time": 1782125598.25389,
+                "auxillary_file_paths": [
+                    "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1079434.pt"
+                ]
+            },
+            {
+                "steps": 1089712,
+                "file_path": "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1089712.onnx",
+                "reward": 1913.1037588119507,
+                "creation_time": 1782125776.952193,
+                "auxillary_file_paths": [
+                    "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1089712.pt"
+                ]
+            },
+            {
+                "steps": 1090572,
+                "file_path": "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1090572.onnx",
+                "reward": 1802.251968903975,
+                "creation_time": 1782125795.25234,
+                "auxillary_file_paths": [
+                    "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1090572.pt"
+                ]
+            },
+            {
+                "steps": 1099102,
+                "file_path": "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1099102.onnx",
+                "reward": 2617.565284729004,
+                "creation_time": 1782126663.057135,
+                "auxillary_file_paths": [
+                    "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1099102.pt"
+                ]
+            },
+            {
+                "steps": 1108857,
+                "file_path": "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1108857.onnx",
+                "reward": 3765.7442474365234,
+                "creation_time": 1782127203.188838,
+                "auxillary_file_paths": [
+                    "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1108857.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1108857,
+            "file_path": "results/ybot_stand_03/PhysicalAgentZone0.onnx",
+            "reward": 3765.7442474365234,
+            "creation_time": 1782127203.188838,
+            "auxillary_file_paths": [
+                "results/ybot_stand_03/PhysicalAgentZone0/PhysicalAgentZone0-1108857.pt"
+            ]
+        }
+    }
+}

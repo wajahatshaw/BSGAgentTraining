@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1782127206",
+        "python_version": "3.9.6 (v3.9.6:db3ff76da1, Jun 28 2021, 11:49:53) \n[Clang 6.0 (clang-600.0.57)]",
+        "command_line_arguments": "/Users/mac/UnityProjects/BSG/ml-agents-env/bin/mlagents-learn Assets/BSGIntegration/config/ybot_walk.yaml --run-id=ybot_stand_03 --resume",
+        "mlagents_version": "0.30.0",
+        "mlagents_envs_version": "0.30.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "1.11.0",
+        "numpy_version": "1.21.2",
+        "end_time_seconds": "1782127807"
+    },
+    "total": 601.1007013330001,
+    "count": 1,
+    "self": 0.012316958000155864,
+    "children": {
+        "run_training.setup": {
+            "total": 0.04506750000000004,
+            "count": 1,
+            "self": 0.04506750000000004
+        },
+        "TrainerController.start_learning": {
+            "total": 601.043316875,
+            "count": 1,
+            "self": 0.0003996249998863277,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 601.04265175,
+                    "count": 1,
+                    "self": 601.04265175
+                },
+                "TrainerController._save_models": {
+                    "total": 0.0002655000000686414,
+                    "count": 1,
+                    "self": 0.0002655000000686414
+                }
+            }
+        }
+    }
+}

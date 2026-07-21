@@ -906,6 +906,7 @@
         {
             "agentId": "M1",
             "behaviorName": "PhysicalAgentZone0",
+            "role": "Mental",
             "skillLevel": 0.0,
             "desireLevel": 100.0,
             "skillPercentage": 0.00,
