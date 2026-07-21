@@ -38667,20 +38667,20 @@ MonoBehaviour:
   relocatePhysicalBandBlockingProps: 1
   relocateCenterBlockingPropsOnly: 1
   relocateSpawnPoints: 0
-  cognitiveSpacingMultiplier: 1.58
+  cognitiveSpacingMultiplier: 1
   environmentSpacingMultiplier: 1
   cognitiveGridAnchor: {x: 0, y: 0}
   environmentGridAnchor: {x: 0, y: 0}
   cognitivePlacementOffset: {x: 0, y: 0}
   environmentPlacementOffset: {x: 0, y: 0}
   cognitiveOverflowGridStep: 10.5
-  cognitiveModuleBufferGapMultiplier: 1.72
+  cognitiveModuleBufferGapMultiplier: 1
   cognitiveModuleRowReferenceZ: 9
   showProximityZones: 1
   cognitiveProximityRadius: 2.65
   physicalProximityRadius: 2.35
   splitMentalPhysicalLayout: 1
-  cognitiveBandBiasZ: 8
+  cognitiveBandBiasZ: 2
   physicalBandInsetFromBackWall: 3
   physicalBandDepth: 9
   physicalBandHorizontalSpread: 1.85
@@ -38691,7 +38691,7 @@ MonoBehaviour:
     m_Extent: {x: 0, y: 0, z: 0}
   useZone0InteriorOverride: 0
   agentScaleMultiplier: 0.54
-  cognitiveScaleMultiplier: 0.36
+  cognitiveScaleMultiplier: 0.28
   environmentScaleMultiplier: 0.72
   environmentHeightMultiplier: 2.45
   useSceneWallBoundaryOnly: 1

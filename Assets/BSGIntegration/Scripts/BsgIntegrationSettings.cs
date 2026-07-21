@@ -197,14 +197,16 @@ public struct RagZoneLayoutSpacing
 
     public static RagZoneLayoutSpacing MultiplayerZone0Defaults => new RagZoneLayoutSpacing
     {
-        cognitiveSpacingMultiplier = 1.85f,
+        // Keep 1.0 so the authored 3-column front→back cognitive grid is not warped before band-fit
+        // (a high multiplier + zone clamp was collapsing stations on top of each other).
+        cognitiveSpacingMultiplier = 1f,
         environmentSpacingMultiplier = 2.45f,
-        cognitiveGridAnchor = new Vector2(0f, 9f),
+        cognitiveGridAnchor = Vector2.zero,
         environmentGridAnchor = new Vector2(0f, -14f),
-        cognitivePlacementOffset = new Vector2(0f, 5f),
+        cognitivePlacementOffset = Vector2.zero,
         environmentPlacementOffset = new Vector2(0f, -12f),
         cognitiveOverflowGridStep = 8.5f,
-        cognitiveModuleBufferGapMultiplier = 1.72f,
+        cognitiveModuleBufferGapMultiplier = 1f,
     };
 
     /// <summary>Preserves legacy RAG grid positions from <c>TryGetLegacyZone01CognitivePosition</c> and zone targetObjects.</summary>

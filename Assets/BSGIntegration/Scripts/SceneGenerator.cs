@@ -492,8 +492,32 @@ public class SceneGenerator : MonoBehaviour
         }
 
         ApplySpatialStaggerToGeneratedToolLabels();
-        
-        Debug.Log($"Tool generation complete. Created {generatedTools.Count} tools.");
+
+        int cognitiveCount = 0;
+        int moduleCount = 0;
+        int bufferCount = 0;
+        foreach (var kvp in generatedTools)
+        {
+            if (kvp.Value == null)
+                continue;
+            ToolState st = null;
+            if (sceneData.initialStates != null)
+                sceneData.initialStates.TryGetValue(kvp.Key, out st);
+            if (!IsCognitiveStation(kvp.Key, st))
+                continue;
+
+            cognitiveCount++;
+            string typeLower = (st?.type ?? string.Empty).ToLowerInvariant();
+            if (typeLower.Contains("buffer"))
+                bufferCount++;
+            else
+                moduleCount++;
+        }
+        Debug.Log($"Tool generation complete. Created {generatedTools.Count} tools " +
+                  $"(cognitive stations={cognitiveCount}: modules={moduleCount}, buffers={bufferCount}).");
+        if (cognitiveCount < 16)
+            Debug.LogWarning($"[SceneGenerator] Expected 16 cognitive stations but only spawned {cognitiveCount}. " +
+                             "Check zone mask / initialStates.");
     }
     
     GameObject CreateToolObject(string toolId, ToolState toolState, int index)
@@ -577,9 +601,12 @@ public class SceneGenerator : MonoBehaviour
             visualStyler.ApplyStyle();
 
             // Modules slightly above buffers; multiplayer embed applies anchor scale separately.
+            // Trimmed a bit (was 0.92 / 0.82) so stations take less floor space and leave wider lanes for the
+            // agent to weave through the staggered cognitive field. The CognitiveNavObstacle box is a child, so
+            // it scales down with this too, widening the navigable gaps.
             toolGO.transform.localScale = isModuleType
-                ? Vector3.one * 0.92f
-                : Vector3.one * 0.82f;
+                ? Vector3.one * 0.80f
+                : Vector3.one * 0.72f;
 
             if (UsesSceneAnchorLayout())
             {
@@ -774,27 +801,42 @@ public class SceneGenerator : MonoBehaviour
         solid.ConfigureSolidCollider();
         ScenePhysicsLayers.ApplyEnvironmentLayer(go);
 
-        // Must cover composite footprint (see CognitiveStationVisualStyler) plus root scale.
-        float pad = BsgIntegrationSettings.UsePhotonPlayerAsPhysicalAgent ? 0.92f : 1.08f;
+        // Fit the collision box to the station's ACTUAL VISIBLE geometry (composite mesh), like physical props
+        // do (EnvironmentVisibleSolid). This is what removes the "invisible gap": the agent now collides with
+        // the real station body instead of an oversized constant box that stopped it short of what it sees.
+        // A tiny pad keeps the box just outside the mesh surface; the NavMesh bake radius provides path
+        // clearance, so the box no longer needs to be inflated. Called after the composite style is applied.
+        if (EnvironmentNavigationColliderBuilder.TryComputeLocalVisibleBox(root, out Vector3 fitCenter, out Vector3 fitSize))
+        {
+            const float contactPad = 1.04f;
+            box.center = fitCenter;
+            box.size = new Vector3(
+                Mathf.Max(0.12f, fitSize.x * contactPad),
+                Mathf.Max(0.12f, fitSize.y),
+                Mathf.Max(0.12f, fitSize.z * contactPad));
+            return;
+        }
+
+        // Fallback (no visible renderer found): conservative type constants, no longer inflated.
         if (isHub)
         {
             box.center = new Vector3(0f, 1.05f, 0f);
-            box.size = new Vector3(2.35f, 2.45f, 2.35f) * pad;
+            box.size = new Vector3(2.35f, 2.45f, 2.35f);
         }
         else if (isModule)
         {
             box.center = new Vector3(0f, 1.02f, 0f);
-            box.size = new Vector3(2.05f, 2.30f, 2.05f) * pad;
+            box.size = new Vector3(2.05f, 2.30f, 2.05f);
         }
         else if (isBuffer)
         {
             box.center = new Vector3(0f, 0.62f, 0f);
-            box.size = new Vector3(2.85f, 1.65f, 2.15f) * pad;
+            box.size = new Vector3(2.85f, 1.65f, 2.15f);
         }
         else
         {
             box.center = new Vector3(0f, 0.85f, 0f);
-            box.size = new Vector3(2.1f, 2.1f, 2.1f) * pad;
+            box.size = new Vector3(2.1f, 2.1f, 2.1f);
         }
     }
 

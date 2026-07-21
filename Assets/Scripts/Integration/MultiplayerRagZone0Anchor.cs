@@ -23,6 +23,12 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
     [Min(0.05f)]
     public float maxLayoutScale = 0.46f;
 
+    [Tooltip("Max fit scale for the cognitive (mental) band specifically. Higher than maxLayoutScale so modules " +
+             "and buffers get enough NavMesh clearance and never overlap — the mental band has spare depth to " +
+             "absorb the wider spread. Only affects the cognitive cluster; the physical/env band still uses maxLayoutScale.")]
+    [Min(0.05f)]
+    public float mentalBandMaxLayoutScale = 0.95f;
+
     [Range(0.5f, 1f)]
     public float fitMargin = 0.95f;
 
@@ -75,8 +81,8 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
     static readonly string[] PhysicalBandBlockingPropNames = { "TablePivot" };
 
     [Header("Object spacing (JSON layout — cognitive vs physical env props)")]
-    [Tooltip("Spread between individual cognitive stations (modules/buffers). 1 = exact RAG grid.")]
-    [Range(1f, 2.5f)] public float cognitiveSpacingMultiplier = 1.58f;
+    [Tooltip("Spread between individual cognitive stations (modules/buffers). 1 = exact 3-column front→back grid.")]
+    [Range(1f, 2.5f)] public float cognitiveSpacingMultiplier = 1f;
     [Tooltip("Spread between individual physical-environment target objects. 1 = exact RAG positions.")]
     [Range(1f, 3.5f)] public float environmentSpacingMultiplier = 1f;
     [Tooltip("JSON-local grid anchor for cognitive stations.")]
@@ -89,7 +95,7 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
     public Vector2 environmentPlacementOffset = Vector2.zero;
     [Min(4f)] public float cognitiveOverflowGridStep = 10.5f;
     [Tooltip("Extra Z separation between orange modules and blue buffer rows in the cognitive grid.")]
-    [Range(1f, 2.5f)] public float cognitiveModuleBufferGapMultiplier = 1.72f;
+    [Range(1f, 2.5f)] public float cognitiveModuleBufferGapMultiplier = 1f;
     [Tooltip("Legacy JSON Z reference for the module row when applying buffer gap.")]
     public float cognitiveModuleRowReferenceZ = 9f;
 
@@ -102,8 +108,8 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
     [Header("Mental / physical split (multiplayer zone 0)")]
     [Tooltip("Keep cognitive stations + M agent near zone center; push P agent + env props toward the back wall.")]
     public bool splitMentalPhysicalLayout = true;
-    [Tooltip("Base-local Z bias for the mental band above zone geometric center (toward bifurcation / top of zone 0).")]
-    public float cognitiveBandBiasZ = 8f;
+    [Tooltip("Base-local Z bias for the mental band relative to zone center (small = closer to middle).")]
+    public float cognitiveBandBiasZ = 2f;
     [Tooltip("Inset from the back wall when placing the physical/environment band.")]
     [Min(0.5f)] public float physicalBandInsetFromBackWall = 3f;
     [Tooltip("Depth of the physical/environment band along Base-local Z.")]
@@ -127,7 +133,7 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
 
     [Header("Multiplayer size overrides")]
     [Range(0.4f, 1.2f)] public float agentScaleMultiplier = 0.54f;
-    [Range(0.4f, 1.2f)] public float cognitiveScaleMultiplier = 0.36f;
+    [Range(0.4f, 1.2f)] public float cognitiveScaleMultiplier = 0.28f;
     [Range(0.5f, 1.2f)] public float environmentScaleMultiplier = 0.72f;
     [Range(1.2f, 3.5f)] public float environmentHeightMultiplier = 2.45f;
 
@@ -1028,7 +1034,7 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
             CollectSplitBandJsonPositions(data, mentalPoints, physicalPoints);
 
             if (mentalPoints.Count > 0)
-                _mentalBandLayout = ComputeBandLayout(mentalPoints, GetMentalFitBounds(), GetMentalPlacementCenterBase());
+                _mentalBandLayout = ComputeBandLayout(mentalPoints, GetMentalFitBounds(), GetMentalPlacementCenterBase(), mentalBandMaxLayoutScale);
             if (physicalPoints.Count > 0)
                 _physicalBandLayout = ComputeBandLayout(physicalPoints, GetPhysicalFitBounds(), GetPhysicalPlacementCenterBase());
 
@@ -1138,13 +1144,33 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
 
     Bounds GetMentalFitBounds()
     {
+        // Keep enough depth for all 16 stations in 3 columns, but CENTER the band in the free space
+        // between the physical band and the front wall — do NOT hug the front wall (that was packing
+        // the whole cluster against the green wall). Leave a clear front inset so the origin reads
+        // mid-zone like before.
         Bounds fit = _zone0InteriorBounds;
-        float centerZ = Mathf.Min(
-            _zone0InteriorBounds.center.z + layoutCenterOffset.y + cognitiveBandBiasZ,
-            _zone0InteriorBounds.max.z - wallInteriorMargin - 1.5f);
-        float minZ = _zone0InteriorBounds.center.z + layoutCenterOffset.y;
-        fit.min = new Vector3(fit.min.x, fit.min.y, minZ);
-        fit.max = new Vector3(fit.max.x, fit.max.y, centerZ + 4f);
+        float physicalFrontZ = _zone0InteriorBounds.min.z
+            + physicalBandInsetFromBackWall
+            + physicalBandDepth
+            + 1.25f;
+        const float frontWallClearance = 7.5f; // keep cluster off the front wall
+        float frontLimitZ = _zone0InteriorBounds.max.z - wallInteriorMargin - frontWallClearance;
+        if (frontLimitZ <= physicalFrontZ + 6f)
+            frontLimitZ = Mathf.Max(physicalFrontZ + 6f, _zone0InteriorBounds.max.z - wallInteriorMargin - 2f);
+
+        // Prefer zone geometric center (+ small bias) as the band mid-point, clamped into free space.
+        float preferredCenterZ = _zone0InteriorBounds.center.z + layoutCenterOffset.y + cognitiveBandBiasZ * 0.35f;
+        float availableDepth = Mathf.Max(6f, frontLimitZ - physicalFrontZ);
+        float bandDepth = Mathf.Min(availableDepth * 0.92f, 22f);
+        float midZ = Mathf.Clamp(
+            preferredCenterZ,
+            physicalFrontZ + bandDepth * 0.5f,
+            frontLimitZ - bandDepth * 0.5f);
+        float minZ = midZ - bandDepth * 0.5f;
+        float maxZ = midZ + bandDepth * 0.5f;
+
+        fit.min = new Vector3(fit.min.x + wallInteriorMargin, fit.min.y, minZ);
+        fit.max = new Vector3(fit.max.x - wallInteriorMargin, fit.max.y, maxZ);
         return fit;
     }
 
@@ -1159,12 +1185,11 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
 
     Vector3 GetMentalPlacementCenterBase()
     {
+        Bounds mental = GetMentalFitBounds();
         return new Vector3(
             _zone0InteriorBounds.center.x + layoutCenterOffset.x,
             0f,
-            Mathf.Min(
-                _zone0InteriorBounds.center.z + layoutCenterOffset.y + cognitiveBandBiasZ,
-                _zone0InteriorBounds.max.z - wallInteriorMargin - 1.5f));
+            mental.center.z + layoutCenterOffset.y);
     }
 
     Vector3 GetPhysicalPlacementCenterBase()
@@ -1179,6 +1204,19 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
     public Vector2 GetDesignatedPhysicalAgentSpawnBaseLocal()
     {
         ResolveZone0InteriorFromScene();
+
+        // TEST (NavMesh pathfinding): spawn the designated physical agent on the COGNITIVE-station side of the
+        // zone instead of next to its physical targets, so it must path across the whole zone and route around
+        // obstacles to reach them. Set to false to restore the normal near-targets spawn. Takes precedence over
+        // the serialized designatedPhysicalAgentSpawnBaseLocal so it works without editing the scene Inspector.
+        const bool SpawnOnCognitiveSideForPathfindingTest = true;
+        if (SpawnOnCognitiveSideForPathfindingTest)
+        {
+            Vector3 mentalCenter = GetMentalPlacementCenterBase();
+            // Offset laterally so it starts beside the cognitive cluster (not on top of M1 / a station); the
+            // existing NudgeSpawnClearOfCognitiveStations still clears any residual overlap.
+            return ClampBaseLocalToZoneInterior(new Vector2(mentalCenter.x + 3.5f, mentalCenter.z));
+        }
 
         if (designatedPhysicalAgentSpawnBaseLocal.sqrMagnitude > 0.01f)
             return ClampBaseLocalToZoneInterior(designatedPhysicalAgentSpawnBaseLocal);
@@ -1331,7 +1369,7 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
         return Quaternion.LookRotation(dir.normalized, Vector3.up);
     }
 
-    BandLayoutData ComputeBandLayout(List<Vector3> points, Bounds fitBounds, Vector3 placementCenterBase)
+    BandLayoutData ComputeBandLayout(List<Vector3> points, Bounds fitBounds, Vector3 placementCenterBase, float maxScaleOverride = -1f)
     {
         var layout = new BandLayoutData();
         if (points == null || points.Count == 0 || fitBounds.size.sqrMagnitude < 0.01f)
@@ -1352,7 +1390,8 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
         float scaleX = fitBounds.size.x / jsonWidth;
         float scaleZ = fitBounds.size.z / jsonDepth;
         layout.scale = Mathf.Min(scaleX, scaleZ) * fitMargin;
-        layout.scale = Mathf.Min(layout.scale, maxLayoutScale);
+        float cap = maxScaleOverride > 0f ? maxScaleOverride : maxLayoutScale;
+        layout.scale = Mathf.Min(layout.scale, cap);
         layout.scale = Mathf.Max(layout.scale, 0.05f);
 
         float halfWidth = jsonWidth * layout.scale * 0.5f;
@@ -1485,17 +1524,11 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
 
     Vector3 ApplyModuleBufferGapInJsonSpace(string objectId, Vector3 jsonLocal)
     {
-        if (cognitiveModuleBufferGapMultiplier <= 1.001f || !IsMentalLayoutObjectId(objectId, null))
-            return jsonLocal;
-
-        if (!TryParseCognitiveNumericIndex(objectId, out int idx) || idx < 7)
-            return jsonLocal;
-
-        float delta = jsonLocal.z - cognitiveModuleRowReferenceZ;
-        if (Mathf.Abs(delta) < 0.01f)
-            return jsonLocal;
-
-        jsonLocal.z = cognitiveModuleRowReferenceZ + delta * cognitiveModuleBufferGapMultiplier;
+        // No-op: module/buffer separation is now baked into the staggered cognitive grid
+        // (RagSceneJsonBridge.TryGetLegacyZone01CognitivePosition). Re-scaling buffer z about the module row
+        // here would distort that staggered field (blow the back rows far deeper before the band fit), so the
+        // gap is applied exactly once, in the grid. cognitiveModuleBufferGapMultiplier is retained for
+        // serialization/back-compat but no longer transforms positions.
         return jsonLocal;
     }
 
@@ -1625,11 +1658,8 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
         if (mentalCluster.Count == 0 && physicalCluster.Count == 0)
             return false;
 
-        Vector2 mentalTarget = new Vector2(
-            _zone0InteriorBounds.center.x + layoutCenterOffset.x,
-            Mathf.Min(
-                _zone0InteriorBounds.center.z + layoutCenterOffset.y + cognitiveBandBiasZ,
-                _zone0InteriorBounds.max.z - wallInteriorMargin - 1.5f));
+        Vector3 mentalCenter = GetMentalPlacementCenterBase();
+        Vector2 mentalTarget = new Vector2(mentalCenter.x, mentalCenter.z);
         Vector2 physicalTarget = new Vector2(
             _zone0InteriorBounds.center.x + layoutCenterOffset.x,
             _zone0InteriorBounds.min.z + physicalBandInsetFromBackWall + physicalBandDepth * 0.5f);

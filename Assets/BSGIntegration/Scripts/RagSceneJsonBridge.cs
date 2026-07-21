@@ -394,39 +394,46 @@ public static class RagSceneJsonBridge
     }
 
     /// <summary>
-    /// World XZ for each <c>cognitive_XXX</c> id — matches <c>Assets/JsonFile/basicUi_ml.json</c> zone01 <c>initialStates</c>
-    /// (three rows at +Z, same arrangement as the legacy Game view).
+    /// World XZ for each <c>cognitive_XXX</c> id — three VERTICAL columns (front wall → back wall = +Z),
+    /// 6+5+5 unique slots for all 16 stations (no shared cells / overlaps).
     /// </summary>
     static bool TryGetLegacyZone01CognitivePosition(string objectId, out float x, out float z)
     {
         x = z = 0f;
         if (string.IsNullOrWhiteSpace(objectId)) return false;
 
-        // Six modules on z=9 (001–006); ten buffers 007–016 — seven on z=14 then three on z=4.5 (matches ACTR-style 6+10 split).
+        // THREE even columns front→back (vary Z, fixed X). 6 + 5 + 5 = all 16 stations with UNIQUE slots
+        // so none share a cell. Wide X (±14) keeps clear aisles between columns after multiplayer band-fit.
+        //   LEFT  x=-14 : 001–006
+        //   MID   x=  0 : 007–011
+        //   RIGHT x= 14 : 012–016
         switch (objectId.Trim().ToUpperInvariant())
         {
-            case "COGNITIVE_001": x = -13.5f; z = 9f; break;
-            case "COGNITIVE_002": x = -9f; z = 9f; break;
-            case "COGNITIVE_003": x = -4.5f; z = 9f; break;
-            case "COGNITIVE_004": x = 0f; z = 9f; break;
-            case "COGNITIVE_005": x = 4.5f; z = 9f; break;
-            case "COGNITIVE_006": x = 9f; z = 9f; break;
-            case "COGNITIVE_007": x = -13.5f; z = 14f; break;
-            case "COGNITIVE_008": x = -9f; z = 14f; break;
-            case "COGNITIVE_009": x = -4.5f; z = 14f; break;
-            case "COGNITIVE_010": x = 0f; z = 14f; break;
-            case "COGNITIVE_011": x = 4.5f; z = 14f; break;
-            case "COGNITIVE_012": x = 9f; z = 14f; break;
-            case "COGNITIVE_013": x = 13.5f; z = 14f; break;
-            case "COGNITIVE_014": x = -6.75f; z = 8f; break;
-            case "COGNITIVE_015": x = 0f; z = 8f; break;
-            case "COGNITIVE_016": x = 6.75f; z = 8f; break;
-            case "COGNITIVE_017": x = 13.5f; z = 4.5f; break;
+            // LEFT column — front → back
+            case "COGNITIVE_001": x = -14.0f; z = 3.0f;  break;
+            case "COGNITIVE_002": x = -14.0f; z = 6.0f;  break;
+            case "COGNITIVE_003": x = -14.0f; z = 9.0f;  break;
+            case "COGNITIVE_004": x = -14.0f; z = 12.0f; break;
+            case "COGNITIVE_005": x = -14.0f; z = 15.0f; break;
+            case "COGNITIVE_006": x = -14.0f; z = 18.0f; break;
+            // MID column — front → back
+            case "COGNITIVE_007": x = 0.0f;   z = 3.0f;  break;
+            case "COGNITIVE_008": x = 0.0f;   z = 6.75f; break;
+            case "COGNITIVE_009": x = 0.0f;   z = 10.5f; break;
+            case "COGNITIVE_010": x = 0.0f;   z = 14.25f; break;
+            case "COGNITIVE_011": x = 0.0f;   z = 18.0f; break;
+            // RIGHT column — front → back
+            case "COGNITIVE_012": x = 14.0f;  z = 3.0f;  break;
+            case "COGNITIVE_013": x = 14.0f;  z = 6.75f; break;
+            case "COGNITIVE_014": x = 14.0f;  z = 10.5f; break;
+            case "COGNITIVE_015": x = 14.0f;  z = 14.25f; break;
+            case "COGNITIVE_016": x = 14.0f;  z = 18.0f; break;
+            case "COGNITIVE_017": x = 0.0f;   z = 20.0f; break;
             default: return false;
         }
 
+        // Uniform spread about the grid anchor + placement offset (respects the anchor's spacing knob).
         SpreadCognitiveLocal(ref x, ref z);
-        ApplyModuleBufferRowGap(objectId, ref x, ref z);
         return true;
     }
 
@@ -608,7 +615,16 @@ public static class RagSceneJsonBridge
                 }
                 float wx = lx + offset.x;
                 float wz = lz + offset.z;
-                if (hasZones) ClampWorldPositionToZone(offset, ref wx, ref wz);
+                // Per-station zone clamp is only for the standalone/solo path. When a scene anchor is active
+                // (multiplayer band-fit), it re-fits the whole cognitive cluster inside the zone walls in one
+                // proportional pass — so this clamp is redundant AND harmful there: it clamps each axis
+                // independently, hard-pinning any station that overshoots two insets (e.g. far-left + far-back
+                // 007/008/014) to the SAME zone corner, collapsing them onto each other. Also skip while the
+                // multiplayer embed flag is set (JSON may be built before UseSceneAnchorLayout is synced).
+                bool anchorRemapsPositions = BsgIntegrationSettings.HasSceneAnchorLayout
+                    && BsgIntegrationSettings.UseSceneAnchorLayout;
+                if (hasZones && !anchorRemapsPositions && !BsgIntegrationSettings.MultiplayerEmbedMode)
+                    ClampWorldPositionToZone(offset, ref wx, ref wz);
 
                 string displayName = string.IsNullOrWhiteSpace(c.name) ? baseId : c.name;
                 string effectiveState = EffectiveCognitiveObjectState(c);
@@ -624,7 +640,7 @@ public static class RagSceneJsonBridge
                 sb.Append("\n      \"shape\": \"").Append(shape).Append("\",");
                 sb.Append("\n      \"moduleType\": \"").Append(EscapeJson(effectiveState ?? displayName ?? stationType)).Append("\",");
                 sb.Append("\n      \"initialState\": \"").Append(EscapeJson(effectiveState)).Append("\",");
-                sb.Append("\n      \"visible\": ").Append(c.visible ? "true" : "false").Append(",");
+                sb.Append("\n      \"visible\": true,");
                 sb.Append("\n      \"stationAction\": \"").Append(EscapeJson(action)).Append("\",");
                 sb.Append("\n      \"isCognitiveStation\": true,");
                 sb.Append("\n      \"isAvailable\": true,");

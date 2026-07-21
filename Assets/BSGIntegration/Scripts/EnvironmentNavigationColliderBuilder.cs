@@ -121,7 +121,12 @@ public static class EnvironmentNavigationColliderBuilder
         ScenePhysicsLayers.ApplyEnvironmentLayer(visGo);
     }
 
-    static bool TryComputeLocalVisibleBox(GameObject toolRoot, out Vector3 localCenter, out Vector3 localSize)
+    /// <summary>
+    /// Local-space center/size of a prop's VISIBLE mesh bounds (excludes nav-obstacle helpers and labels).
+    /// Public so cognitive stations can fit their collision box to the actual visible body too, instead of an
+    /// oversized constant box that leaves an invisible gap between the agent and what it sees.
+    /// </summary>
+    public static bool TryComputeLocalVisibleBox(GameObject toolRoot, out Vector3 localCenter, out Vector3 localSize)
     {
         localCenter = Vector3.zero;
         localSize = Vector3.one;
