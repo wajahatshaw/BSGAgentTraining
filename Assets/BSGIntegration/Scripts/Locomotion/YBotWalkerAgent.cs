@@ -45,7 +45,7 @@ public class YBotWalkerAgent : Agent
              "Week 2 (walking): set false so progress-to-target + reach rewards activate and the " +
              "target spawns away from the agent. Agent is runtime-added, so this code default is " +
              "the source of truth — inspector edits don't persist.")]
-    public bool stabilityOnlyTraining = false;
+    public bool stabilityOnlyTraining = true;
 
     [Header("Reward weights")]
     // Week 2 (walking) mix: progress-to-target is dominant, but upright/height/alive are kept so
@@ -129,6 +129,7 @@ public class YBotWalkerAgent : Agent
     YBotFootContact _rightFoot;
     float _prevTargetDistance;
     bool _ownsTarget;
+    GameObject _targetMarker; // the desk box under the target; hidden during stability training
     float[] _actionBuffer;
     float[] _prevActionBuffer;   // for the action-smoothness (jerk) penalty
     int _actionsReceived;        // >0 confirms the Python trainer is sending actions
@@ -455,6 +456,7 @@ public class YBotWalkerAgent : Agent
         ScenePhysicsLayers.SafeSetTag(marker, ScenePhysicsLayers.TagFurniture);
         var rend = marker.GetComponent<Renderer>();
         if (rend != null) rend.material.color = new Color(0.2f, 0.8f, 1f); // cyan desk = the goal
+        _targetMarker = marker;
     }
 
     void RandomizeTarget()
@@ -463,11 +465,19 @@ public class YBotWalkerAgent : Agent
 
         if (stabilityOnlyTraining)
         {
+            // Stand phase: there is no destination — the agent just balances in place. HIDE the desk
+            // box (disable its GameObject → no collider, no render). If it stayed visible it would sit
+            // ON the agent (target == agent position) and its solid Wall-layer collider would collide
+            // with the agent's legs and shove it around, corrupting standing training.
+            if (_targetMarker != null && _targetMarker.activeSelf) _targetMarker.SetActive(false);
             Vector3 standPos = _rig.Root.transform.position;
             standPos.y = SampleGroundY(standPos);
             target.position = standPos;
             return;
         }
+
+        // Walk/avoid phase: the desk is a real destination away from the agent — show it.
+        if (_targetMarker != null && !_targetMarker.activeSelf) _targetMarker.SetActive(true);
 
         Vector3 origin = _rig.Root.transform.position;
         int attempts = biasTargetBehindObstacles ? 8 : 1;

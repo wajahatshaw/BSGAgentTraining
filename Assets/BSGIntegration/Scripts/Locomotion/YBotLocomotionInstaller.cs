@@ -32,9 +32,14 @@ public static class YBotLocomotionInstaller
     public const int RaysPerDirection = 5;      // -> 2*5+1 = 11 rays
     public const float MaxRayDegrees = 90f;     // forward 180-degree fan
     public const float RayLength = 18f;         // covers a 40 m zone from most positions
-    public const float RaySphereCastRadius = 0.1f;
-    public const float RayStartVerticalOffset = 0.9f; // torso height so rays sweep at body level
-    public const float RayEndVerticalOffset = 0.6f;
+    public const float RaySphereCastRadius = 0.15f;
+    // Offsets are RELATIVE TO THE HIPS ANCHOR (~0.9 m off the ground when standing). Negative =
+    // below the hips. The band sweeps from just under the hips near the body down toward the floor
+    // at range, so it catches BOTH tall obstacles (walls/desks) AND low ones (small props < 0.6 m)
+    // that a torso-level horizontal fan would pass over. Tune in-editor via the gizmo; resume-safe.
+    public const float RayStartVerticalOffset = -0.10f; // ~0.80 m near the body
+    public const float RayEndVerticalOffset = -0.75f;   // ~0.15 m at RayLength → scans down to floor level
+    public const string RaySensorAnchorName = "ObstacleRaySensorAnchor";
     // Ray obs count = (2*RaysPerDirection+1) * (numTags+2) = 11 * (8+2) = 110 (separate from the 58
     // VectorSensor obs; total policy input = 168). This is the FROZEN spec — see ObstacleTagVocabulary.
 
@@ -76,7 +81,7 @@ public static class YBotLocomotionInstaller
         // AddComponent<BehaviorParameters> while active registers the default obs size (1) immediately;
         // recreate while the host is inactive so mlagents-learn sees (58,) not (1,).
         // Agent is added only after BP is configured so it never handshakes with obs=1.
-        ConfigureBehaviorParameters(host, obsSize, actionSize);
+        ConfigureBehaviorParameters(host, rig, obsSize, actionSize);
 
         YBotWalkerAgent agent = host.GetComponent<YBotWalkerAgent>();
         if (agent == null)
@@ -116,7 +121,7 @@ public static class YBotLocomotionInstaller
         DestroyImmediateIfPresent(playerRoot.GetComponent<BehaviorParameters>());
     }
 
-    static void ConfigureBehaviorParameters(GameObject host, int obsSize, int actionSize)
+    static void ConfigureBehaviorParameters(GameObject host, YBotLocomotionRig rig, int obsSize, int actionSize)
     {
         YBotWalkerAgent agent = host.GetComponent<YBotWalkerAgent>();
         DecisionRequester dr = host.GetComponent<DecisionRequester>();
@@ -138,8 +143,10 @@ public static class YBotLocomotionInstaller
         // Obstacle-perception ray sensor. Added while the host is INACTIVE (before the Agent
         // registers with the Academy) so the sensor is enumerated in the initial handshake — the
         // ray obs are a SEPARATE tensor from the 58-vector, so VectorObservationSize stays 58 and
-        // the policy's total input becomes 58 + 110 = 168 (11 rays x (8 tags + 2)).
-        AddRaySensor(host);
+        // the policy's total input becomes 58 + 110 = 168 (11 rays x (8 tags + 2)). Mounted on a
+        // child of the Hips (physics root) — NOT the host container — so the rays track the body's
+        // real position + facing as it walks. The Agent still collects it via UseChildSensors=true.
+        AddRaySensor(rig != null ? rig.Root : null, host);
 
         if (wasActive)
             host.SetActive(true);
@@ -187,16 +194,33 @@ public static class YBotLocomotionInstaller
     }
 
     /// <summary>
-    /// Adds (idempotently) the obstacle-perception <see cref="RayPerceptionSensorComponent3D"/> to
-    /// the agent host. Detects the static physical-type tags (Wall/Station/Prop/Human) on the
-    /// scene's solid layer. Must run while the host is inactive so the sensor is present before the
-    /// Agent handshakes with the Academy.
+    /// Adds (idempotently) the obstacle-perception <see cref="RayPerceptionSensorComponent3D"/> on a
+    /// child anchor of the HIPS (physics root) so the rays track the body's real position + facing as
+    /// it walks — NOT on the static host container, whose transform never moves with the ragdoll. The
+    /// Agent (on host) still collects it because BehaviorParameters.UseChildSensors defaults to true.
+    /// Runs while the host is inactive so the sensor exists before the Agent handshakes with the Academy.
     /// </summary>
-    static void AddRaySensor(GameObject host)
+    static void AddRaySensor(ArticulationBody hipsRoot, GameObject host)
     {
+        // Clean up any legacy sensor left on the host container from an earlier build.
         DestroyImmediateIfPresent(host.GetComponent<RayPerceptionSensorComponent3D>());
 
-        RayPerceptionSensorComponent3D rays = host.AddComponent<RayPerceptionSensorComponent3D>();
+        Transform anchorParent = hipsRoot != null ? hipsRoot.transform : host.transform;
+        Transform anchor = anchorParent.Find(RaySensorAnchorName);
+        if (anchor == null)
+        {
+            var anchorGo = new GameObject(RaySensorAnchorName);
+            anchor = anchorGo.transform;
+            anchor.SetParent(anchorParent, false);
+            // Identity local pose: forward = Hips forward, the SAME axis the heading observation +
+            // reward use (CollectObservations), so perception and heading stay consistent. If the
+            // Mixamo hips' forward isn't the visual forward, fix both together (see memory note).
+            anchor.localPosition = Vector3.zero;
+            anchor.localRotation = Quaternion.identity;
+        }
+        DestroyImmediateIfPresent(anchor.GetComponent<RayPerceptionSensorComponent3D>());
+
+        RayPerceptionSensorComponent3D rays = anchor.gameObject.AddComponent<RayPerceptionSensorComponent3D>();
         rays.SensorName = RaySensorName;
         rays.DetectableTags = new System.Collections.Generic.List<string>(DetectableTags);
         rays.RaysPerDirection = RaysPerDirection;
