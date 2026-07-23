@@ -1,0 +1,96 @@
+# ============================================================================
+# LOCOMOTION + OBSTACLE-AVOIDANCE — FRESH from-scratch run (NO resume).
+#
+# This run adds a RayPerceptionSensor (obstacle perception) to PhysicalAgentZone0. Rays are a
+# SEPARATE observation tensor, so the total policy input changes (58 VectorSensor + 110 ray = 168).
+# ML-Agents does a strict input-shape check with no partial transfer, so the old 58-obs stand
+# checkpoint (ybot_stand_03) CANNOT be --resume'd or --initialize-from'ed into this. The policy
+# weights must be trained from scratch here — this is the ONE unavoidable reset.
+#
+# We pay it once: the observation spec is now frozen (168 obs / 21 actions, 8 ray tags
+# Wall/Station/Furniture/Prop/Agent/Human/Reserved1/Reserved2 locked in — reserved slots let new
+# object categories be added LATER by reusing a tag, with no further reset). The whole curriculum
+# runs as REWARD-ONLY phases on THIS one run (all resume-safe from here on):
+#   1. Stand   — YBotWalkerAgent.stabilityOnlyTraining = true  (rays present but dormant)
+#   2. Walk    — stabilityOnlyTraining = false                 (progress/heading/velocity/reach)
+#   3. Avoid   — biasTargetBehindObstacles = true + obstacle penalty active (per-category scales)
+# Curriculum = Unity-side reward flags only; obs/action spec stays 168/21 every phase so later
+# phases --resume this same run-id with no reset.
+#
+# Still ONE policy / one combined ONNX (PhysicalAgentZone0) — not a second behavior.
+#
+# Launch (trainer FIRST, then press Play — avoids the port-5004 handshake race):
+#   mlagents-learn Assets/BSGIntegration/config/ybot_loco_avoid.yaml --run-id=ybot_loco_avoid_v1
+#   (wait for "Listening on port 5004", THEN Play)
+# Later phases (walk, avoid) resume in place:
+#   mlagents-learn Assets/BSGIntegration/config/ybot_loco_avoid.yaml --run-id=ybot_loco_avoid_v1 --resume
+# ============================================================================
+default_settings:
+  checkpoint_interval: 10000
+  keep_checkpoints: 5
+
+behaviors:
+  PhysicalAgentZone0:
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 2048           # Unity Walker reference values for physics locomotion
+      buffer_size: 40960         # 20 batches/update — stable for high-DOF balance+walk
+      learning_rate: 3.0e-4      # Walker-recommended; 5e-4 is too aggressive over tens of M steps
+      beta: 5.0e-3               # Walker-standard entropy
+      epsilon: 0.2
+      lambd: 0.95
+      num_epoch: 3
+      # CONSTANT (not linear): multi-phase --resume curriculum on ONE run. A linear schedule decays
+      # the rate to 0 at max_steps, leaving no capacity for later phases and forcing a reset.
+      learning_rate_schedule: constant
+      beta_schedule: constant
+    # LOCKED for the entire curriculum — changing any of these makes the checkpoint incompatible and
+    # is the only thing (besides the obs/action spec) that would force a reset.
+    network_settings:
+      normalize: true
+      hidden_units: 512
+      num_layers: 3
+    reward_signals:
+      extrinsic:
+        gamma: 0.995             # longer reward horizon — recommended for sustained locomotion
+        strength: 1.0
+    max_steps: 50000000          # headroom for stand+walk+avoid on one run
+    time_horizon: 1000
+    summary_freq: 30000
+
+env_settings:
+  env_path: null
+  env_args: null
+  base_port: 5004
+  num_envs: 1
+  num_areas: 4
+  seed: -1
+  max_lifetime_restarts: 10
+  restarts_rate_limit_n: 1
+  restarts_rate_limit_period_s: 60
+
+engine_settings:
+  width: 84
+  height: 84
+  quality_level: 5
+  time_scale: 1.0
+  target_frame_rate: -1
+  capture_frame_rate: 60
+  no_graphics: false
+
+# Fresh run — no resume, no initialize_from (the ray obs change makes the stand checkpoint
+# incompatible). This folder starts empty at run 0.
+checkpoint_settings:
+  run_id: ybot_loco_avoid_v1
+  initialize_from: null
+  load_model: false
+  resume: false
+  force: false
+  train_model: true
+  inference: false
+  results_dir: results
+
+torch_settings:
+  device: null
+
+debug: false

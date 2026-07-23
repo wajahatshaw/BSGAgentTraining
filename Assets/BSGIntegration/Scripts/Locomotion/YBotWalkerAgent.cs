@@ -77,14 +77,65 @@ public class YBotWalkerAgent : Agent
     public float fallPenalty = 1.0f;
     public float reachReward = 2.0f;
 
+    [Header("Obstacle avoidance (walk mode only)")]
+    [Tooltip("Weight of the proximity penalty applied as the body nears a non-target obstacle " +
+             "(Wall/Station/Prop/Human). The RayPerceptionSensor gives the policy the PERCEPTION; " +
+             "this penalty gives it the INCENTIVE to route around. Kept below progressWeight so " +
+             "reaching the target stays dominant.")]
+    public float obstacleAvoidWeight = 0.15f;
+    [Tooltip("Body-to-obstacle distance (m) at/under which the proximity penalty is at full strength; " +
+             "it ramps to zero at this radius.")]
+    public float obstacleContactRadius = 0.9f;
+    [Tooltip("Body-to-obstacle distance (m) treated as a hard collision — applies fallPenalty-style " +
+             "obstacleHitPenalty and optionally ends the episode.")]
+    public float obstacleHitDistance = 0.35f;
+    public float obstacleHitPenalty = 1.0f;
+    [Tooltip("End the episode on a hard obstacle collision (like a fall). Off by default so the agent " +
+             "learns to recover/steer away rather than being reset on every graze.")]
+    public bool endEpisodeOnObstacleHit = false;
+    [Tooltip("Curriculum (avoid phase): bias target placement so an obstacle sits on the straight " +
+             "line from the agent to the target, forcing it to actually route around. Enable once " +
+             "stand+walk are solid.")]
+    public bool biasTargetBehindObstacles = false;
+
+    [Header("Per-category avoidance (reward-only, resume-safe)")]
+    [Tooltip("Multiplier on the proximity + hit penalty per obstacle category. Living things (Human, " +
+             "Agent) cost more to bump into than static scenery, so the policy keeps a wider berth " +
+             "around people. Pure reward shaping — changing these never alters the obs/action spec, " +
+             "so it is safe on any --resume.")]
+    public float wallPenaltyScale = 1.0f;
+    public float stationPenaltyScale = 1.0f;
+    public float furniturePenaltyScale = 1.0f;
+    public float propPenaltyScale = 1.0f;
+    public float agentPenaltyScale = 1.5f;
+    public float humanPenaltyScale = 2.0f;
+
+    [Header("Training placeholders (scene-only, resume-safe)")]
+    [Tooltip("Spawn a per-episode field of placeholder obstacles (boxes/cylinders on the Wall layer, " +
+             "tagged Furniture/Prop/Wall) so the ray sensor + avoidance reward have things to learn " +
+             "against BEFORE the real office scene exists. Turn OFF once training runs in the real " +
+             "populated scene. Scene-only — never affects the frozen obs/action spec.")]
+    public bool spawnTrainingPlaceholders = true;
+    [Tooltip("Number of placeholder obstacles spawned per episode (randomized position/size/type).")]
+    public int placeholderObstacleCount = 4;
+
+    [Header("Action smoothness")]
+    [Tooltip("Penalty on squared action delta between steps (jerk). Reduces the twitchy PPO ragdoll " +
+             "buzz for a more natural gait. Reward-only; safe on any resume.")]
+    public float actionSmoothWeight = 0.005f;
+
     YBotLocomotionRig _rig;
     YBotFootContact _leftFoot;
     YBotFootContact _rightFoot;
     float _prevTargetDistance;
     bool _ownsTarget;
     float[] _actionBuffer;
+    float[] _prevActionBuffer;   // for the action-smoothness (jerk) penalty
     int _actionsReceived;        // >0 confirms the Python trainer is sending actions
     float _nextTrainingLogTime;  // throttle for the clean current-training log
+    int _obstacleLayerMask;      // 0 = uninitialized, -1 = no Wall layer, else (1 << wallLayer)
+    static readonly Collider[] _obstacleOverlap = new Collider[16];
+    YBotTrainingObstacleField _placeholders; // per-episode placeholder obstacles (training only)
 
     public static int ObservationSize(int totalDof) => 2 * totalDof + 16;
 
@@ -116,7 +167,24 @@ public class YBotWalkerAgent : Agent
         _rig.ResetToSpawn();
         EnsureTarget();
         RandomizeTarget();
+
+        // Per-episode placeholder obstacle field (training only; off in the real populated scene).
+        // Spawned AFTER the target is placed so it can avoid dropping an obstacle on the goal, and
+        // only in walk/avoid mode (stability mode has no navigation, so obstacles are pointless).
+        if (spawnTrainingPlaceholders && !stabilityOnlyTraining)
+        {
+            if (_placeholders == null)
+                _placeholders = YBotTrainingObstacleField.GetOrCreate(zoneIndex);
+            _placeholders.Randomize(_rig.Root.transform.position, target, zoneIndex,
+                                    placeholderObstacleCount, reachTargetDistance);
+        }
+        else if (_placeholders != null)
+        {
+            _placeholders.Clear();
+        }
+
         _prevTargetDistance = PlanarDistanceToTarget();
+        _prevActionBuffer = null; // avoid a spurious jerk spike across the episode boundary
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -183,6 +251,22 @@ public class YBotWalkerAgent : Agent
         for (int i = 0; i < _actionBuffer.Length; i++)
             _actionBuffer[i] = i < cont.Length ? cont[i] : 0f;
         _rig.ApplyActions(_actionBuffer);
+
+        // Action-smoothness (jerk) penalty: squared change from the previous step's actions. Applied
+        // in every mode (natural posture in stand, natural gait in walk). Reward-only.
+        if (_prevActionBuffer != null && _prevActionBuffer.Length == _actionBuffer.Length && actionSmoothWeight > 0f)
+        {
+            float jerk = 0f;
+            for (int i = 0; i < _actionBuffer.Length; i++)
+            {
+                float d = _actionBuffer[i] - _prevActionBuffer[i];
+                jerk += d * d;
+            }
+            AddReward(-actionSmoothWeight * jerk);
+        }
+        if (_prevActionBuffer == null || _prevActionBuffer.Length != _actionBuffer.Length)
+            _prevActionBuffer = new float[_actionBuffer.Length];
+        System.Array.Copy(_actionBuffer, _prevActionBuffer, _actionBuffer.Length);
 
         // Fall / non-finite handling lives in FixedUpdate so it also runs with no trainer attached.
         if (!_rig.HasValidPhysicsState())
@@ -253,6 +337,11 @@ public class YBotWalkerAgent : Agent
         if (leftGrounded && _leftFoot != null) slip += Mathf.Min(_leftFoot.HorizontalSpeed, 3f);
         if (rightGrounded && _rightFoot != null) slip += Mathf.Min(_rightFoot.HorizontalSpeed, 3f);
         if (slip > 0f) AddReward(-footSlipWeight * slip);
+
+        // Obstacle avoidance (walk mode only): penalize nearing / colliding with any non-target
+        // physical object. Perception comes from the RayPerceptionSensor; this is the incentive.
+        if (!stabilityOnlyTraining)
+            ApplyObstacleAvoidanceReward(root.position);
 
         // Existential cost (walk mode only): small per-step time penalty so idling is never free.
         // During stability training, standing IS the goal, so no time cost is applied there.
@@ -350,19 +439,22 @@ public class YBotWalkerAgent : Agent
         target = go.transform;
         _ownsTarget = true;
 
-        // Visible beacon so you can SEE where the agent is walking. Purely cosmetic: its collider
-        // is removed so it never interferes with physics, foot contacts, or the ground raycast. It
-        // floats above the ground target point — the reward uses only the planar (xz) distance, so
-        // the marker's height is irrelevant to training.
-        var marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        marker.name = "YBotWalkerTargetMarker";
-        var col = marker.GetComponent<Collider>();
-        if (col != null) Destroy(col);
+        // The goal is a DESK-scale box (office desk / workstation), not an abstract point — so the
+        // ray sensor perceives the destination as a real "Furniture" object the way it will in the
+        // real scene. It sits on the ground at target.position with a non-trigger collider on the
+        // Wall layer. It is NEVER penalized: IsCurrentTarget excludes it (it is a child of target),
+        // and SampleGroundY skips it, so the desk box can't corrupt ground sampling. Reach is decided
+        // on planar (xz) distance, so the agent arrives in front of the desk rather than climbing it.
+        var marker = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        marker.name = "YBotWalkerTargetDesk";
         marker.transform.SetParent(target, false);
-        marker.transform.localPosition = new Vector3(0f, 1.2f, 0f);
-        marker.transform.localScale = Vector3.one * 0.4f;
+        // Desk dimensions: 1.35 m (W) x 0.75 m (H) x 0.70 m (D); base resting on the ground point.
+        marker.transform.localScale = new Vector3(1.35f, 0.75f, 0.70f);
+        marker.transform.localPosition = new Vector3(0f, 0.375f, 0f);
+        ScenePhysicsLayers.ApplyEnvironmentLayer(marker);            // Wall layer → seen by the rays
+        ScenePhysicsLayers.SafeSetTag(marker, ScenePhysicsLayers.TagFurniture);
         var rend = marker.GetComponent<Renderer>();
-        if (rend != null) rend.material.color = new Color(0.2f, 0.8f, 1f); // cyan beacon
+        if (rend != null) rend.material.color = new Color(0.2f, 0.8f, 1f); // cyan desk = the goal
     }
 
     void RandomizeTarget()
@@ -378,19 +470,125 @@ public class YBotWalkerAgent : Agent
         }
 
         Vector3 origin = _rig.Root.transform.position;
-        float ang = Random.value * Mathf.PI * 2f;
-        float r = Mathf.Lerp(targetSpawnRadius * 0.4f, targetSpawnRadius, Random.value);
-        Vector3 pos = origin + new Vector3(Mathf.Cos(ang) * r, 0f, Mathf.Sin(ang) * r);
-        pos = ZonePlayAreaBounds.ClampPosition(zoneIndex, pos); // keep the goal inside the zone
-        pos.y = SampleGroundY(pos);
-        target.position = pos;
+        int attempts = biasTargetBehindObstacles ? 8 : 1;
+        Vector3 chosen = origin;
+        for (int a = 0; a < attempts; a++)
+        {
+            float ang = Random.value * Mathf.PI * 2f;
+            float r = Mathf.Lerp(targetSpawnRadius * 0.4f, targetSpawnRadius, Random.value);
+            Vector3 pos = origin + new Vector3(Mathf.Cos(ang) * r, 0f, Mathf.Sin(ang) * r);
+            pos = ZonePlayAreaBounds.ClampPosition(zoneIndex, pos); // keep the goal inside the zone
+            pos.y = SampleGroundY(pos);
+            chosen = pos;
+
+            // Curriculum: prefer a target with an obstacle between the agent and it, so the agent
+            // must route around instead of walking straight. Accept the first blocked candidate;
+            // otherwise the last candidate stands (unbiased fallback).
+            if (!biasTargetBehindObstacles)
+                break;
+            int mask = ObstacleMask();
+            if (mask != 0)
+            {
+                Vector3 a0 = origin + Vector3.up * 0.9f;
+                Vector3 b0 = new Vector3(pos.x, a0.y, pos.z);
+                if (Physics.Linecast(a0, b0, mask, QueryTriggerInteraction.Ignore))
+                    break;
+            }
+        }
+        target.position = chosen;
+    }
+
+    /// <summary>
+    /// Proximity/collision penalty against non-target physical objects on the Wall layer. Uses a
+    /// cheap OverlapSphere around the hips — no per-bone collision components needed — and applies
+    /// the "identity (tag) vs role (runtime reference)" rule: the agent's CURRENT target object is
+    /// never penalized, everything else (Wall/Station/Prop/Human) is.
+    /// </summary>
+    void ApplyObstacleAvoidanceReward(Vector3 bodyPos)
+    {
+        int mask = ObstacleMask();
+        if (mask == 0) return;
+
+        int n = Physics.OverlapSphereNonAlloc(bodyPos, obstacleContactRadius, _obstacleOverlap, mask, QueryTriggerInteraction.Ignore);
+        float worstProximityPenalty = 0f; // proximity * category scale, worst over all obstacles
+        float worstHitScale = 0f;         // category scale of the closest hard-hit obstacle (0 = none)
+        for (int i = 0; i < n; i++)
+        {
+            Collider c = _obstacleOverlap[i];
+            if (c == null) continue;
+            if (c.GetComponentInParent<ArticulationBody>() != null) continue; // skip the agent's own rig
+            if (IsCurrentTarget(c.transform)) continue;                       // never punish the goal
+
+            Vector3 closest = c.ClosestPoint(bodyPos);
+            Vector3 planar = new Vector3(bodyPos.x - closest.x, 0f, bodyPos.z - closest.z);
+            float d = planar.magnitude;
+            float prox = Mathf.Clamp01(1f - d / Mathf.Max(0.01f, obstacleContactRadius));
+            float scale = CategoryPenaltyScale(c.tag); // living things cost more than scenery
+            float scaledProx = prox * scale;
+            if (scaledProx > worstProximityPenalty) worstProximityPenalty = scaledProx;
+            if (d < obstacleHitDistance && scale > worstHitScale) worstHitScale = scale;
+        }
+
+        if (worstProximityPenalty > 0f)
+            AddReward(-obstacleAvoidWeight * worstProximityPenalty);
+        if (worstHitScale > 0f)
+        {
+            AddReward(-obstacleHitPenalty * worstHitScale);
+            if (endEpisodeOnObstacleHit)
+                EndEpisode();
+        }
+    }
+
+    /// <summary>
+    /// Per-category penalty multiplier for a hit collider's tag. Reward shaping only — living things
+    /// (Human, Agent) are costlier to bump than static scenery. Never changes the obs/action spec.
+    /// </summary>
+    float CategoryPenaltyScale(string tag)
+    {
+        switch (tag)
+        {
+            case ScenePhysicsLayers.TagHuman:     return humanPenaltyScale;
+            case ScenePhysicsLayers.TagAgent:     return agentPenaltyScale;
+            case ScenePhysicsLayers.TagStation:   return stationPenaltyScale;
+            case ScenePhysicsLayers.TagFurniture: return furniturePenaltyScale;
+            case ScenePhysicsLayers.TagProp:      return propPenaltyScale;
+            default:                              return wallPenaltyScale; // Wall + Untagged scenery
+        }
+    }
+
+    /// <summary>
+    /// Cached obstacle overlap mask: the "Wall" layer (static scenery) plus the "Character" layer
+    /// (other agents/humans), matching the ray sensor. Returns 0 when neither layer is defined.
+    /// </summary>
+    int ObstacleMask()
+    {
+        if (_obstacleLayerMask == 0)
+        {
+            int wall = LayerMask.NameToLayer(ScenePhysicsLayers.EnvironmentLayerName);
+            int character = LayerMask.NameToLayer(ScenePhysicsLayers.CharacterLayerName);
+            int m = 0;
+            if (wall >= 0) m |= (1 << wall);
+            if (character >= 0) m |= (1 << character);
+            _obstacleLayerMask = m != 0 ? m : -1;
+        }
+        return _obstacleLayerMask == -1 ? 0 : _obstacleLayerMask;
+    }
+
+    /// <summary>True when <paramref name="hit"/> is (part of) the agent's current target object.</summary>
+    bool IsCurrentTarget(Transform hit)
+    {
+        if (target == null || hit == null) return false;
+        for (Transform t = hit; t != null; t = t.parent)
+            if (t == target || t == target.parent)
+                return true;
+        return false;
     }
 
     /// <summary>
     /// Ground Y under a point. For ground-tagged colliders use bounds.max.y (top surface) — raw
     /// hit.point.y can report a box's BOTTOM face and bury the feet (memory gotcha #5).
     /// </summary>
-    static float SampleGroundY(Vector3 worldPos)
+    float SampleGroundY(Vector3 worldPos)
     {
         Vector3 origin = worldPos + Vector3.up * 5f;
         var hits = Physics.RaycastAll(origin, Vector3.down, 20f, ~0, QueryTriggerInteraction.Ignore);
@@ -399,6 +597,7 @@ public class YBotWalkerAgent : Agent
         foreach (var h in hits)
         {
             if (h.collider.GetComponentInParent<ArticulationBody>() != null) continue; // skip the rig
+            if (IsCurrentTarget(h.collider.transform)) continue;                       // skip the desk goal
             float topY = h.collider.bounds.max.y;
             if (!found || topY > best) { best = topY; found = true; }
         }

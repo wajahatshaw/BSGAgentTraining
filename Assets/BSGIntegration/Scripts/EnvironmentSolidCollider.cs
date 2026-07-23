@@ -26,6 +26,42 @@ public class EnvironmentSolidCollider : MonoBehaviour
 
         _solid.isTrigger = false;
         ScenePhysicsLayers.ApplyEnvironmentLayer(gameObject);
+        ScenePhysicsLayers.SafeSetTag(gameObject, ResolvePhysicalTypeTag());
+    }
+
+    /// <summary>
+    /// Static physical identity for the locomotion ray sensor, derived from the object's parent
+    /// components / name so it survives collider rebuilds without per-call-site edits:
+    ///   cognitive station → "Station", office furniture (desk/table/workstation/…) → "Furniture",
+    ///   tool/prop → "Prop", otherwise (walls/scenery) → "Wall".
+    /// This is IDENTITY only — whether this object is the agent's current target is a runtime
+    /// reference on the agent, never a tag. Agent/Human tags are assigned on agent bodies elsewhere
+    /// (Character layer), not here. Reused tags => resume-safe; this rule can be refined freely.
+    /// </summary>
+    string ResolvePhysicalTypeTag()
+    {
+        if (GetComponentInParent<CognitiveStationInteractable>() != null)
+            return ScenePhysicsLayers.TagStation;
+        if (IsFurnitureName(name) || (transform.parent != null && IsFurnitureName(transform.parent.name)))
+            return ScenePhysicsLayers.TagFurniture;
+        if (GetComponentInParent<ToolComponent>() != null
+            || GetComponentInParent<DeclarativeObjectMetadata>() != null)
+            return ScenePhysicsLayers.TagProp;
+        return ScenePhysicsLayers.TagWall;
+    }
+
+    /// <summary>
+    /// Heuristic office-furniture classifier by object name. Deliberately name-based (not a marker
+    /// component) so it works on runtime-spawned workstation parts without touching every spawn site.
+    /// Refine freely — tag assignment is scene-only and resume-safe (never triggers a retrain).
+    /// </summary>
+    static bool IsFurnitureName(string n)
+    {
+        if (string.IsNullOrEmpty(n)) return false;
+        n = n.ToLowerInvariant();
+        return n.Contains("desk") || n.Contains("table") || n.Contains("workstation")
+            || n.Contains("cabinet") || n.Contains("shelf") || n.Contains("counter")
+            || n.Contains("furniture");
     }
 
     /// <summary>
