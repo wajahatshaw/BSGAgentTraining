@@ -1213,7 +1213,7 @@ public class MultiplayerRagZone0Anchor : MonoBehaviour
         // zone instead of next to its physical targets, so it must path across the whole zone and route around
         // obstacles to reach them. Set to false to restore the normal near-targets spawn. Takes precedence over
         // the serialized designatedPhysicalAgentSpawnBaseLocal so it works without editing the scene Inspector.
-        const bool SpawnOnCognitiveSideForPathfindingTest = true;
+        const bool SpawnOnCognitiveSideForPathfindingTest = false;
         if (SpawnOnCognitiveSideForPathfindingTest)
         {
             Vector3 mentalCenter = GetMentalPlacementCenterBase();
