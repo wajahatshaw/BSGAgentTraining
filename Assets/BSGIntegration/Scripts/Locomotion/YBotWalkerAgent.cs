@@ -45,7 +45,26 @@ public class YBotWalkerAgent : Agent
              "Week 2 (walking): set false so progress-to-target + reach rewards activate and the " +
              "target spawns away from the agent. Agent is runtime-added, so this code default is " +
              "the source of truth — inspector edits don't persist.")]
-    public bool stabilityOnlyTraining = true;
+    public bool stabilityOnlyTraining = false;
+
+    [Tooltip("Gentle walk-in curriculum for a stand-warm-started policy: start the target CLOSE and in " +
+             "a forward cone, then widen distance + angle as episodes accumulate. Cushions the obs- " +
+             "normalizer shock (direction-to-target was pinned to 0 for the whole stand phase, so its " +
+             "running variance is ~0 and the first non-zero value would otherwise slam to the ±5 clamp) " +
+             "and asks for a small forward step first instead of an instant 180° turn + long march. " +
+             "TARGET PLACEMENT ONLY — never touches the 168/21 obs/action spec, so it is fully " +
+             "--resume-safe. Set false to always use the full targetSpawnRadius / 360° placement.")]
+    public bool useWalkTargetCurriculum = true;
+    [Tooltip("Walk curriculum: target distance (m) at episode 0. Ramps up to targetSpawnRadius.")]
+    public float walkCurriculumStartRadius = 1.5f;
+    [Tooltip("Walk curriculum: half-angle (deg) of the forward cone the target spawns within at " +
+             "episode 0. Opens to 180 (full circle) as the curriculum completes.")]
+    public float walkCurriculumStartConeDeg = 30f;
+    [Tooltip("Walk curriculum: completed episodes over which distance ramps to targetSpawnRadius and " +
+             "the cone opens to 360°. Set 0 to disable ramping (always full radius/angle). Note: this " +
+             "counts episodes in the CURRENT Play session, so each --resume re-ramps gently from close " +
+             "— which is exactly the safe behaviour we want after any restart.")]
+    public int walkCurriculumEpisodesToFull = 400;
 
     [Header("Reward weights")]
     // Week 2 (walking) mix: progress-to-target is dominant, but upright/height/alive are kept so
@@ -66,18 +85,24 @@ public class YBotWalkerAgent : Agent
     [Tooltip("Dense per-step reward for the root's velocity TOWARD the target, normalized to " +
              "desiredWalkSpeed. This is what makes a stand-expert actually start walking: standing " +
              "still earns 0 here, so idling stops being optimal.")]
-    public float velocityWeight = 0.1f;
+    public float velocityWeight = 0.2f;
     [Tooltip("Walk speed (m/s) at which the velocity-toward-target reward saturates — prevents lunging/sprinting.")]
     public float desiredWalkSpeed = 1.5f;
     [Tooltip("Small per-step time cost (subtracted) so standing idle is never free — discourages the " +
              "agent from balancing in place instead of walking to the target. Replaces the old alive bonus. " +
              "Walk mode only (not applied during stabilityOnlyTraining).")]
-    public float existentialPenalty = 0.002f;
+    public float existentialPenalty = 0.006f;
     public float energyPenalty = 0.0002f;
     public float fallPenalty = 1.0f;
     public float reachReward = 2.0f;
 
-    [Header("Obstacle avoidance (walk mode only)")]
+    [Header("Obstacle avoidance (avoid phase — off during pure walk)")]
+    [Tooltip("Master switch for the whole obstacle-avoidance layer: the proximity/hit penalty AND the " +
+             "per-episode placeholder obstacle field. Curriculum: keep FALSE for the Walk phase so the " +
+             "agent learns pure walk-to-target first, then set TRUE and --resume for the Avoid phase. " +
+             "Reward + scene only — never changes the frozen 168/21 obs/action spec, so it is resume-safe. " +
+             "The ray sensor (perception) is always built regardless; this only controls the INCENTIVE.")]
+    public bool enableObstacleAvoidance = false;
     [Tooltip("Weight of the proximity penalty applied as the body nears a non-target obstacle " +
              "(Wall/Station/Prop/Human). The RayPerceptionSensor gives the policy the PERCEPTION; " +
              "this penalty gives it the INCENTIVE to route around. Kept below progressWeight so " +
@@ -171,8 +196,9 @@ public class YBotWalkerAgent : Agent
 
         // Per-episode placeholder obstacle field (training only; off in the real populated scene).
         // Spawned AFTER the target is placed so it can avoid dropping an obstacle on the goal, and
-        // only in walk/avoid mode (stability mode has no navigation, so obstacles are pointless).
-        if (spawnTrainingPlaceholders && !stabilityOnlyTraining)
+        // only in the Avoid phase (enableObstacleAvoidance) — the pure Walk phase and stability mode
+        // have nothing to avoid, so obstacles would just be noise.
+        if (spawnTrainingPlaceholders && !stabilityOnlyTraining && enableObstacleAvoidance)
         {
             if (_placeholders == null)
                 _placeholders = YBotTrainingObstacleField.GetOrCreate(zoneIndex);
@@ -339,9 +365,10 @@ public class YBotWalkerAgent : Agent
         if (rightGrounded && _rightFoot != null) slip += Mathf.Min(_rightFoot.HorizontalSpeed, 3f);
         if (slip > 0f) AddReward(-footSlipWeight * slip);
 
-        // Obstacle avoidance (walk mode only): penalize nearing / colliding with any non-target
+        // Obstacle avoidance (Avoid phase only): penalize nearing / colliding with any non-target
         // physical object. Perception comes from the RayPerceptionSensor; this is the incentive.
-        if (!stabilityOnlyTraining)
+        // Gated behind enableObstacleAvoidance so the Walk phase stays pure walk-to-target.
+        if (!stabilityOnlyTraining && enableObstacleAvoidance)
             ApplyObstacleAvoidanceReward(root.position);
 
         // Existential cost (walk mode only): small per-step time penalty so idling is never free.
@@ -480,13 +507,34 @@ public class YBotWalkerAgent : Agent
         if (_targetMarker != null && !_targetMarker.activeSelf) _targetMarker.SetActive(true);
 
         Vector3 origin = _rig.Root.transform.position;
+
+        // Gentle walk-in curriculum (see useWalkTargetCurriculum): ramp target distance from close→full
+        // and the spawn cone from a narrow forward wedge→full circle over the first episodes of the
+        // session. Keeps the direction-to-target obs small/consistent so the normalizer re-learns
+        // variance smoothly after the all-zero stand phase, and asks for a small forward step first.
+        // The Avoid phase (biasTargetBehindObstacles) needs any-direction placement, so it uses full.
+        float tCurr = (useWalkTargetCurriculum && !biasTargetBehindObstacles && walkCurriculumEpisodesToFull > 0)
+            ? Mathf.Clamp01((float)CompletedEpisodes / walkCurriculumEpisodesToFull)
+            : 1f;
+        float radiusMax = Mathf.Lerp(walkCurriculumStartRadius, targetSpawnRadius, tCurr);
+        float coneDeg = (useWalkTargetCurriculum && !biasTargetBehindObstacles)
+            ? Mathf.Lerp(walkCurriculumStartConeDeg, 180f, tCurr)
+            : 180f;
+
+        // Forward heading in the XZ plane (fallback to world forward if degenerate). Cone is centred here.
+        Vector3 fwd = new Vector3(_rig.Root.transform.forward.x, 0f, _rig.Root.transform.forward.z);
+        fwd = fwd.sqrMagnitude > 1e-4f ? fwd.normalized : Vector3.forward;
+        float baseAngle = Mathf.Atan2(fwd.x, fwd.z); // so dir = (sin, cos) points along forward at offset 0
+
         int attempts = biasTargetBehindObstacles ? 8 : 1;
         Vector3 chosen = origin;
         for (int a = 0; a < attempts; a++)
         {
-            float ang = Random.value * Mathf.PI * 2f;
-            float r = Mathf.Lerp(targetSpawnRadius * 0.4f, targetSpawnRadius, Random.value);
-            Vector3 pos = origin + new Vector3(Mathf.Cos(ang) * r, 0f, Mathf.Sin(ang) * r);
+            float coneRad = coneDeg * Mathf.Deg2Rad;
+            float ang = baseAngle + Random.Range(-coneRad, coneRad);       // forward cone (full circle when coneDeg=180)
+            float rMin = Mathf.Max(reachTargetDistance + 0.75f, radiusMax * 0.5f); // always beyond reach so it isn't instantly "done"
+            float r = Mathf.Lerp(rMin, Mathf.Max(rMin + 0.25f, radiusMax), Random.value);
+            Vector3 pos = origin + new Vector3(Mathf.Sin(ang) * r, 0f, Mathf.Cos(ang) * r);
             pos = ZonePlayAreaBounds.ClampPosition(zoneIndex, pos); // keep the goal inside the zone
             pos.y = SampleGroundY(pos);
             chosen = pos;

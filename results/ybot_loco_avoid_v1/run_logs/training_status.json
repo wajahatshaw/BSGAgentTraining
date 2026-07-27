@@ -2,58 +2,58 @@
     "PhysicalAgentZone0": {
         "checkpoints": [
             {
-                "steps": 1179993,
-                "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1179993.onnx",
-                "reward": 16.977792852932645,
-                "creation_time": 1784883266.0011241,
+                "steps": 2489989,
+                "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2489989.onnx",
+                "reward": 24.12724004895704,
+                "creation_time": 1785155261.853853,
                 "auxillary_file_paths": [
-                    "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1179993.pt"
+                    "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2489989.pt"
                 ]
             },
             {
-                "steps": 1189992,
-                "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1189992.onnx",
-                "reward": 16.686359480023384,
-                "creation_time": 1784883525.711338,
+                "steps": 2499992,
+                "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2499992.onnx",
+                "reward": 24.329614873518025,
+                "creation_time": 1785155612.733792,
                 "auxillary_file_paths": [
-                    "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1189992.pt"
+                    "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2499992.pt"
                 ]
             },
             {
-                "steps": 1199964,
-                "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1199964.onnx",
-                "reward": 16.693454430697905,
-                "creation_time": 1784883784.95548,
+                "steps": 2509984,
+                "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2509984.onnx",
+                "reward": 24.273755077575554,
+                "creation_time": 1785155967.943433,
                 "auxillary_file_paths": [
-                    "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1199964.pt"
+                    "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2509984.pt"
                 ]
             },
             {
-                "steps": 1209986,
-                "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1209986.onnx",
-                "reward": 16.736829912589243,
-                "creation_time": 1784884139.400395,
+                "steps": 2519977,
+                "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2519977.onnx",
+                "reward": 24.41292713558863,
+                "creation_time": 1785156366.287769,
                 "auxillary_file_paths": [
-                    "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1209986.pt"
+                    "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2519977.pt"
                 ]
             },
             {
-                "steps": 1212602,
-                "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1212602.onnx",
-                "reward": 16.736728230819264,
-                "creation_time": 1784884238.7799082,
+                "steps": 2523734,
+                "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2523734.onnx",
+                "reward": 24.021783517754596,
+                "creation_time": 1785156485.8370728,
                 "auxillary_file_paths": [
-                    "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1212602.pt"
+                    "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2523734.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 1212602,
+            "steps": 2523734,
             "file_path": "results/ybot_loco_avoid_v1/PhysicalAgentZone0.onnx",
-            "reward": 16.736728230819264,
-            "creation_time": 1784884238.7799082,
+            "reward": 24.021783517754596,
+            "creation_time": 1785156485.8370728,
             "auxillary_file_paths": [
-                "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-1212602.pt"
+                "results/ybot_loco_avoid_v1/PhysicalAgentZone0/PhysicalAgentZone0-2523734.pt"
             ]
         }
     },

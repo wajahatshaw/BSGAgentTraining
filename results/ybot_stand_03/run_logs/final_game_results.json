@@ -1,5 +1,5 @@
 ﻿{
-    "timestamp": "2026-07-22 17:21:12",
+    "timestamp": "2026-07-24 14:38:46",
     "sceneId": "scene_warehouse_replica_001",
     "mlAgentsRunId": "ybot_stand_03",
     "resultsRunLogsRelativePath": "results/ybot_stand_03/run_logs/",
@@ -8,7 +8,6 @@
         {
             "agentId": "P1",
             "behaviorName": "PhysicalAgentZone0",
-            "role": "Physical",
             "skillLevel": 5.0,
             "desireLevel": 100.0,
             "skillPercentage": 5.00,
@@ -907,7 +906,6 @@
         {
             "agentId": "M1",
             "behaviorName": "PhysicalAgentZone0",
-            "role": "Mental",
             "skillLevel": 0.0,
             "desireLevel": 100.0,
             "skillPercentage": 0.00,

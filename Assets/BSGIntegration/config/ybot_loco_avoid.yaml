@@ -11,9 +11,9 @@
 # Wall/Station/Furniture/Prop/Agent/Human/Reserved1/Reserved2 locked in — reserved slots let new
 # object categories be added LATER by reusing a tag, with no further reset). The whole curriculum
 # runs as REWARD-ONLY phases on THIS one run (all resume-safe from here on):
-#   1. Stand   — YBotWalkerAgent.stabilityOnlyTraining = true  (rays present but dormant)
-#   2. Walk    — stabilityOnlyTraining = false                 (progress/heading/velocity/reach)
-#   3. Avoid   — biasTargetBehindObstacles = true + obstacle penalty active (per-category scales)
+#   1. Stand   — stabilityOnlyTraining = true,  enableObstacleAvoidance = false  (rays present but dormant)
+#   2. Walk    — stabilityOnlyTraining = false, enableObstacleAvoidance = false  (progress/heading/velocity/reach; PURE walk-to-target)
+#   3. Avoid   — enableObstacleAvoidance = true (proximity/hit penalty + placeholder obstacles); optionally biasTargetBehindObstacles = true
 # Curriculum = Unity-side reward flags only; obs/action spec stays 168/21 every phase so later
 # phases --resume this same run-id with no reset.
 #
