@@ -163,6 +163,19 @@ public class YBotWalkerAgent : Agent
     static readonly Collider[] _obstacleOverlap = new Collider[16];
     YBotTrainingObstacleField _placeholders; // per-episode placeholder obstacles (training only)
 
+    // --- Reward-term instrumentation (diagnostics only) ---------------------------------------
+    // Each AddReward is mirrored into a per-window bucket so the TRAINING log can show WHERE the
+    // reward is coming from — posture (upright/height/heading) vs actual locomotion (progress/
+    // velocity). These buckets never affect learning; AddReward still does all the work. Reset
+    // each time the log prints (every 10 s).
+    double _accUpright, _accHeight, _accFoot, _accProgress, _accHeading, _accVelocity;
+    double _accExistential, _accObstacle, _accSlip, _accEnergy, _accSmooth, _accFallReach;
+    int _accSteps;               // reward-steps counted since the last log print
+    float _lastDist, _lastVelToward, _lastFacing, _lastProgress; // latest instantaneous values
+
+    // Mirror an AddReward into a diagnostics bucket (learning unchanged).
+    void AddR(ref double bucket, float r) { AddReward(r); bucket += r; }
+
     public static int ObservationSize(int totalDof) => 2 * totalDof + 16;
 
     public void Wire(YBotLocomotionRig rig, YBotFootContact left, YBotFootContact right)
@@ -289,7 +302,7 @@ public class YBotWalkerAgent : Agent
                 float d = _actionBuffer[i] - _prevActionBuffer[i];
                 jerk += d * d;
             }
-            AddReward(-actionSmoothWeight * jerk);
+            AddR(ref _accSmooth, -actionSmoothWeight * jerk);
         }
         if (_prevActionBuffer == null || _prevActionBuffer.Length != _actionBuffer.Length)
             _prevActionBuffer = new float[_actionBuffer.Length];
@@ -305,12 +318,14 @@ public class YBotWalkerAgent : Agent
         if (height < fallHeight)
             return;
 
+        _accSteps++; // count this as a reward-applying step for the per-step breakdown
+
         // Upright posture: dot(local up, world up).
         float upright = Vector3.Dot(root.up, Vector3.up);
-        AddReward(uprightWeight * Mathf.Clamp01(upright));
+        AddR(ref _accUpright, uprightWeight * Mathf.Clamp01(upright));
 
         float normHeight = Mathf.Clamp((height - fallHeight) / (standHeight - fallHeight), 0f, 1f);
-        AddReward(heightWeight * normHeight);
+        AddR(ref _accHeight, heightWeight * normHeight);
 
         // Foot-contact shaping for a REALISTIC walking gait. Walking has a single-support phase
         // (one foot planted while the other swings forward), so we must NOT require both feet down
@@ -320,16 +335,18 @@ public class YBotWalkerAgent : Agent
         bool leftGrounded = _leftFoot != null && _leftFoot.IsGrounded;
         bool rightGrounded = _rightFoot != null && _rightFoot.IsGrounded;
         if (leftGrounded || rightGrounded)
-            AddReward(footGroundedWeight);
+            AddR(ref _accFoot, footGroundedWeight);
         else
-            AddReward(-footGroundedWeight); // both feet off the ground = hop/jump, not a walk
+            AddR(ref _accFoot, -footGroundedWeight); // both feet off the ground = hop/jump, not a walk
 
         float dist = PlanarDistanceToTarget();
+        _lastDist = dist;
         if (!stabilityOnlyTraining && progressWeight > 0f)
         {
             float progress = _prevTargetDistance - dist;
             _prevTargetDistance = dist;
-            AddReward(progressWeight * progress);
+            _lastProgress = progress;
+            AddR(ref _accProgress, progressWeight * progress);
         }
         else
         {
@@ -347,14 +364,16 @@ public class YBotWalkerAgent : Agent
             Vector3 toTarget = PlanarToTarget().normalized;
             Vector3 fwd = new Vector3(root.forward.x, 0f, root.forward.z).normalized;
             float facing = Vector3.Dot(fwd, toTarget); // 1 = facing target, -1 = facing away
-            AddReward(headingWeight * facing);
+            _lastFacing = facing;
+            AddR(ref _accHeading, headingWeight * facing);
 
             // Dense velocity-toward-target reward: pays every step the agent actually MOVES toward
             // the goal, saturating at desiredWalkSpeed. Standing still scores 0 here, so a stand-expert
             // can no longer farm posture rewards by idling — moving toward the target is what pays.
             Vector3 planarVel = _rig.Root.linearVelocity; planarVel.y = 0f;
             float velToward = Vector3.Dot(planarVel, toTarget);
-            AddReward(velocityWeight * Mathf.Clamp01(velToward / desiredWalkSpeed));
+            _lastVelToward = velToward;
+            AddR(ref _accVelocity, velocityWeight * Mathf.Clamp01(velToward / desiredWalkSpeed));
         }
 
         // Foot-slip penalty: a grounded foot should plant, not skate (moonwalk). Penalize the
@@ -363,7 +382,7 @@ public class YBotWalkerAgent : Agent
         float slip = 0f;
         if (leftGrounded && _leftFoot != null) slip += Mathf.Min(_leftFoot.HorizontalSpeed, 3f);
         if (rightGrounded && _rightFoot != null) slip += Mathf.Min(_rightFoot.HorizontalSpeed, 3f);
-        if (slip > 0f) AddReward(-footSlipWeight * slip);
+        if (slip > 0f) AddR(ref _accSlip, -footSlipWeight * slip);
 
         // Obstacle avoidance (Avoid phase only): penalize nearing / colliding with any non-target
         // physical object. Perception comes from the RayPerceptionSensor; this is the incentive.
@@ -374,15 +393,15 @@ public class YBotWalkerAgent : Agent
         // Existential cost (walk mode only): small per-step time penalty so idling is never free.
         // During stability training, standing IS the goal, so no time cost is applied there.
         if (!stabilityOnlyTraining)
-            AddReward(-existentialPenalty);
+            AddR(ref _accExistential, -existentialPenalty);
 
         float effort = 0f;
         for (int i = 0; i < cont.Length; i++) effort += cont[i] * cont[i];
-        AddReward(-energyPenalty * effort);
+        AddR(ref _accEnergy, -energyPenalty * effort);
 
         if (!stabilityOnlyTraining && dist < reachTargetDistance)
         {
-            AddReward(reachReward);
+            AddR(ref _accFallReach, reachReward);
             EndEpisode();
         }
     }
@@ -411,16 +430,30 @@ public class YBotWalkerAgent : Agent
             _nextTrainingLogTime = Time.time + 10f;
             float gY = SampleGroundY(root.transform.position);
             float up = Vector3.Dot(root.transform.up, Vector3.up);
+            int s = Mathf.Max(1, _accSteps); // avoid /0 on the first window
+            System.Func<double, float> perStep = acc => (float)(acc / s);
             Debug.Log($"[YBotWalker] TRAINING — completedEpisodes={CompletedEpisodes}, " +
                       $"actionsReceived={_actionsReceived} ({(_actionsReceived > 0 ? "trainer SENDING actions" : "NO actions — trainer not connected")}), " +
                       $"stepThisEpisode={StepCount}, episodeReward={GetCumulativeReward():F2}, " +
-                      $"upright={up:F2}, hipHeight={(root.transform.position.y - gY):F2}");
+                      $"upright={up:F2}, hipHeight={(root.transform.position.y - gY):F2}\n" +
+                      $"    reward/step (last {_accSteps} steps) — POSTURE: upright={perStep(_accUpright):F3} " +
+                      $"height={perStep(_accHeight):F3} foot={perStep(_accFoot):F3} heading={perStep(_accHeading):F3} | " +
+                      $"LOCOMOTION: progress={perStep(_accProgress):F3} velocity={perStep(_accVelocity):F3} | " +
+                      $"COSTS: obstacle={perStep(_accObstacle):F3} slip={perStep(_accSlip):F3} " +
+                      $"existential={perStep(_accExistential):F3} energy={perStep(_accEnergy):F3} smooth={perStep(_accSmooth):F3} " +
+                      $"fall/reach={perStep(_accFallReach):F3}\n" +
+                      $"    locomotion state — distToTarget={_lastDist:F2}m velToward={_lastVelToward:F2}m/s " +
+                      $"facing={_lastFacing:F2} progressΔ/step={_lastProgress:F4}m");
+            // Reset the diagnostics window.
+            _accUpright = _accHeight = _accFoot = _accProgress = _accHeading = _accVelocity = 0;
+            _accExistential = _accObstacle = _accSlip = _accEnergy = _accSmooth = _accFallReach = 0;
+            _accSteps = 0;
         }
 
         // Non-finite → reset.
         if (!_rig.HasValidPhysicsState())
         {
-            AddReward(-fallPenalty);
+            AddR(ref _accFallReach, -fallPenalty);
             EndEpisode();
             return;
         }
@@ -443,7 +476,7 @@ public class YBotWalkerAgent : Agent
         float upright = Vector3.Dot(root.transform.up, Vector3.up);
         if (pos.y - groundY < fallHeight || upright < minUprightToSurvive)
         {
-            AddReward(-fallPenalty);
+            AddR(ref _accFallReach, -fallPenalty);
             EndEpisode();
         }
     }
@@ -588,10 +621,10 @@ public class YBotWalkerAgent : Agent
         }
 
         if (worstProximityPenalty > 0f)
-            AddReward(-obstacleAvoidWeight * worstProximityPenalty);
+            AddR(ref _accObstacle, -obstacleAvoidWeight * worstProximityPenalty);
         if (worstHitScale > 0f)
         {
-            AddReward(-obstacleHitPenalty * worstHitScale);
+            AddR(ref _accObstacle, -obstacleHitPenalty * worstHitScale);
             if (endEpisodeOnObstacleHit)
                 EndEpisode();
         }
