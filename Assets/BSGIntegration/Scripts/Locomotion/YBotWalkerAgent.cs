@@ -85,13 +85,13 @@ public class YBotWalkerAgent : Agent
     [Tooltip("Dense per-step reward for the root's velocity TOWARD the target, normalized to " +
              "desiredWalkSpeed. This is what makes a stand-expert actually start walking: standing " +
              "still earns 0 here, so idling stops being optimal.")]
-    public float velocityWeight = 0.2f;
+    public float velocityWeight = 0.4f; // raised 0.2→0.4 (Phase A): moving toward the target now pays more than idling
     [Tooltip("Walk speed (m/s) at which the velocity-toward-target reward saturates — prevents lunging/sprinting.")]
     public float desiredWalkSpeed = 1.5f;
     [Tooltip("Small per-step time cost (subtracted) so standing idle is never free — discourages the " +
              "agent from balancing in place instead of walking to the target. Replaces the old alive bonus. " +
              "Walk mode only (not applied during stabilityOnlyTraining).")]
-    public float existentialPenalty = 0.006f;
+    public float existentialPenalty = 0.02f; // raised 0.006→0.02 (Phase A): standing idle bleeds reward so walking becomes optimal
     public float energyPenalty = 0.0002f;
     public float fallPenalty = 1.0f;
     public float reachReward = 2.0f;
