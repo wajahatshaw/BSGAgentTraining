@@ -26,13 +26,20 @@ public class YBotWalkerAgent : Agent
 {
     [Header("Target")]
     public Transform target;
-    public float targetSpawnRadius = 6f;
+    // Lowered 6→2.5: at ~0.36 m/s and a ~110-step (~2.2 s) life the agent covers <1 m per episode, so
+    // a 3-6 m target was unreachable and the reach bonus almost never fired. Widen this back out only
+    // once the chained-reach count in the WHY-EPISODES-END log is consistently high.
+    public float targetSpawnRadius = 2.5f;
 
     [Header("Episode")]
     [Tooltip("Zone index used to clamp the body inside the zone play area (designated player = 0).")]
     public int zoneIndex = 0;
-    [Tooltip("Hips height above ground (m) below which the agent is considered fallen.")]
-    public float fallHeight = 0.6f;
+    [Tooltip("Hips height above ground (m) below which the agent is considered fallen. Lowered " +
+             "0.6→0.4: at 0.6 the agent (standing hip height ~0.98 m) was killed by any knee bend " +
+             "deeper than ~40%, and the WHY-EPISODES-END log showed 89% of episodes ending on this " +
+             "check with hips at 0.57-0.59 m. A crouch that deep is recoverable for a real biped, so " +
+             "0.6 was terminating episodes the agent could have survived.")]
+    public float fallHeight = 0.4f;
     [Tooltip("dot(root.up, worldUp) below which the body counts as tipped over and the episode resets. " +
              "Without this a backward-tipped body keeps its hips above fallHeight and gets stuck, never resetting.")]
     public float minUprightToSurvive = 0.4f;
@@ -69,8 +76,12 @@ public class YBotWalkerAgent : Agent
     [Header("Reward weights")]
     // Week 2 (walking) mix: progress-to-target is dominant, but upright/height/alive are kept so
     // the warm-started balance from the stand checkpoint isn't forgotten while learning to walk.
-    public float uprightWeight = 0.15f;
-    public float heightWeight = 0.05f;
+    // Lowered 0.15→0.05 and 0.05→0.02: posture was 78% of ALL reward the agent earned (0.241/step of
+    // 0.31), so standing upright WAS the optimal policy and walking was a rounding error. Posture is
+    // now maintenance shaping only — the fall termination and minUprightToSurvive remain the real
+    // enforcement, so balance is still required, it just stops being the whole objective.
+    public float uprightWeight = 0.05f;
+    public float heightWeight = 0.02f;
     public float footGroundedWeight = 0.02f;
     [Tooltip("Penalty per (m/s) of horizontal speed of a foot WHILE it is grounded — stops a planted " +
              "foot from skating/moonwalking so the stance looks natural. No hard gait rhythm is forced.")]
@@ -94,7 +105,21 @@ public class YBotWalkerAgent : Agent
     public float existentialPenalty = 0.02f; // raised 0.006→0.02 (Phase A): standing idle bleeds reward so walking becomes optimal
     public float energyPenalty = 0.0002f;
     public float fallPenalty = 1.0f;
-    public float reachReward = 2.0f;
+    // Raised 2.0→10.0. At ~0.2 reward/step a +2 bonus was indistinguishable from noise; arrival needs
+    // to register as a clear spike now that reaching chains the target instead of ending the episode.
+    public float reachReward = 10.0f;
+
+    [Header("Reach validity — the agent must ARRIVE ON ITS FEET")]
+    [Tooltip("Minimum dot(up, worldUp) for a reach to count. Without this the agent can DIVE: a " +
+             "toppling body's hips travel 0.3-0.6 m horizontally, enough to cross reachTargetDistance " +
+             "from the nearest spawn, and OnActionReceived only skips below fallHeight — so mid-fall " +
+             "(hips ~0.55 m, upright ~0.5) the reach still fired. That paid +10 against a -1 fall " +
+             "penalty: a net +9 for falling over, which is far easier than walking. Arrival must " +
+             "therefore require a standing posture.")]
+    public float reachMinUpright = 0.7f;
+    [Tooltip("Minimum hip height as a FRACTION of standHeight for a reach to count. Blocks the " +
+             "'collapse forward into the target' variant that keeps the torso vertical while sinking.")]
+    public float reachMinHeightFrac = 0.75f;
 
     [Header("Obstacle avoidance (avoid phase — off during pure walk)")]
     [Tooltip("Master switch for the whole obstacle-avoidance layer: the proximity/hit penalty AND the " +
@@ -172,6 +197,39 @@ public class YBotWalkerAgent : Agent
     double _accExistential, _accObstacle, _accSlip, _accEnergy, _accSmooth, _accFallReach;
     int _accSteps;               // reward-steps counted since the last log print
     float _lastDist, _lastVelToward, _lastFacing, _lastProgress; // latest instantaneous values
+
+    // --- Termination-cause instrumentation (diagnostics only) ----------------------------------
+    // The two fall conditions (hips sank below fallHeight vs body tipped past minUprightToSurvive)
+    // share one code path, so the log cannot tell them apart — yet they have OPPOSITE fixes:
+    // sinking = the legs aren't holding the body up, tipping = balance/coordination. These counters
+    // split them, plus episode-length stats (is the ~100-step episode real or a log artifact?) and
+    // the margin values AT the moment of failure (how close to the threshold it was). Pure logging:
+    // no reward, no observation, no action-space effect.
+    // Termination causes since the last log. obstacleHit only fires in the Avoid phase
+    // (enableObstacleAvoidance + endEpisodeOnObstacleHit); it stays 0 during the pure Walk phase.
+    int _termSink, _termTip, _termNonFinite, _termObstacleHit;
+    // Reach is no longer a termination (targets chain), so it is counted separately — otherwise it
+    // would pollute the episode-length stats with mid-episode events.
+    int _reachCount;
+    // Crossings of the reach radius REJECTED because the agent was not on its feet. A high number
+    // here means the policy is actively trying to dive at the target rather than walk to it.
+    int _reachRejected;
+    double _sinkHeightSum, _tipUprightSum;              // value at failure, to see how marginal it was
+    int _epCount; long _epStepsSum; int _epStepsMin = int.MaxValue, _epStepsMax;
+
+    /// <summary>
+    /// Records one episode termination for the diagnostics log. Call IMMEDIATELY BEFORE EndEpisode()
+    /// — EndEpisode() zeroes StepCount, so the length must be captured first.
+    /// </summary>
+    void NoteTermination(ref int causeCounter)
+    {
+        causeCounter++;
+        int len = StepCount;
+        _epCount++;
+        _epStepsSum += len;
+        if (len < _epStepsMin) _epStepsMin = len;
+        if (len > _epStepsMax) _epStepsMax = len;
+    }
 
     // Mirror an AddReward into a diagnostics bucket (learning unchanged).
     void AddR(ref double bucket, float r) { AddReward(r); bucket += r; }
@@ -373,7 +431,12 @@ public class YBotWalkerAgent : Agent
             Vector3 planarVel = _rig.Root.linearVelocity; planarVel.y = 0f;
             float velToward = Vector3.Dot(planarVel, toTarget);
             _lastVelToward = velToward;
-            AddR(ref _accVelocity, velocityWeight * Mathf.Clamp01(velToward / desiredWalkSpeed));
+            // Clamp(-1,1), NOT Clamp01: with Clamp01 moving AWAY from the target cost nothing, so an
+            // agent could oscillate toward-and-away, collect on every approach and pay nothing on
+            // every retreat — free reward for shuffling in place, while progress telescoped to zero.
+            // Symmetric shaping is also what keeps the intended optimum intact (potential-based
+            // shaping only preserves the optimal policy when it is symmetric).
+            AddR(ref _accVelocity, velocityWeight * Mathf.Clamp(velToward / desiredWalkSpeed, -1f, 1f));
         }
 
         // Foot-slip penalty: a grounded foot should plant, not skate (moonwalk). Penalize the
@@ -401,8 +464,28 @@ public class YBotWalkerAgent : Agent
 
         if (!stabilityOnlyTraining && dist < reachTargetDistance)
         {
-            AddR(ref _accFallReach, reachReward);
-            EndEpisode();
+            // The arrival must happen ON ITS FEET — see reachMinUpright. A dive that crosses the reach
+            // radius mid-topple is NOT an arrival: it pays nothing and does not chain the target, so
+            // the +10 cannot be farmed by falling forward. The target stays put, so if the agent
+            // recovers and stands up inside the radius it collects legitimately on a later step.
+            bool onFeet = upright >= reachMinUpright && height >= reachMinHeightFrac * standHeight;
+            if (!onFeet)
+            {
+                _reachRejected++; // measures how often it is TRYING to dive
+            }
+            else
+            {
+                // TARGET CHAINING — pay the reach bonus and place a NEW target, but do NOT end the
+                // episode. Ending it here made success self-defeating: the agent forfeited every
+                // future per-step reward (~0.2/step over a ~110-step life) to collect a one-off
+                // bonus, so its value function correctly learned that arriving is a bad trade and it
+                // avoided the goal. Chaining keeps the income stream alive, so arriving is now
+                // strictly profitable — this is what ML-Agents' own Walker/Crawler examples do.
+                AddR(ref _accFallReach, reachReward);
+                _reachCount++;
+                RandomizeTarget();
+                _prevTargetDistance = PlanarDistanceToTarget(); // no phantom progress spike
+            }
         }
     }
 
@@ -444,16 +527,39 @@ public class YBotWalkerAgent : Agent
                       $"fall/reach={perStep(_accFallReach):F3}\n" +
                       $"    locomotion state — distToTarget={_lastDist:F2}m velToward={_lastVelToward:F2}m/s " +
                       $"facing={_lastFacing:F2} progressΔ/step={_lastProgress:F4}m");
+
+            // SEPARATE Debug.Log on purpose: Unity's Console list view clips each entry to its first
+            // few lines (the rest is only visible in the detail pane), so appending these as lines
+            // 4-5 of the message above made them invisible. Its own entry always shows.
+            Debug.Log($"[YBotWalker] WHY EPISODES END (last {_epCount} episodes) — " +
+                      $"sank(hips<{fallHeight:F2}m)={_termSink} " +
+                      $"tipped(upright<{minUprightToSurvive:F2})={_termTip} " +
+                      $"nonFinite={_termNonFinite} obstacleHit={_termObstacleHit} | " +
+                      $"TARGETS REACHED (on feet, chained)={_reachCount} " +
+                      $"reachRejected(dive/not-standing)={_reachRejected}\n" +
+                      $"    at failure: avgSinkHeight={(_termSink > 0 ? _sinkHeightSum / _termSink : 0):F2}m " +
+                      $"avgTipUpright={(_termTip > 0 ? _tipUprightSum / _termTip : 0):F2} | " +
+                      $"episode length avg={(_epCount > 0 ? (double)_epStepsSum / _epCount : 0):F0} steps " +
+                      $"min={(_epCount > 0 ? _epStepsMin : 0)} max={_epStepsMax} " +
+                      $"(~{(_epCount > 0 ? (double)_epStepsSum / _epCount * Time.fixedDeltaTime : 0):F1}s of life; " +
+                      $"needs ~{(_lastDist > 0f && _lastVelToward > 0.01f ? _lastDist / _lastVelToward : -1f):F1}s " +
+                      $"to reach at current speed)");
+
             // Reset the diagnostics window.
             _accUpright = _accHeight = _accFoot = _accProgress = _accHeading = _accVelocity = 0;
             _accExistential = _accObstacle = _accSlip = _accEnergy = _accSmooth = _accFallReach = 0;
             _accSteps = 0;
+            _termSink = _termTip = _termNonFinite = _termObstacleHit = 0;
+            _reachCount = _reachRejected = 0;
+            _sinkHeightSum = _tipUprightSum = 0;
+            _epCount = 0; _epStepsSum = 0; _epStepsMin = int.MaxValue; _epStepsMax = 0;
         }
 
         // Non-finite → reset.
         if (!_rig.HasValidPhysicsState())
         {
             AddR(ref _accFallReach, -fallPenalty);
+            NoteTermination(ref _termNonFinite);
             EndEpisode();
             return;
         }
@@ -474,9 +580,17 @@ public class YBotWalkerAgent : Agent
         // otherwise stay stuck forever, so the episode never resets and nothing can be learned.
         float groundY = SampleGroundY(pos);
         float upright = Vector3.Dot(root.transform.up, Vector3.up);
-        if (pos.y - groundY < fallHeight || upright < minUprightToSurvive)
+        float hipHeight = pos.y - groundY;
+        bool sank = hipHeight < fallHeight;                 // legs failed to hold the body up
+        bool tipped = upright < minUprightToSurvive;        // body toppled over
+        if (sank || tipped)
         {
             AddR(ref _accFallReach, -fallPenalty);
+            // Attribute to the condition that actually tripped. When BOTH are true the body has
+            // already collapsed, so the ordering is arbitrary — sinking is recorded first because a
+            // buckling leg is what usually drags the tilt down with it.
+            if (sank) { _sinkHeightSum += hipHeight; NoteTermination(ref _termSink); }
+            else      { _tipUprightSum += upright;  NoteTermination(ref _termTip); }
             EndEpisode();
         }
     }
@@ -626,7 +740,10 @@ public class YBotWalkerAgent : Agent
         {
             AddR(ref _accObstacle, -obstacleHitPenalty * worstHitScale);
             if (endEpisodeOnObstacleHit)
+            {
+                NoteTermination(ref _termObstacleHit);
                 EndEpisode();
+            }
         }
     }
 

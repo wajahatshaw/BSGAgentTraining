@@ -25,6 +25,21 @@ public class YBotLocomotionRig : MonoBehaviour
     public const float MaxForceLimit = 400f;
     public const float MinDampingRatio = 0.35f; // damping >= ratio * stiffness
 
+    // --- one-way hinges (knee / elbow) ---------------------------------------------------------
+    // A knee and an elbow bend in ONE direction only. Driving them symmetrically (±swingLimit) lets
+    // the knee fold BACKWARDS, and a backwards knee cannot carry body weight — the hips sink while
+    // the torso stays vertical, which is exactly the 89%-"sank" failure the walker log reports.
+    // These joints therefore get an asymmetric range: full flexion one way, a few degrees of slack
+    // the other way (real joints are not perfectly rigid at full extension).
+    public const float HingeHyperextendSlackDeg = 5f;
+
+    // Which jointPosition sign corresponds to FLEXION (bending the right way). This depends on the
+    // Mixamo bone axis and cannot be read off the code, so it is a single flip point:
+    //   +1 => flexion is positive.  -1 => flexion is negative.
+    // HOW TO VERIFY: the rig logs "HINGE RANGE" every 10 s with the observed knee angle range. If the
+    // knees sit pinned near 0 and the bot walks stiff-legged, this sign is wrong — flip it to -1f.
+    public const float HingeFlexionSign = 1f;
+
     [System.Serializable]
     public class Joint
     {
@@ -33,6 +48,7 @@ public class YBotLocomotionRig : MonoBehaviour
         public bool spherical;     // true = 3 DOF (x/y/z drive), false = revolute (x drive)
         public int dofStartIndex;  // index into the flat action/obs vector
         public int dofCount;       // 3 (spherical) or 1 (revolute)
+        public bool oneWayHinge;   // knee/elbow — tracked so the HINGE RANGE log can verify the sign
     }
 
     // Bone suffixes (matched against transform names that may carry a "mixamorig:" namespace).
@@ -44,6 +60,7 @@ public class YBotLocomotionRig : MonoBehaviour
         public string suffix;
         public bool spherical;
         public float swingLimit;   // degrees (spherical) / lower-upper half-range (revolute)
+        public bool oneWayHinge;   // knee/elbow: full flexion one way, HingeHyperextendSlackDeg the other
         public float stiffness;
         public float forceLimit;
         public float mass;
@@ -56,14 +73,18 @@ public class YBotLocomotionRig : MonoBehaviour
         new BoneSpec{ suffix="Spine",     spherical=true,  swingLimit=20f, stiffness=420f, forceLimit=350f, mass=8f,   colliderRadius=0.12f },
         new BoneSpec{ suffix="LeftUpLeg",  spherical=true,  swingLimit=45f, stiffness=500f, forceLimit=400f, mass=6f,   colliderRadius=0.09f },
         new BoneSpec{ suffix="RightUpLeg", spherical=true,  swingLimit=45f, stiffness=500f, forceLimit=400f, mass=6f,   colliderRadius=0.09f },
-        new BoneSpec{ suffix="LeftLeg",    spherical=false, swingLimit=80f, stiffness=500f, forceLimit=400f, mass=4f,   colliderRadius=0.07f }, // knee
-        new BoneSpec{ suffix="RightLeg",   spherical=false, swingLimit=80f, stiffness=500f, forceLimit=400f, mass=4f,   colliderRadius=0.07f },
+        // Knee: ONE-WAY hinge — 90° of flexion, only 5° the other way. Symmetric ±80° let it fold
+        // backwards, which cannot bear weight (see HingeFlexionSign).
+        new BoneSpec{ suffix="LeftLeg",    spherical=false, swingLimit=90f, oneWayHinge=true, stiffness=500f, forceLimit=400f, mass=4f,   colliderRadius=0.07f }, // knee
+        new BoneSpec{ suffix="RightLeg",   spherical=false, swingLimit=90f, oneWayHinge=true, stiffness=500f, forceLimit=400f, mass=4f,   colliderRadius=0.07f },
         new BoneSpec{ suffix="LeftFoot",   spherical=false, swingLimit=35f, stiffness=380f, forceLimit=320f, mass=1.5f, colliderRadius=0.06f }, // ankle
         new BoneSpec{ suffix="RightFoot",  spherical=false, swingLimit=35f, stiffness=380f, forceLimit=320f, mass=1.5f, colliderRadius=0.06f },
         new BoneSpec{ suffix="LeftArm",    spherical=true,  swingLimit=45f, stiffness=280f, forceLimit=220f, mass=2f,   colliderRadius=0.06f }, // shoulder
         new BoneSpec{ suffix="RightArm",   spherical=true,  swingLimit=45f, stiffness=280f, forceLimit=220f, mass=2f,   colliderRadius=0.06f },
-        new BoneSpec{ suffix="LeftForeArm",spherical=false, swingLimit=80f, stiffness=240f, forceLimit=180f, mass=1.5f, colliderRadius=0.05f }, // elbow
-        new BoneSpec{ suffix="RightForeArm",spherical=false,swingLimit=80f, stiffness=240f, forceLimit=180f, mass=1.5f, colliderRadius=0.05f },
+        // Elbow: same one-way hinge as the knee (less critical for standing, but it should not
+        // hyperextend either — a backwards arm changes the mass distribution the balance relies on).
+        new BoneSpec{ suffix="LeftForeArm",spherical=false, swingLimit=80f, oneWayHinge=true, stiffness=240f, forceLimit=180f, mass=1.5f, colliderRadius=0.05f }, // elbow
+        new BoneSpec{ suffix="RightForeArm",spherical=false,swingLimit=80f, oneWayHinge=true, stiffness=240f, forceLimit=180f, mass=1.5f, colliderRadius=0.05f },
     };
 
     public ArticulationBody Root { get; private set; }       // Hips
@@ -133,7 +154,8 @@ public class YBotLocomotionRig : MonoBehaviour
                 boneSuffix = spec.suffix,
                 spherical = spec.spherical,
                 dofStartIndex = dofCursor,
-                dofCount = dof
+                dofCount = dof,
+                oneWayHinge = spec.oneWayHinge
             });
             dofCursor += dof;
             _allBodies.Add(ab);
@@ -177,8 +199,15 @@ public class YBotLocomotionRig : MonoBehaviour
     // processed the articulation (next FixedUpdate), so we log there rather than inside Build().
     bool _loggedDiagnostics;
 
+    // Observed flexion range per one-way hinge, so HingeFlexionSign can be verified from a live run
+    // instead of guessed. Reset every log window.
+    readonly Dictionary<string, Vector2> _hingeRange = new Dictionary<string, Vector2>();
+    float _nextHingeLogTime;
+
     void FixedUpdate()
     {
+        TrackHingeRanges();
+
         if (_loggedDiagnostics || !IsBuilt) return;
         _loggedDiagnostics = true;
 
@@ -195,6 +224,42 @@ public class YBotLocomotionRig : MonoBehaviour
         Debug.Log(sb.ToString());
     }
 
+    /// <summary>
+    /// Records the min/max angle each one-way hinge actually reaches and logs it every 10 s. This is
+    /// how HingeFlexionSign gets verified rather than assumed:
+    ///   • healthy  — the knee sweeps a real positive range, e.g. min=-4 max=62 (sign is CORRECT)
+    ///   • WRONG    — the knee stays pinned in the 5° slack band, e.g. min=-4 max=1, and the bot walks
+    ///                stiff-legged. Flip HingeFlexionSign to -1f.
+    /// jointPosition is in RADIANS for articulation DOFs, so it is converted for readability.
+    /// </summary>
+    void TrackHingeRanges()
+    {
+        if (!IsBuilt) return;
+
+        foreach (Joint j in _joints)
+        {
+            if (!j.oneWayHinge || j.body == null || j.body.dofCount < 1) continue;
+            float deg = j.body.jointPosition[0] * Mathf.Rad2Deg;
+            if (float.IsNaN(deg) || float.IsInfinity(deg)) continue;
+
+            if (_hingeRange.TryGetValue(j.boneSuffix, out Vector2 r))
+                _hingeRange[j.boneSuffix] = new Vector2(Mathf.Min(r.x, deg), Mathf.Max(r.y, deg));
+            else
+                _hingeRange[j.boneSuffix] = new Vector2(deg, deg);
+        }
+
+        if (Time.time < _nextHingeLogTime || _hingeRange.Count == 0) return;
+        _nextHingeLogTime = Time.time + 10f;
+
+        var sb = new System.Text.StringBuilder(
+            $"[YBotLocomotionRig] HINGE RANGE (deg, last 10s) — HingeFlexionSign={HingeFlexionSign:+0;-0} : ");
+        foreach (var kv in _hingeRange)
+            sb.Append($"{kv.Key}[min={kv.Value.x:F0} max={kv.Value.y:F0}] ");
+        sb.Append("| knee pinned inside the ±5° slack band => sign is WRONG, flip HingeFlexionSign.");
+        Debug.Log(sb.ToString());
+        _hingeRange.Clear();
+    }
+
     static ArticulationBody EnsureBody(Transform t)
     {
         ArticulationBody ab = t.GetComponent<ArticulationBody>();
@@ -209,14 +274,25 @@ public class YBotLocomotionRig : MonoBehaviour
         float force = Mathf.Min(spec.forceLimit, MaxForceLimit);
         float damping = Mathf.Max(stiffness * MinDampingRatio, 1f);
 
+        // Symmetric by default (spherical joints swing both ways). One-way hinges (knee/elbow) get
+        // full flexion in the HingeFlexionSign direction and only a few degrees the other way, so
+        // they cannot fold backwards and lose the ability to bear weight.
+        float lower = -spec.swingLimit;
+        float upper = spec.swingLimit;
+        if (spec.oneWayHinge)
+        {
+            if (HingeFlexionSign >= 0f) { lower = -HingeHyperextendSlackDeg; upper = spec.swingLimit; }
+            else                        { lower = -spec.swingLimit;          upper = HingeHyperextendSlackDeg; }
+        }
+
         ArticulationDrive drive = new ArticulationDrive
         {
             stiffness = stiffness,
             damping = damping,
             forceLimit = force,
             target = 0f,
-            lowerLimit = -spec.swingLimit,
-            upperLimit = spec.swingLimit
+            lowerLimit = lower,
+            upperLimit = upper
         };
 
         if (spec.spherical)
@@ -311,8 +387,18 @@ public class YBotLocomotionRig : MonoBehaviour
     static float Sample(System.Collections.Generic.IList<float> a, int i)
         => (a != null && i >= 0 && i < a.Count) ? Mathf.Clamp(a[i], -1f, 1f) : 0f;
 
+    /// <summary>
+    /// Maps a normalized action [-1,1] onto a drive's angular limits, PIVOTING ON 0° so that a
+    /// neutral action always means "joint at rest" (leg straight, arm straight).
+    ///
+    /// The old form — Lerp(lower, upper, (norm+1)/2) — mapped 0 to the MIDPOINT of the range. That is
+    /// identical to this for a symmetric range, but with the asymmetric knee range (-5°..+90°) it
+    /// would make a neutral action command a permanent 42° crouch, which is worse than the bug being
+    /// fixed. Pivoting on zero keeps neutral == straight for every joint.
+    /// </summary>
     static float MapToLimit(ArticulationDrive d, float norm)
-        => Mathf.Lerp(d.lowerLimit, d.upperLimit, (norm + 1f) * 0.5f);
+        => norm >= 0f ? Mathf.Lerp(0f, d.upperLimit, norm)
+                      : Mathf.Lerp(0f, d.lowerLimit, -norm);
 
     static void SetDriveTarget(ArticulationBody ab, int axis, float target)
     {
