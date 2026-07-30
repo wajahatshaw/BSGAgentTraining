@@ -82,6 +82,14 @@ public class YBotWalkerAgent : Agent
     // enforcement, so balance is still required, it just stops being the whole objective.
     public float uprightWeight = 0.05f;
     public float heightWeight = 0.02f;
+    [Tooltip("Multiplier applied to uprightWeight/heightWeight ONLY while stabilityOnlyTraining is " +
+             "true. The 0.15→0.05 cut exists because posture was out-competing locomotion — but in the " +
+             "Stand phase there IS no locomotion reward to compete with, so the cut just leaves a weak " +
+             "corrective gradient (0.077/step) against a fallPenalty of 1.0, while failures are 69% " +
+             "'tipped' (lateral balance needs fine correction). Scaling here instead of editing the " +
+             "weights means the walk-phase values auto-restore when the flag flips back — no manual " +
+             "revert to forget. 2.5 => upright 0.125, height 0.05 during Stand.")]
+    public float standPostureBoost = 2.5f;
     public float footGroundedWeight = 0.02f;
     [Tooltip("Penalty per (m/s) of horizontal speed of a foot WHILE it is grounded — stops a planted " +
              "foot from skating/moonwalking so the stance looks natural. No hard gait rhythm is forced.")]
@@ -92,7 +100,11 @@ public class YBotWalkerAgent : Agent
              "to TURN and walk forward toward the goal (realistic) instead of strafing/back-pedalling. " +
              "Kept small so it nudges heading without overwhelming progress or letting the agent farm " +
              "reward by standing still and just facing the target.")]
-    public float headingWeight = 0.05f;
+    // Lowered 0.05 → 0.015. At 0.05 this was the LARGEST positive term in the whole function and it
+    // could be collected by standing still and merely rotating to face the target — which is exactly
+    // the "rotates on the spot, faces the desk, never advances" behaviour observed. Facing should nudge
+    // the heading, not be a living wage.
+    public float headingWeight = 0.015f;
     [Tooltip("Dense per-step reward for the root's velocity TOWARD the target, normalized to " +
              "desiredWalkSpeed. This is what makes a stand-expert actually start walking: standing " +
              "still earns 0 here, so idling stops being optimal.")]
@@ -102,7 +114,12 @@ public class YBotWalkerAgent : Agent
     [Tooltip("Small per-step time cost (subtracted) so standing idle is never free — discourages the " +
              "agent from balancing in place instead of walking to the target. Replaces the old alive bonus. " +
              "Walk mode only (not applied during stabilityOnlyTraining).")]
-    public float existentialPenalty = 0.02f; // raised 0.006→0.02 (Phase A): standing idle bleeds reward so walking becomes optimal
+    // Raised 0.02 → 0.05. Together with headingWeight 0.05→0.015 this drops idle income from
+    // ~0.102/step to ~0.034/step while walking still pays ~0.32/step — roughly a 9x preference for
+    // moving. Deliberately NOT pushed high enough to make idling negative: with termination available
+    // and fallPenalty only 1.0, a negative per-step income teaches the agent to fall on purpose to stop
+    // the bleeding, which is a worse failure than idling.
+    public float existentialPenalty = 0.05f;
     public float energyPenalty = 0.0002f;
     public float fallPenalty = 1.0f;
     // Raised 2.0→10.0. At ~0.2 reward/step a +2 bonus was indistinguishable from noise; arrival needs
@@ -380,10 +397,12 @@ public class YBotWalkerAgent : Agent
 
         // Upright posture: dot(local up, world up).
         float upright = Vector3.Dot(root.up, Vector3.up);
-        AddR(ref _accUpright, uprightWeight * Mathf.Clamp01(upright));
+        // Posture weights are boosted during the Stand phase only — see standPostureBoost.
+        float postureScale = stabilityOnlyTraining ? Mathf.Max(1f, standPostureBoost) : 1f;
+        AddR(ref _accUpright, uprightWeight * postureScale * Mathf.Clamp01(upright));
 
         float normHeight = Mathf.Clamp((height - fallHeight) / (standHeight - fallHeight), 0f, 1f);
-        AddR(ref _accHeight, heightWeight * normHeight);
+        AddR(ref _accHeight, heightWeight * postureScale * normHeight);
 
         // Foot-contact shaping for a REALISTIC walking gait. Walking has a single-support phase
         // (one foot planted while the other swings forward), so we must NOT require both feet down

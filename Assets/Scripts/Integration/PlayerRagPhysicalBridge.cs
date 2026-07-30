@@ -284,6 +284,26 @@ public static class PlayerRagPhysicalBridge
         if (anchor == null || !anchor.enableZone0LocomotionTraining)
             return false;
 
+        // TRAINER GATE — locomotion training only runs when the Python trainer is actually connected.
+        // Without this, pressing Play on its own still tore down the RAG setup (detached the mover,
+        // disabled the Animator, stripped the Rigidbody chain) and built the AB ragdoll, so the scene
+        // showed a collapsing ragdoll and the cyan training-target desk instead of the normal RAG
+        // workflow. Everything below this point is training-only teardown; with no trainer we leave the
+        // scene completely untouched and the agent runs its mental/physical RAG steps as before.
+        // NOTE: read Academy.Instance directly rather than guarding on Academy.IsInitialized. Nothing
+        // has touched the Academy yet at this point (this method is what creates the agent), so
+        // IsInitialized would be false even WITH a trainer running and locomotion would never start.
+        // Touching Instance lazily initializes the Academy, which performs the port-5004 handshake, so
+        // IsCommunicatorOn is meaningful immediately afterwards.
+        if (Unity.MLAgents.Academy.Instance == null ||
+            !Unity.MLAgents.Academy.Instance.IsCommunicatorOn)
+        {
+            Debug.Log("[PlayerRagPhysicalBridge] Zone0 locomotion SKIPPED — no ML-Agents trainer connected. " +
+                      "Running the normal RAG physical/mental workflow (static animation, no locomotion rig, " +
+                      "no training target). Start mlagents-learn BEFORE pressing Play to train locomotion.");
+            return false;
+        }
+
         // 1. Unit scale + Y-Bot visual, with the gate active so GetScale() returns 1.
         DesignatedPhysicalPlayerAppearance.LocomotionRigActive = true;
         DesignatedPhysicalPlayerAppearance.ApplyScale(mover.transform);

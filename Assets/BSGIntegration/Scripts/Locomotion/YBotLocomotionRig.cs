@@ -49,6 +49,7 @@ public class YBotLocomotionRig : MonoBehaviour
         public int dofStartIndex;  // index into the flat action/obs vector
         public int dofCount;       // 3 (spherical) or 1 (revolute)
         public bool oneWayHinge;   // knee/elbow — tracked so the HINGE RANGE log can verify the sign
+        public bool isHip;         // hip — all 3 DOF logged separately to identify the abduction axis
     }
 
     // Bone suffixes (matched against transform names that may carry a "mixamorig:" namespace).
@@ -61,6 +62,8 @@ public class YBotLocomotionRig : MonoBehaviour
         public bool spherical;
         public float swingLimit;   // degrees (spherical) / lower-upper half-range (revolute)
         public bool oneWayHinge;   // knee/elbow: full flexion one way, HingeHyperextendSlackDeg the other
+        public bool isFoot;        // gets a FLAT BOX sole instead of a capsule — see AddFootBoxCollider
+        public bool isHip;         // per-axis range is logged so abduction can be identified
         public float stiffness;
         public float forceLimit;
         public float mass;
@@ -71,14 +74,23 @@ public class YBotLocomotionRig : MonoBehaviour
     {
         // suffix,        spherical, swing, stiff,  force,  mass, radius
         new BoneSpec{ suffix="Spine",     spherical=true,  swingLimit=20f, stiffness=420f, forceLimit=350f, mass=8f,   colliderRadius=0.12f },
-        new BoneSpec{ suffix="LeftUpLeg",  spherical=true,  swingLimit=45f, stiffness=500f, forceLimit=400f, mass=6f,   colliderRadius=0.09f },
-        new BoneSpec{ suffix="RightUpLeg", spherical=true,  swingLimit=45f, stiffness=500f, forceLimit=400f, mass=6f,   colliderRadius=0.09f },
+        // Hip: 45f -> 30f. The knee data ruled the knee OUT as the cause of the collapse (it peaks at
+        // ~56 deg, which only drops the hips to ~0.59 m, but they reach 0.37 m), while the torso stays
+        // vertical (upright 0.98) and tipping is only 7%. The remaining mechanism that fits all of that
+        // is the legs SPLAYING sideways — hip abduction — i.e. sliding into the splits with a straight
+        // back. Symmetric +-45 deg on all three axes makes that freely available. 30 deg is
+        // sign-agnostic (it narrows every axis, so it cannot be applied backwards) and still leaves
+        // enough hip flexion for a walking stride.
+        new BoneSpec{ suffix="LeftUpLeg",  spherical=true,  swingLimit=30f, isHip=true, stiffness=500f, forceLimit=400f, mass=6f,   colliderRadius=0.09f },
+        new BoneSpec{ suffix="RightUpLeg", spherical=true,  swingLimit=30f, isHip=true, stiffness=500f, forceLimit=400f, mass=6f,   colliderRadius=0.09f },
         // Knee: ONE-WAY hinge — 90° of flexion, only 5° the other way. Symmetric ±80° let it fold
         // backwards, which cannot bear weight (see HingeFlexionSign).
         new BoneSpec{ suffix="LeftLeg",    spherical=false, swingLimit=90f, oneWayHinge=true, stiffness=500f, forceLimit=400f, mass=4f,   colliderRadius=0.07f }, // knee
         new BoneSpec{ suffix="RightLeg",   spherical=false, swingLimit=90f, oneWayHinge=true, stiffness=500f, forceLimit=400f, mass=4f,   colliderRadius=0.07f },
-        new BoneSpec{ suffix="LeftFoot",   spherical=false, swingLimit=35f, stiffness=380f, forceLimit=320f, mass=1.5f, colliderRadius=0.06f }, // ankle
-        new BoneSpec{ suffix="RightFoot",  spherical=false, swingLimit=35f, stiffness=380f, forceLimit=320f, mass=1.5f, colliderRadius=0.06f },
+        // Ankle stays a SYMMETRIC hinge (real ankles dorsiflex and plantarflex both ways), but the foot
+        // gets a flat BOX sole — a capsule here degenerates to a sphere and destroys the support polygon.
+        new BoneSpec{ suffix="LeftFoot",   spherical=false, swingLimit=35f, isFoot=true, stiffness=380f, forceLimit=320f, mass=1.5f, colliderRadius=0.06f }, // ankle
+        new BoneSpec{ suffix="RightFoot",  spherical=false, swingLimit=35f, isFoot=true, stiffness=380f, forceLimit=320f, mass=1.5f, colliderRadius=0.06f },
         new BoneSpec{ suffix="LeftArm",    spherical=true,  swingLimit=45f, stiffness=280f, forceLimit=220f, mass=2f,   colliderRadius=0.06f }, // shoulder
         new BoneSpec{ suffix="RightArm",   spherical=true,  swingLimit=45f, stiffness=280f, forceLimit=220f, mass=2f,   colliderRadius=0.06f },
         // Elbow: same one-way hinge as the knee (less critical for standing, but it should not
@@ -145,7 +157,10 @@ public class YBotLocomotionRig : MonoBehaviour
             ab.useGravity = true;
             ab.mass = spec.mass;
             ConfigureJoint(ab, spec);
-            AddCapsuleCollider(bone, spec.colliderRadius);
+            if (UseBoxFeet && spec.isFoot)
+                AddFootBoxCollider(bone, spec.colliderRadius);
+            else
+                AddCapsuleCollider(bone, spec.colliderRadius);
 
             int dof = spec.spherical ? 3 : 1;
             _joints.Add(new Joint
@@ -155,7 +170,8 @@ public class YBotLocomotionRig : MonoBehaviour
                 spherical = spec.spherical,
                 dofStartIndex = dofCursor,
                 dofCount = dof,
-                oneWayHinge = spec.oneWayHinge
+                oneWayHinge = spec.oneWayHinge,
+                isHip = spec.isHip
             });
             dofCursor += dof;
             _allBodies.Add(ab);
@@ -238,14 +254,22 @@ public class YBotLocomotionRig : MonoBehaviour
 
         foreach (Joint j in _joints)
         {
-            if (!j.oneWayHinge || j.body == null || j.body.dofCount < 1) continue;
-            float deg = j.body.jointPosition[0] * Mathf.Rad2Deg;
-            if (float.IsNaN(deg) || float.IsInfinity(deg)) continue;
+            if (j.body == null || j.body.dofCount < 1) continue;
+            // One-way hinges log their single DOF; hips log all three SEPARATELY, because the axis
+            // that moves during a collapse is the one that needs a tighter limit — and which axis is
+            // abduction cannot be read off the code.
+            int dofs = j.oneWayHinge ? 1 : (j.isHip ? Mathf.Min(3, j.body.dofCount) : 0);
+            for (int d = 0; d < dofs; d++)
+            {
+                float deg = j.body.jointPosition[d] * Mathf.Rad2Deg;
+                if (float.IsNaN(deg) || float.IsInfinity(deg)) continue;
 
-            if (_hingeRange.TryGetValue(j.boneSuffix, out Vector2 r))
-                _hingeRange[j.boneSuffix] = new Vector2(Mathf.Min(r.x, deg), Mathf.Max(r.y, deg));
-            else
-                _hingeRange[j.boneSuffix] = new Vector2(deg, deg);
+                string key = j.oneWayHinge ? j.boneSuffix : $"{j.boneSuffix}.{(char)('x' + d)}";
+                if (_hingeRange.TryGetValue(key, out Vector2 r))
+                    _hingeRange[key] = new Vector2(Mathf.Min(r.x, deg), Mathf.Max(r.y, deg));
+                else
+                    _hingeRange[key] = new Vector2(deg, deg);
+            }
         }
 
         if (Time.time < _nextHingeLogTime || _hingeRange.Count == 0) return;
@@ -313,6 +337,81 @@ public class YBotLocomotionRig : MonoBehaviour
         }
     }
 
+    // --- feet -----------------------------------------------------------------------------------
+    // A biped stands on its SUPPORT POLYGON — the area enclosed by the soles. A capsule foot has no
+    // such area: CapsuleCollider.height counts the two hemispherical caps, so with radius 0.06 and an
+    // ankle->toe length of ~0.12-0.15 m the cylindrical section is ~0 and the collider degenerates
+    // into a 6 cm SPHERE. Balancing on two spheres is close to impossible — they roll sideways
+    // (tipped) and offer nothing to resist the hips descending (sank). Every reference biped rig
+    // (ML-Agents Walker, MuJoCo humanoid) uses BOX feet for exactly this reason.
+    //
+    // Set false to fall back to the old capsule feet if the box turns out to be mis-oriented (check
+    // the "FOOT BOX" build log and look at the collider in the Editor).
+    public const bool UseBoxFeet = true;
+
+    // Scope self-collision to non-adjacent pairs so the legs cannot scissor through each other. Set
+    // false to restore the old "ignore every pair" behaviour if the articulation destabilizes.
+    public const bool ScopedSelfCollision = true;
+    // 0.10 -> 0.20 m. The zero-action test was decisive: with NO policy at all the rig never sinks
+    // (sank=0) but tips 100% of the time, at exactly step 61 every run (min=max=61). A perfectly
+    // repeatable passive topple means the spawn pose is statically unstable — the centre of mass
+    // starts outside the support polygon — and the Mixamo bind pose has the feet almost touching, so
+    // there is virtually no LATERAL support. Widening the sole widens that polygon without needing to
+    // know which hip axis is abduction (which the code cannot determine). Effectively this stands the
+    // bot with its feet apart. Reduce once it can balance actively.
+    public const float FootWidth = 0.20f;   // m, medial-lateral
+    public const float FootThickness = 0.05f; // m, sole thickness
+    public const float FootHeelBehindAnkle = 0.07f; // m, heel extent behind the ankle joint
+
+    /// <summary>
+    /// Box (flat-soled) collider for a foot bone, giving the biped a real support polygon.
+    /// Orientation is derived from the bind pose: "forward" is the bone-local axis pointing at the toe
+    /// child, "down" is the bone-local axis closest to world down (the rig is authored standing, so
+    /// world down is a reliable proxy for the sole direction). Both are snapped to the dominant
+    /// cardinal axis because BoxCollider is axis-aligned in local space and Mixamo bones are
+    /// axis-aligned in practice. The chosen axes are logged so they can be verified.
+    /// </summary>
+    static void AddFootBoxCollider(Transform bone, float radius)
+    {
+        if (bone.GetComponent<Collider>() != null)
+            return;
+
+        // Toe direction in bone-local space (fall back to local forward if there is no child).
+        Vector3 localToToe = bone.childCount > 0
+            ? bone.InverseTransformPoint(bone.GetChild(0).position)
+            : Vector3.forward * 0.12f;
+        int fwdAxis = AxisOfLargest(localToToe);
+        float toeLen = Mathf.Max(Mathf.Abs(localToToe[fwdAxis]), 0.10f);
+        float fwdSign = Mathf.Sign(localToToe[fwdAxis] == 0f ? 1f : localToToe[fwdAxis]);
+
+        // Sole direction in bone-local space.
+        Vector3 localDown = bone.InverseTransformDirection(Vector3.down);
+        int downAxis = AxisOfLargest(localDown);
+        if (downAxis == fwdAxis) // degenerate bind pose — pick any other axis
+            downAxis = (fwdAxis + 1) % 3;
+        float downSign = Mathf.Sign(localDown[downAxis] == 0f ? 1f : localDown[downAxis]);
+
+        int sideAxis = 3 - fwdAxis - downAxis; // the remaining axis of {0,1,2}
+
+        var box = bone.gameObject.AddComponent<BoxCollider>();
+        Vector3 size = Vector3.zero;
+        size[fwdAxis] = toeLen + FootHeelBehindAnkle; // heel..toe
+        size[downAxis] = FootThickness;
+        size[sideAxis] = FootWidth;
+        box.size = size;
+
+        // Centre it: shifted toward the toe by half the heel-to-toe midpoint, and DOWN to the sole so
+        // the ankle sits above the foot rather than inside it.
+        Vector3 centre = Vector3.zero;
+        centre[fwdAxis] = fwdSign * (toeLen - FootHeelBehindAnkle) * 0.5f;
+        centre[downAxis] = downSign * (radius - FootThickness * 0.5f);
+        box.center = centre;
+
+        Debug.Log($"[YBotLocomotionRig] FOOT BOX '{bone.name}': size={size} centre={centre} " +
+                  $"(fwdAxis={fwdAxis} sign={fwdSign:+0;-0}, downAxis={downAxis} sign={downSign:+0;-0}, sideAxis={sideAxis}) " +
+                  $"— verify in the Editor that the box lies FLAT under the ankle, heel to toe.");
+    }
+
     static void AddCapsuleCollider(Transform bone, float radius)
     {
         if (bone.GetComponent<Collider>() != null)
@@ -351,14 +450,90 @@ public class YBotLocomotionRig : MonoBehaviour
     void IgnoreSelfCollisions()
     {
         var cols = new List<Collider>();
+        var bodies = new List<ArticulationBody>();
         foreach (ArticulationBody ab in _allBodies)
         {
             Collider c = ab.GetComponent<Collider>();
-            if (c != null) cols.Add(c);
+            if (c != null) { cols.Add(c); bodies.Add(ab); }
         }
+
+        // The old code ignored EVERY pair, which let the legs scissor straight through each other.
+        // Crossed legs collapse the support polygon (both feet can end up on the same side of the
+        // centre of mass), so the body has nothing underneath it — a direct cause of BOTH toppling and
+        // hip-sinking. Real thighs collide; these did not.
+        //
+        // Adjacent (parent<->child) pairs MUST stay ignored: their capsules share the joint and
+        // overlap by construction, and colliding them makes the articulation explode. Non-adjacent
+        // pairs that ALREADY overlap in the bind pose (e.g. the two thigh capsules, which sit ~0.18 m
+        // apart at radius 0.09 and so may just touch) would explode for the same reason, so those are
+        // detected with ComputePenetration and left ignored too. Everything else — shin vs shin, foot
+        // vs foot, shin vs opposite thigh — gets REAL collision, which is what blocks leg crossing.
+        // One-flip revert to the old behaviour (ignore EVERY pair) if scoped collision destabilizes
+        // the articulation. Symmetric with UseBoxFeet.
+        if (!ScopedSelfCollision)
+        {
+            for (int i = 0; i < cols.Count; i++)
+                for (int j = i + 1; j < cols.Count; j++)
+                    Physics.IgnoreCollision(cols[i], cols[j], true);
+            Debug.Log("[YBotLocomotionRig] SELF-COLLISION: all pairs ignored (ScopedSelfCollision=false).");
+            return;
+        }
+
+        int enabled = 0, adjacent = 0, overlapping = 0;
         for (int i = 0; i < cols.Count; i++)
+        {
             for (int j = i + 1; j < cols.Count; j++)
-                Physics.IgnoreCollision(cols[i], cols[j], true);
+            {
+                if (IsAdjacent(bodies[i], bodies[j]))
+                {
+                    Physics.IgnoreCollision(cols[i], cols[j], true);
+                    adjacent++;
+                }
+                else if (OverlapsInBindPose(cols[i], cols[j]))
+                {
+                    Physics.IgnoreCollision(cols[i], cols[j], true);
+                    overlapping++;
+                }
+                else
+                {
+                    Physics.IgnoreCollision(cols[i], cols[j], false);
+                    enabled++;
+                }
+            }
+        }
+
+        Debug.Log($"[YBotLocomotionRig] SELF-COLLISION scoped: {enabled} pair(s) COLLIDE (blocks leg " +
+                  $"crossing), {adjacent} ignored as parent/child, {overlapping} ignored as already " +
+                  $"overlapping in the bind pose. If the rig explodes on spawn, raise the bind-pose " +
+                  $"overlap margin or revert to ignoring all pairs.");
+    }
+
+    /// <summary>True if either body is the other's nearest ArticulationBody ancestor.</summary>
+    static bool IsAdjacent(ArticulationBody a, ArticulationBody b)
+        => NearestBodyAncestor(a) == b || NearestBodyAncestor(b) == a;
+
+    static ArticulationBody NearestBodyAncestor(ArticulationBody ab)
+    {
+        Transform t = ab.transform.parent;
+        while (t != null)
+        {
+            var p = t.GetComponent<ArticulationBody>();
+            if (p != null) return p;
+            t = t.parent;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// True if two colliders already interpenetrate in the current (bind) pose. Such a pair cannot be
+    /// allowed to collide — the solver would resolve the initial penetration explosively.
+    /// </summary>
+    static bool OverlapsInBindPose(Collider a, Collider b)
+    {
+        return Physics.ComputePenetration(
+            a, a.transform.position, a.transform.rotation,
+            b, b.transform.position, b.transform.rotation,
+            out _, out _);
     }
 
     /// <summary>Set every actuated DOF drive target from a flat [-1,1] action vector.</summary>
