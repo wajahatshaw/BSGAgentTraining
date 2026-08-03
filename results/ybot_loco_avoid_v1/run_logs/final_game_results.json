@@ -1,5 +1,5 @@
 ﻿{
-    "timestamp": "2026-07-30 12:13:59",
+    "timestamp": "2026-08-03 12:48:44",
     "sceneId": "scene_warehouse_replica_001",
     "mlAgentsRunId": "ybot_loco_avoid_v1",
     "resultsRunLogsRelativePath": "results/ybot_loco_avoid_v1/run_logs/",
@@ -8,10 +8,9 @@
         {
             "agentId": "P1",
             "behaviorName": "PhysicalAgentZone0",
-            "role": "Physical",
-            "skillLevel": 5.0,
+            "skillLevel": 3.0,
             "desireLevel": 100.0,
-            "skillPercentage": 5.00,
+            "skillPercentage": 3.00,
             "isCompleted": false,
             "learnedSkillsCount": 0,
             "learnedSkillsNames": [],
@@ -222,7 +221,6 @@
         {
             "agentId": "M1",
             "behaviorName": "PhysicalAgentZone0",
-            "role": "Mental",
             "skillLevel": 0.0,
             "desireLevel": 100.0,
             "skillPercentage": 0.00,
@@ -231,7 +229,7 @@
             "learnedSkillsNames": [],
             "episodes": 0,
             "totalReward": 0.00,
-            "completedSteps": 5,
+            "completedSteps": 3,
             "totalSteps": 46,
             "cognitiveSequenceCompleted": false,
             "cognitiveCompletedSteps": 0,
@@ -284,8 +282,8 @@
                     "targetObjectId": "cognitive_009",
                     "targetObjectName": "Imaginal Buffer",
                     "expectedDuration": 3.00,
-                    "isCompleted": true,
-                    "completionTime": 3.00,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },
@@ -297,8 +295,8 @@
                     "targetObjectId": "cognitive_013",
                     "targetObjectName": "Manual Buffer",
                     "expectedDuration": 2.00,
-                    "isCompleted": true,
-                    "completionTime": 2.00,
+                    "isCompleted": false,
+                    "completionTime": 0.00,
                     "requiredSkillCodes": [],
                     "skillsLearned": []
                 },

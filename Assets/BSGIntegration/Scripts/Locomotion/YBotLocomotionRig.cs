@@ -23,7 +23,8 @@ public class YBotLocomotionRig : MonoBehaviour
     // --- tunables (raised for stand/stability curriculum — stiff enough to hold pose, damped to avoid jitter) ---
     public const float MaxStiffness = 500f;
     public const float MaxForceLimit = 400f;
-    public const float MinDampingRatio = 0.35f; // damping >= ratio * stiffness
+
+    public const float MinDampingRatio = 0.10f; // damping >= ratio * stiffness
 
     // --- one-way hinges (knee / elbow) ---------------------------------------------------------
     // A knee and an elbow bend in ONE direction only. Driving them symmetrically (±swingLimit) lets
@@ -89,8 +90,9 @@ public class YBotLocomotionRig : MonoBehaviour
         new BoneSpec{ suffix="RightLeg",   spherical=false, swingLimit=90f, oneWayHinge=true, stiffness=500f, forceLimit=400f, mass=4f,   colliderRadius=0.07f },
         // Ankle stays a SYMMETRIC hinge (real ankles dorsiflex and plantarflex both ways), but the foot
         // gets a flat BOX sole — a capsule here degenerates to a sphere and destroys the support polygon.
-        new BoneSpec{ suffix="LeftFoot",   spherical=false, swingLimit=35f, isFoot=true, stiffness=380f, forceLimit=320f, mass=1.5f, colliderRadius=0.06f }, // ankle
-        new BoneSpec{ suffix="RightFoot",  spherical=false, swingLimit=35f, isFoot=true, stiffness=380f, forceLimit=320f, mass=1.5f, colliderRadius=0.06f },
+        // Ankle drive raised 380/320 -> 500/400 (now matching hip and knee). The ankle is the primary
+        new BoneSpec{ suffix="LeftFoot",   spherical=false, swingLimit=35f, isFoot=true, stiffness=500f, forceLimit=400f, mass=1.5f, colliderRadius=0.06f }, // ankle
+        new BoneSpec{ suffix="RightFoot",  spherical=false, swingLimit=35f, isFoot=true, stiffness=500f, forceLimit=400f, mass=1.5f, colliderRadius=0.06f },
         new BoneSpec{ suffix="LeftArm",    spherical=true,  swingLimit=45f, stiffness=280f, forceLimit=220f, mass=2f,   colliderRadius=0.06f }, // shoulder
         new BoneSpec{ suffix="RightArm",   spherical=true,  swingLimit=45f, stiffness=280f, forceLimit=220f, mass=2f,   colliderRadius=0.06f },
         // Elbow: same one-way hinge as the knee (less critical for standing, but it should not

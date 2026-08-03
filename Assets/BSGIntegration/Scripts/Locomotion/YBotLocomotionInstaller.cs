@@ -87,6 +87,11 @@ public static class YBotLocomotionInstaller
         if (agent == null)
             agent = host.AddComponent<YBotWalkerAgent>();
         agent.Wire(rig, left, right);
+        // Episode truncation. Agent.MaxStep defaults to 0 (= unlimited), so the ONLY exit was a fall
+        // and every terminal in the PPO buffer was a V=0 failure — the critic never saw a trajectory
+        // where surviving paid off. A finite MaxStep makes ML-Agents truncate via EpisodeInterrupted()
+        // (value bootstrapped) instead of EndEpisode(), and bounds the chained-target episode.
+        if (agent.episodeMaxSteps > 0) agent.MaxStep = agent.episodeMaxSteps;
 
         // 4. DecisionRequester — after Agent + BP so it binds correctly.
         DecisionRequester dr = host.GetComponent<DecisionRequester>();

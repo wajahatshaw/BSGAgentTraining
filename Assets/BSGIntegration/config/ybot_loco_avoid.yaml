@@ -26,8 +26,8 @@
 #   mlagents-learn Assets/BSGIntegration/config/ybot_loco_avoid.yaml --run-id=ybot_loco_avoid_v1 --resume
 # ============================================================================
 default_settings:
-  checkpoint_interval: 10000
-  keep_checkpoints: 5
+  checkpoint_interval: 25000
+  keep_checkpoints: 25
 
 behaviors:
   PhysicalAgentZone0:

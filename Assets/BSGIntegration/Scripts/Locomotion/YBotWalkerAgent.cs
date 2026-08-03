@@ -105,6 +105,14 @@ public class YBotWalkerAgent : Agent
     // the "rotates on the spot, faces the desk, never advances" behaviour observed. Facing should nudge
     // the heading, not be a living wage.
     public float headingWeight = 0.015f;
+    [Tooltip("Fraction of the locomotion reward still paid when the agent moves toward the target " +
+             "while facing AWAY from it (back-pedalling). The facing gate ramps from this value at " +
+             "facing<=0 to 1.0 at facing>=0.7, so walking forwards pays 1/this times more than " +
+             "reversing. NOT zero on purpose: back-pedalling is the agent's current main locomotion " +
+             "mode, and removing all of its income at once would likely collapse it back to standing " +
+             "still and lose the movement it has. Lower this toward 0 once forward walking is " +
+             "established and facing in the TRAINING log is reliably positive.")]
+    public float facingBackpedalCredit = 0.25f;
     [Tooltip("Dense per-step reward for the root's velocity TOWARD the target, normalized to " +
              "desiredWalkSpeed. This is what makes a stand-expert actually start walking: standing " +
              "still earns 0 here, so idling stops being optimal.")]
@@ -121,7 +129,29 @@ public class YBotWalkerAgent : Agent
     // the bleeding, which is a worse failure than idling.
     public float existentialPenalty = 0.05f;
     public float energyPenalty = 0.0002f;
+    // HELD AT 1.0 ON PURPOSE — do not raise without evidence. Briefly set to 10.0 on the theory that
+    // terminating was a cheap escape hatch (a -1 terminal is small next to the ~0.3-0.5/step a
+    // degrading body bleeds). Reverted: the supporting evidence did not hold up. The "avgSinkHeight
+    // 0.36-0.39 vs a 0.40 threshold means it sinks deliberately" reading is a MEASUREMENT ARTIFACT —
+    // that value is sampled on the first frame that crosses below the threshold, so it always lands
+    // just under 0.40 whether the sink is deliberate or accidental. Same for the tight 63-74 step
+    // spread, which any near-deterministic policy falling from a fixed spawn would produce.
+    // Raising it is also actively risky: a large terminal penalty makes early walking attempts (which
+    // DO fall) expensive, and the likely outcome is a policy that freezes rigidly rather than risks a
+    // step. Revisit only if episode length rises while TARGETS REACHED stays 0, and change it ALONE.
     public float fallPenalty = 1.0f;
+    [Tooltip("Agent.MaxStep (decision steps) applied by YBotLocomotionInstaller. Set because MaxStep " +
+             "defaulted to 0 (unlimited): the ONLY way an episode could end was a fall, so EVERY " +
+             "terminal in the PPO buffer was a failure bootstrapped with V=0 and the critic never saw " +
+             "a single trajectory where surviving paid off. A finite MaxStep makes ML-Agents call " +
+             "EpisodeInterrupted() instead of EndEpisode(), which bootstraps the value estimate " +
+             "properly. Also bounds the CHAINED-target episode, which was otherwise unbounded. " +
+             "MaxStep is compared against StepCount, which counts PHYSICS FRAMES (not decisions), so " +
+             "1500 = 1500 * 0.02s = ~30s of life. NOTE: while episodes " +
+             "still end in a fall at ~67 steps this never fires and changes NOTHING — it is a " +
+             "correctness fix that only becomes load-bearing once episodes actually get long. Do not " +
+             "expect it to improve anything on its own.")]
+    public int episodeMaxSteps = 1500;
     // Raised 2.0→10.0. At ~0.2 reward/step a +2 bonus was indistinguishable from noise; arrival needs
     // to register as a clear spike now that reaching chains the target instead of ending the episode.
     public float reachReward = 10.0f;
@@ -214,6 +244,13 @@ public class YBotWalkerAgent : Agent
     double _accExistential, _accObstacle, _accSlip, _accEnergy, _accSmooth, _accFallReach;
     int _accSteps;               // reward-steps counted since the last log print
     float _lastDist, _lastVelToward, _lastFacing, _lastProgress; // latest instantaneous values
+    // Mean stance gate over the window. This is the direct read-out of the dive fix: ~1.0 means
+    // locomotion reward is being earned on the feet, low values mean the agent is still collecting
+    // (or trying to collect) while toppling.
+    double _accStance;
+    // Mean facing gate over the window — the read-out for the back-pedalling fix. Rises toward 1.0 as
+    // the agent turns to walk forwards; sits near facingBackpedalCredit while it still reverses.
+    double _accFacingGate;
 
     // --- Termination-cause instrumentation (diagnostics only) ----------------------------------
     // The two fall conditions (hips sank below fallHeight vs body tipped past minUprightToSurvive)
@@ -264,6 +301,21 @@ public class YBotWalkerAgent : Agent
     {
         if (_rig == null) _rig = GetComponent<YBotLocomotionRig>();
 
+        if (episodeMaxSteps > 0) MaxStep = episodeMaxSteps;
+
+        // FORWARD-AXIS CHECK (diagnostic only — no reward, no observation, no action effect).
+
+        if (_rig != null && _rig.IsBuilt && _rig.Root != null)
+        {
+            Vector3 charFwd = transform.forward;
+            Vector3 hipsFwd = _rig.Root.transform.forward;
+            Debug.Log($"[YBotWalker] FORWARD-AXIS CHECK — dot(hips.forward, character.forward)={Vector3.Dot(hipsFwd, charFwd):F3} " +
+                      $"dot(hips.right, character.forward)={Vector3.Dot(_rig.Root.transform.right, charFwd):F3} " +
+                      $"dot(hips.up, worldUp)={Vector3.Dot(_rig.Root.transform.up, Vector3.up):F3} | " +
+                      $"+1 = aligned (facing is real), -1 = INVERTED (heading reward + obs 55 are backwards), " +
+                      $"|right| = 1 = rotated 90deg");
+        }
+
         // One-time policy/connection diagnostic — if actionsReceived stays 0 this tells us why.
         var bp = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
         bool comms = Academy.IsInitialized && Academy.Instance.IsCommunicatorOn;
@@ -280,6 +332,33 @@ public class YBotWalkerAgent : Agent
 
         _rig.ResetToSpawn();
         EnsureTarget();
+
+        // DEFERRED SPAWN-DEPENDENT SETUP — do NOT place the target or take the distance baseline here.
+
+        _spawnPendingFrames = SpawnSettleFrames;
+        _reachGraceFrames = ReachGraceFrames;
+        _prevActionBuffer = null; // avoid a spurious jerk spike across the episode boundary
+    }
+
+    // --- deferred spawn setup ---------------------------------------------------------------------
+    // Physics frames to wait after a reset before trusting Root.transform.position. 2 is enough (the
+    // solver applies the teleport + zeroed joint state on the next step); 3 gives a frame of margin.
+    const int SpawnSettleFrames = 3;
+    // Frames after a reset during which a reach cannot be credited. Covers the stand-up transient, so
+    // a reset artefact or the settling motion itself can never collect the +10. Reward-only.
+    const int ReachGraceFrames = 15;
+    int _spawnPendingFrames;
+    int _reachGraceFrames;
+
+    /// <summary>
+    /// Spawn-relative setup, run from FixedUpdate once the physics reset has actually been applied.
+    /// Places the target, spawns the placeholder field and takes the progress baseline — all from the
+    /// TRUE spawn pose rather than the pose the previous episode ended in.
+    /// </summary>
+    void ApplyDeferredSpawnSetup()
+    {
+        if (_rig == null || !_rig.IsBuilt) return;
+
         RandomizeTarget();
 
         // Per-episode placeholder obstacle field (training only; off in the real populated scene).
@@ -299,7 +378,6 @@ public class YBotWalkerAgent : Agent
         }
 
         _prevTargetDistance = PlanarDistanceToTarget();
-        _prevActionBuffer = null; // avoid a spurious jerk spike across the episode boundary
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -391,7 +469,14 @@ public class YBotWalkerAgent : Agent
         float groundY = SampleGroundY(root.position);
         float height = root.position.y - groundY;
         if (height < fallHeight)
+        {
+            if (!stabilityOnlyTraining)
+            {
+                AddR(ref _accExistential, -existentialPenalty);
+                _prevTargetDistance = PlanarDistanceToTarget();
+            }
             return;
+        }
 
         _accSteps++; // count this as a reward-applying step for the per-step breakdown
 
@@ -416,16 +501,36 @@ public class YBotWalkerAgent : Agent
         else
             AddR(ref _accFoot, -footGroundedWeight); // both feet off the ground = hop/jump, not a walk
 
+        float stance = Mathf.Min(
+            Mathf.InverseLerp(minUprightToSurvive, reachMinUpright, upright),      // 0 at 0.40, 1 at 0.70
+            Mathf.InverseLerp(fallHeight, reachMinHeightFrac * standHeight, height)); // 0 at 0.40m, 1 at 0.75m
+        _accStance += stance;
+
         float dist = PlanarDistanceToTarget();
         _lastDist = dist;
-        if (!stabilityOnlyTraining && progressWeight > 0f)
+
+        // FACING GATE — locomotion credit also requires travelling FORWARDS.
+        float facingGate = 1f;
+        if (dist > 0.01f)
+        {
+            Vector3 fwdPlanar = new Vector3(root.forward.x, 0f, root.forward.z).normalized;
+            float facingNow = Vector3.Dot(fwdPlanar, PlanarToTarget().normalized);
+            facingGate = Mathf.Lerp(facingBackpedalCredit, 1f, Mathf.InverseLerp(0f, 0.7f, facingNow));
+        }
+        _accFacingGate += facingGate;
+        float locomotionGate = stance * facingGate;
+
+      
+        if (!stabilityOnlyTraining && progressWeight > 0f && _spawnPendingFrames <= 0)
         {
             float progress = _prevTargetDistance - dist;
             _prevTargetDistance = dist;
             _lastProgress = progress;
-            AddR(ref _accProgress, progressWeight * progress);
+            float progressReward = progressWeight * progress;
+            if (progressReward > 0f) progressReward *= locomotionGate;
+            AddR(ref _accProgress, progressReward);
         }
-        else
+        else if (_spawnPendingFrames <= 0)
         {
             _prevTargetDistance = dist;
         }
@@ -455,7 +560,13 @@ public class YBotWalkerAgent : Agent
             // every retreat — free reward for shuffling in place, while progress telescoped to zero.
             // Symmetric shaping is also what keeps the intended optimum intact (potential-based
             // shaping only preserves the optimal policy when it is symmetric).
-            AddR(ref _accVelocity, velocityWeight * Mathf.Clamp(velToward / desiredWalkSpeed, -1f, 1f));
+            // Stance-gated (see the stance calculation above): the burst of velocity a toppling body
+            // generates toward the target was the single largest source of dive income (+3.2 of the
+            // +2.9 net). Positive credit only while standing; the negative half is left at full
+            // strength so retreating is never made cheap by a bad posture.
+            float velocityReward = velocityWeight * Mathf.Clamp(velToward / desiredWalkSpeed, -1f, 1f);
+            if (velocityReward > 0f) velocityReward *= locomotionGate; // on its feet AND facing forwards
+            AddR(ref _accVelocity, velocityReward);
         }
 
         // Foot-slip penalty: a grounded foot should plant, not skate (moonwalk). Penalize the
@@ -481,7 +592,8 @@ public class YBotWalkerAgent : Agent
         for (int i = 0; i < cont.Length; i++) effort += cont[i] * cont[i];
         AddR(ref _accEnergy, -energyPenalty * effort);
 
-        if (!stabilityOnlyTraining && dist < reachTargetDistance)
+
+        if (!stabilityOnlyTraining && _reachGraceFrames <= 0 && dist < reachTargetDistance)
         {
             // The arrival must happen ON ITS FEET — see reachMinUpright. A dive that crosses the reach
             // radius mid-topple is NOT an arrival: it pays nothing and does not chain the target, so
@@ -525,6 +637,17 @@ public class YBotWalkerAgent : Agent
 
         ArticulationBody root = _rig.Root;
 
+        // Deferred spawn setup — see OnEpisodeBegin. Runs once the solver has actually applied the
+        // reset, so target placement and the progress baseline use the TRUE spawn pose. Placed before
+        // the fall checks below so the first episode frame is never judged against a stale target.
+        if (_reachGraceFrames > 0) _reachGraceFrames--;
+        if (_spawnPendingFrames > 0)
+        {
+            _spawnPendingFrames--;
+            if (_spawnPendingFrames == 0)
+                ApplyDeferredSpawnSetup();
+        }
+
         // Clean CURRENT-training status (replaces the legacy BSG summary spam). Shows whether the
         // trainer is actually driving the agent and how training is progressing.
         if (Time.time >= _nextTrainingLogTime)
@@ -545,7 +668,10 @@ public class YBotWalkerAgent : Agent
                       $"existential={perStep(_accExistential):F3} energy={perStep(_accEnergy):F3} smooth={perStep(_accSmooth):F3} " +
                       $"fall/reach={perStep(_accFallReach):F3}\n" +
                       $"    locomotion state — distToTarget={_lastDist:F2}m velToward={_lastVelToward:F2}m/s " +
-                      $"facing={_lastFacing:F2} progressΔ/step={_lastProgress:F4}m");
+                      $"facing={_lastFacing:F2} progressΔ/step={_lastProgress:F4}m " +
+                      $"stance={perStep(_accStance):F2} facingGate={perStep(_accFacingGate):F2} " +
+                      $"(stance 1.0 = earning ON ITS FEET; facingGate 1.0 = walking FORWARDS, " +
+                      $"{facingBackpedalCredit:F2} = back-pedalling and earning only that fraction)");
 
             // SEPARATE Debug.Log on purpose: Unity's Console list view clips each entry to its first
             // few lines (the rest is only visible in the detail pane), so appending these as lines
@@ -567,6 +693,7 @@ public class YBotWalkerAgent : Agent
             // Reset the diagnostics window.
             _accUpright = _accHeight = _accFoot = _accProgress = _accHeading = _accVelocity = 0;
             _accExistential = _accObstacle = _accSlip = _accEnergy = _accSmooth = _accFallReach = 0;
+            _accStance = _accFacingGate = 0;
             _accSteps = 0;
             _termSink = _termTip = _termNonFinite = _termObstacleHit = 0;
             _reachCount = _reachRejected = 0;
@@ -698,7 +825,8 @@ public class YBotWalkerAgent : Agent
         {
             float coneRad = coneDeg * Mathf.Deg2Rad;
             float ang = baseAngle + Random.Range(-coneRad, coneRad);       // forward cone (full circle when coneDeg=180)
-            float rMin = Mathf.Max(reachTargetDistance + 0.75f, radiusMax * 0.5f); // always beyond reach so it isn't instantly "done"
+
+            float rMin = Mathf.Max(reachTargetDistance + 0.25f, radiusMax * 0.5f);
             float r = Mathf.Lerp(rMin, Mathf.Max(rMin + 0.25f, radiusMax), Random.value);
             Vector3 pos = origin + new Vector3(Mathf.Sin(ang) * r, 0f, Mathf.Cos(ang) * r);
             pos = ZonePlayAreaBounds.ClampPosition(zoneIndex, pos); // keep the goal inside the zone
