@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
@@ -26,10 +27,9 @@ public class YBotWalkerAgent : Agent
 {
     [Header("Target")]
     public Transform target;
-    // Lowered 6→2.5: at ~0.36 m/s and a ~110-step (~2.2 s) life the agent covers <1 m per episode, so
-    // a 3-6 m target was unreachable and the reach bonus almost never fired. Widen this back out only
-    // once the chained-reach count in the WHY-EPISODES-END log is consistently high.
-    public float targetSpawnRadius = 2.5f;
+    // 3.5→5.0 for the Avoid phase: rMin scales to max(1.25, radius*0.5)=2.5, so targets now sit
+    // 2.5-5.0 m out and the agent must cross more obstacles instead of stepping straight to the goal.
+    public float targetSpawnRadius = 5.0f;
 
     [Header("Episode")]
     [Tooltip("Zone index used to clamp the body inside the zone play area (designated player = 0).")]
@@ -40,28 +40,49 @@ public class YBotWalkerAgent : Agent
              "check with hips at 0.57-0.59 m. A crouch that deep is recoverable for a real biped, so " +
              "0.6 was terminating episodes the agent could have survived.")]
     public float fallHeight = 0.4f;
-    [Tooltip("dot(root.up, worldUp) below which the body counts as tipped over and the episode resets. " +
-             "Without this a backward-tipped body keeps its hips above fallHeight and gets stuck, never resetting.")]
-    public float minUprightToSurvive = 0.4f;
+    [Tooltip("dot(root.up, worldUp) below which the body counts as tipped over and the episode resets.")]
+    // 0.4→0.3: avgTipUpright was 0.37, so episodes were cut off before a recovery could be attempted.
+    public float minUprightToSurvive = 0.3f;
+    [Tooltip("Upright at which locomotion credit starts; full credit at reachMinUpright.")]
+    // Held at 0.4 (minUprightToSurvive's old value) so lowering the survival gate buys recovery
+    // time without also paying a toppling body more for travelling.
+    public float stanceGateMinUpright = 0.4f;
     [Tooltip("Hips height above ground (m) at a healthy standing pose, used to normalize height obs.")]
     public float standHeight = 1.0f;
     public float reachTargetDistance = 1.0f;
 
     [Header("Curriculum")]
-    [Tooltip("Week 1: stand/balance only — no walk-to-target reward; target stays at spawn. " +
-             "Week 2 (walking): set false so progress-to-target + reach rewards activate and the " +
-             "target spawns away from the agent. Agent is runtime-added, so this code default is " +
-             "the source of truth — inspector edits don't persist.")]
+    [Tooltip("STAND PHASE (true): stand/balance only — no walk-to-target reward, target stays at spawn. " +
+             "WALK PHASE (false): progress-to-target + velocity + reach rewards activate and the target " +
+             "spawns away from the agent. Agent is runtime-added, so this code default is the source of " +
+             "truth — inspector edits don't persist.")]
+    // TRUE — back to the STAND phase. Set false on 2026-06-19 to start walking; the TensorBoard record
+    // says that was premature and is what broke the run:
+    //   510k-630k steps (stand phase)  -> episode length 408-508 decisions, i.e. 8-10 s of life. SOLVED.
+    //   walk mode on at ~750k          -> 146, then 24.7 by 990k. Never recovered above 37.
+    //   6.72M steps (walk, 1 flag)     -> 24.1 decisions, versus ~20 for a ZERO-ACTION ragdoll.
+    // The zero-action test then showed why walking cannot be learned from here: the passive rig topples
+    // in ~1.2 s (tipped ~80%), so the plant cannot hold a stance long enough for a stride to exist. Asking
+    // for locomotion before balance was asking for something the physics does not support yet.
+    // Flip back to false only when the stand phase is holding a few hundred decisions AGAIN on the
+    // current plant — not on the strength of the old 510k numbers, which were measured on a different rig
+    // (hip +-45, ankle 380/320, narrower feet, damping ratio 0.35).
+    // Reward-shaping/target-placement only — never touches the frozen 168/21 obs/action spec, so this is
+    // safe on any --resume.
     public bool stabilityOnlyTraining = false;
 
     [Tooltip("Gentle walk-in curriculum for a stand-warm-started policy: start the target CLOSE and in " +
              "a forward cone, then widen distance + angle as episodes accumulate. Cushions the obs- " +
              "normalizer shock (direction-to-target was pinned to 0 for the whole stand phase, so its " +
+      
              "running variance is ~0 and the first non-zero value would otherwise slam to the ±5 clamp) " +
              "and asks for a small forward step first instead of an instant 180° turn + long march. " +
              "TARGET PLACEMENT ONLY — never touches the 168/21 obs/action spec, so it is fully " +
              "--resume-safe. Set false to always use the full targetSpawnRadius / 360° placement.")]
-    public bool useWalkTargetCurriculum = true;
+    // Off: this ramps on CompletedEpisodes, which resets every Play session, so each Unity restart put
+    // targets back at 1.5 m in a ±30° cone — only ~0.3 m of travel per arrival. Its job (cushioning the
+    // normalizer right after the stand flip) is long done.
+    public bool useWalkTargetCurriculum = false;
     [Tooltip("Walk curriculum: target distance (m) at episode 0. Ramps up to targetSpawnRadius.")]
     public float walkCurriculumStartRadius = 1.5f;
     [Tooltip("Walk curriculum: half-angle (deg) of the forward cone the target spawns within at " +
@@ -91,6 +112,19 @@ public class YBotWalkerAgent : Agent
              "revert to forget. 2.5 => upright 0.125, height 0.05 during Stand.")]
     public float standPostureBoost = 2.5f;
     public float footGroundedWeight = 0.02f;
+    [Tooltip("BALANCE SHAPING: penalty on the horizontal distance between the hips and the centroid of " +
+             "the GROUNDED feet, normalized by supportOffsetTolerance. This is the only term that " +
+             "refers to foot placement relative to the body, i.e. the only one that can teach the agent " +
+             "to STEP its support base back under its centre of mass instead of rotating about fixed " +
+             "feet until it falls. Cannot be farmed by standing still: a balanced stationary body " +
+             "already has ~0 offset and so already pays ~0. Deliberately similar in size to the upright " +
+             "reward (0.125 during Stand) so it is a real gradient rather than a rounding error, but " +
+             "below it so the agent is never better off crouching or lying down to reduce the offset.")]
+    // 0.06→0.045: now multiplied by standPostureBoost, so this keeps it under boosted upright (0.125).
+    public float balanceWeight = 0.045f;
+    [Tooltip("Distance OUTSIDE the support polygon (m) at which the balance penalty saturates.")]
+    // 0.25→0.12: 0.25 only bit once the fall was already committed, leaving no usable gradient.
+    public float supportOffsetTolerance = 0.12f;
     [Tooltip("Penalty per (m/s) of horizontal speed of a foot WHILE it is grounded — stops a planted " +
              "foot from skating/moonwalking so the stance looks natural. No hard gait rhythm is forced.")]
     public float footSlipWeight = 0.02f;
@@ -118,7 +152,9 @@ public class YBotWalkerAgent : Agent
              "still earns 0 here, so idling stops being optimal.")]
     public float velocityWeight = 0.4f; // raised 0.2→0.4 (Phase A): moving toward the target now pays more than idling
     [Tooltip("Walk speed (m/s) at which the velocity-toward-target reward saturates — prevents lunging/sprinting.")]
-    public float desiredWalkSpeed = 1.5f;
+    // 1.5→0.5: agent moves at ~0.1 m/s, so the reward sat in the bottom 7% of its range.
+    // Raise toward 1.0 if speed ever plateaus at exactly 0.5 (that is the term saturating).
+    public float desiredWalkSpeed = 0.5f;
     [Tooltip("Small per-step time cost (subtracted) so standing idle is never free — discourages the " +
              "agent from balancing in place instead of walking to the target. Replaces the old alive bonus. " +
              "Walk mode only (not applied during stabilityOnlyTraining).")]
@@ -140,18 +176,13 @@ public class YBotWalkerAgent : Agent
     // DO fall) expensive, and the likely outcome is a policy that freezes rigidly rather than risks a
     // step. Revisit only if episode length rises while TARGETS REACHED stays 0, and change it ALONE.
     public float fallPenalty = 1.0f;
-    [Tooltip("Agent.MaxStep (decision steps) applied by YBotLocomotionInstaller. Set because MaxStep " +
-             "defaulted to 0 (unlimited): the ONLY way an episode could end was a fall, so EVERY " +
-             "terminal in the PPO buffer was a failure bootstrapped with V=0 and the critic never saw " +
-             "a single trajectory where surviving paid off. A finite MaxStep makes ML-Agents call " +
-             "EpisodeInterrupted() instead of EndEpisode(), which bootstraps the value estimate " +
-             "properly. Also bounds the CHAINED-target episode, which was otherwise unbounded. " +
-             "MaxStep is compared against StepCount, which counts PHYSICS FRAMES (not decisions), so " +
-             "1500 = 1500 * 0.02s = ~30s of life. NOTE: while episodes " +
-             "still end in a fall at ~67 steps this never fires and changes NOTHING — it is a " +
-             "correctness fix that only becomes load-bearing once episodes actually get long. Do not " +
-             "expect it to improve anything on its own.")]
-    public int episodeMaxSteps = 1500;
+    [Tooltip("Agent.MaxStep in PHYSICS FRAMES (500 = ~10s). Finite so ML-Agents bootstraps via "
+             + "EpisodeInterrupted() instead of treating every terminal as a failure.")]
+    // 1500→500: episodes ran to the cap, leaving only ~21 episodes per policy update.
+    // 750→1200 (24 s): 88% of episodes were hitting the 15 s cap mid-route, cutting off exactly the
+    // obstacle-negotiation the Avoid phase needs to learn. Costs gradient diversity (~25 episodes per
+    // policy update, down from ~41) — drop back if learning stalls rather than raising it further.
+    public int episodeMaxSteps = 1200;
     // Raised 2.0→10.0. At ~0.2 reward/step a +2 bonus was indistinguishable from noise; arrival needs
     // to register as a clear spike now that reaching chains the target instead of ending the episode.
     public float reachReward = 10.0f;
@@ -174,6 +205,7 @@ public class YBotWalkerAgent : Agent
              "agent learns pure walk-to-target first, then set TRUE and --resume for the Avoid phase. " +
              "Reward + scene only — never changes the frozen 168/21 obs/action spec, so it is resume-safe. " +
              "The ray sensor (perception) is always built regardless; this only controls the INCENTIVE.")]
+    // PHASE 3 ON. Walk met the prerequisite: 1.45 chained reaches/episode with 0 rejected arrivals.
     public bool enableObstacleAvoidance = false;
     [Tooltip("Weight of the proximity penalty applied as the body nears a non-target obstacle " +
              "(Wall/Station/Prop/Human). The RayPerceptionSensor gives the policy the PERCEPTION; " +
@@ -186,14 +218,19 @@ public class YBotWalkerAgent : Agent
     [Tooltip("Body-to-obstacle distance (m) treated as a hard collision — applies fallPenalty-style " +
              "obstacleHitPenalty and optionally ends the episode.")]
     public float obstacleHitDistance = 0.35f;
-    public float obstacleHitPenalty = 1.0f;
+    // 1.0→0.05: this is charged EVERY FRAME while inside obstacleHitDistance, not once like fallPenalty.
+    // At 1.0 a second of contact cost -50 against ~0.22/frame income — five target arrivals — which would
+    // teach freezing, not steering. 0.05 makes a ~20-frame contact cost 1.0, matching a fall.
+    public float obstacleHitPenalty = 0.05f;
     [Tooltip("End the episode on a hard obstacle collision (like a fall). Off by default so the agent " +
              "learns to recover/steer away rather than being reset on every graze.")]
     public bool endEpisodeOnObstacleHit = false;
     [Tooltip("Curriculum (avoid phase): bias target placement so an obstacle sits on the straight " +
              "line from the agent to the target, forcing it to actually route around. Enable once " +
              "stand+walk are solid.")]
-    public bool biasTargetBehindObstacles = false;
+    // On: without it targets are placed anywhere, so most episodes had a clear straight line and the
+    // agent never had to detour. This prefers goals with an obstacle on the direct path.
+    public bool biasTargetBehindObstacles = true;
 
     [Header("Per-category avoidance (reward-only, resume-safe)")]
     [Tooltip("Multiplier on the proximity + hit penalty per obstacle category. Living things (Human, " +
@@ -214,12 +251,26 @@ public class YBotWalkerAgent : Agent
              "populated scene. Scene-only — never affects the frozen obs/action spec.")]
     public bool spawnTrainingPlaceholders = true;
     [Tooltip("Number of placeholder obstacles spawned per episode (randomized position/size/type).")]
-    public int placeholderObstacleCount = 4;
+    // 4→8: with a 3.5 m radius, 4 obstacles left most agent→target corridors empty.
+    public int placeholderObstacleCount = 8;
 
     [Header("Action smoothness")]
     [Tooltip("Penalty on squared action delta between steps (jerk). Reduces the twitchy PPO ragdoll " +
              "buzz for a more natural gait. Reward-only; safe on any resume.")]
-    public float actionSmoothWeight = 0.005f;
+    // 0.005→0.001: cost -0.009/step and paid the agent to move its joints as little as possible.
+    // Raise to 0.002 if the gait ends up too twitchy.
+    public float actionSmoothWeight = 0.001f;
+
+    [Header("Gait (walk phase only)")]
+    // 0.05→0.30: now paid once per swing (peak-ratchet) instead of every frame the foot is held up.
+    [Tooltip("Reward for a full swing-foot lift to gaitClearanceTarget. Paid per swing, not per frame.")]
+    public float gaitClearanceWeight = 0.30f;
+    [Tooltip("Swing-foot height (m) at which the clearance reward saturates.")]
+    public float gaitClearanceTarget = 0.12f;
+    [Tooltip("One-off bonus each time sole support transfers between feet — i.e. an actual step.")]
+    public float gaitAlternationReward = 0.30f;
+    [Tooltip("Gait terms are scaled by Clamp01(velToward / this), or they pay for marching on the spot.")]
+    public float gaitMinSpeedForCredit = 0.20f;
 
     YBotLocomotionRig _rig;
     YBotFootContact _leftFoot;
@@ -232,7 +283,9 @@ public class YBotWalkerAgent : Agent
     int _actionsReceived;        // >0 confirms the Python trainer is sending actions
     float _nextTrainingLogTime;  // throttle for the clean current-training log
     int _obstacleLayerMask;      // 0 = uninitialized, -1 = no Wall layer, else (1 << wallLayer)
-    static readonly Collider[] _obstacleOverlap = new Collider[16];
+    // 16→48: OverlapSphereNonAlloc TRUNCATES silently, so in a populated scene (walls + stations +
+    // placeholders + characters) the nearest obstacle could be dropped and the penalty under-report.
+    static readonly Collider[] _obstacleOverlap = new Collider[48];
     YBotTrainingObstacleField _placeholders; // per-episode placeholder obstacles (training only)
 
     // --- Reward-term instrumentation (diagnostics only) ---------------------------------------
@@ -240,8 +293,18 @@ public class YBotWalkerAgent : Agent
     // reward is coming from — posture (upright/height/heading) vs actual locomotion (progress/
     // velocity). These buckets never affect learning; AddReward still does all the work. Reset
     // each time the log prints (every 10 s).
+    // Gait state + diagnostics. _lastSwingSide: -1 = left foot higher, +1 = right higher, 0 = level.
+    const float GaitLiftDeadband = 0.02f; // m of foot-height difference before a side counts as swinging
+    int _lastSwingSide;
+    float _lastFootLift, _swingPeak;
+    double _accClearance, _accAlternation;
+    int _stepsSingle, _stepsDouble, _stepsAirborne, _alternations;
+    float _gaitWindowStart;
+
     double _accUpright, _accHeight, _accFoot, _accProgress, _accHeading, _accVelocity;
     double _accExistential, _accObstacle, _accSlip, _accEnergy, _accSmooth, _accFallReach;
+    double _accBalance;          // balance-shaping term (hips over support base)
+    float _lastSupportOffset;    // latest hips-to-support horizontal offset, m
     int _accSteps;               // reward-steps counted since the last log print
     float _lastDist, _lastVelToward, _lastFacing, _lastProgress; // latest instantaneous values
     // Mean stance gate over the window. This is the direct read-out of the dive fix: ~1.0 means
@@ -278,11 +341,31 @@ public class YBotWalkerAgent : Agent
     void NoteTermination(ref int causeCounter)
     {
         causeCounter++;
-        int len = StepCount;
+        NoteEpisodeLength(StepCount);
+        _notedThisEpisode = true;
+    }
+
+    void NoteEpisodeLength(int len)
+    {
         _epCount++;
         _epStepsSum += len;
         if (len < _epStepsMin) _epStepsMin = len;
         if (len > _epStepsMax) _epStepsMax = len;
+    }
+
+    // MaxStep truncation is handled inside ML-Agents (EpisodeInterrupted), so it never reaches
+    // NoteTermination — those episodes were invisible in the log, which read as "reset for no reason".
+    bool _notedThisEpisode;
+    int _lastStepCount;
+    int _termTruncated;
+
+    /// <summary>Counts an episode that ran out its MaxStep budget instead of ending in a fall.</summary>
+    void NoteTruncationIfUnended()
+    {
+        if (_notedThisEpisode || _lastStepCount <= 0) { _notedThisEpisode = false; return; }
+        _termTruncated++;
+        NoteEpisodeLength(_lastStepCount);
+        _notedThisEpisode = false;
     }
 
     // Mirror an AddReward into a diagnostics bucket (learning unchanged).
@@ -328,6 +411,7 @@ public class YBotWalkerAgent : Agent
 
     public override void OnEpisodeBegin()
     {
+        NoteTruncationIfUnended();
         if (_rig == null || !_rig.IsBuilt) return;
 
         _rig.ResetToSpawn();
@@ -447,7 +531,12 @@ public class YBotWalkerAgent : Agent
 
         // Action-smoothness (jerk) penalty: squared change from the previous step's actions. Applied
         // in every mode (natural posture in stand, natural gait in walk). Reward-only.
-        if (_prevActionBuffer != null && _prevActionBuffer.Length == _actionBuffer.Length && actionSmoothWeight > 0f)
+        // SKIPPED during the Stand phase, for the same reason as the foot-slip penalty: a protective
+        // step or a fast balance correction IS a large action delta, so this term put a price on every
+        // recovery attempt the agent needed to explore. Jerk shaping is for making a LEARNED gait look
+        // smooth, not for teaching one. Auto-restores in the Walk phase.
+        if (!stabilityOnlyTraining
+            && _prevActionBuffer != null && _prevActionBuffer.Length == _actionBuffer.Length && actionSmoothWeight > 0f)
         {
             float jerk = 0f;
             for (int i = 0; i < _actionBuffer.Length; i++)
@@ -501,8 +590,12 @@ public class YBotWalkerAgent : Agent
         else
             AddR(ref _accFoot, -footGroundedWeight); // both feet off the ground = hop/jump, not a walk
 
+        ApplyGaitReward(leftGrounded, rightGrounded);
+
+        // Lower bound is stanceGateMinUpright, NOT minUprightToSurvive — coupling them let a Stand-phase
+        // tuning change silently raise Walk/Avoid locomotion credit at every tilt angle.
         float stance = Mathf.Min(
-            Mathf.InverseLerp(minUprightToSurvive, reachMinUpright, upright),      // 0 at 0.40, 1 at 0.70
+            Mathf.InverseLerp(stanceGateMinUpright, reachMinUpright, upright),     // 0 at 0.40, 1 at 0.70
             Mathf.InverseLerp(fallHeight, reachMinHeightFrac * standHeight, height)); // 0 at 0.40m, 1 at 0.75m
         _accStance += stance;
 
@@ -569,13 +662,70 @@ public class YBotWalkerAgent : Agent
             AddR(ref _accVelocity, velocityReward);
         }
 
+        // BALANCE SHAPING — keep the body over the support base, or STEP so the support base gets back
+        // under the body. This is the term the reward function was missing entirely.
+        //
+        // Nothing else in the function refers to where the feet are RELATIVE to the body. upright and
+        // height say "be vertical and tall", footGrounded says "have a foot down", and that is the whole
+        // of the balance signal. All of them are satisfied by standing rigidly still, so the policy has
+        // no gradient telling it what to DO once it starts leaning — the only consequence of a lean is
+        // the terminal fallPenalty, which arrives after the point of no return and cannot teach a
+        // correction. That is exactly the observed behaviour: the body rotates about fixed feet and
+        // falls, because moving the feet was never worth anything.
+        //
+        // Penalising the horizontal offset between the hips and the centroid of the GROUNDED feet gives
+        // a dense, continuous signal that shrinks either by pulling the body back over the feet (ankle/
+        // hip strategy) or by stepping a foot under the body (stepping strategy) — the policy is free to
+        // discover either. It cannot be farmed by standing still, because a still, balanced body already
+        // has ~0 offset and so already pays ~0; the term only bites during a lean, which is precisely
+        // when guidance is needed.
+        // STAND PHASE ONLY — and this gate is essential, not tidiness. WALKING LEGITIMATELY PUTS THE
+        // BODY OUTSIDE ITS SUPPORT BASE: that forward lean is what converts a stance into a step, and a
+        // walking human's centre of mass is outside the support polygon for most of the gait cycle. Left
+        // active during the Walk phase this term would charge for the lean that locomotion requires,
+        // fighting the progress/velocity rewards and pushing the policy back toward the "rotates on the
+        // spot, never advances" behaviour already seen in run v1. Static balance is what it teaches, so
+        // it belongs to the phase that asks for static balance; in the Walk phase upright/height, the
+        // stance gate and the fall termination carry that job instead.
+        // Reward-only — never touches the frozen 168/21 obs/action spec, so it is --resume-safe.
+        if (stabilityOnlyTraining && balanceWeight > 0f && (leftGrounded || rightGrounded))
+        {
+            Vector3 support = Vector3.zero;
+            int contacts = 0;
+            if (leftGrounded && _leftFoot != null) { support += _leftFoot.transform.position; contacts++; }
+            if (rightGrounded && _rightFoot != null) { support += _rightFoot.transform.position; contacts++; }
+            if (contacts > 0)
+            {
+                support /= contacts;
+                float offset = new Vector3(root.position.x - support.x, 0f, root.position.z - support.z).magnitude;
+                _lastSupportOffset = offset;
+
+                // Deadband: charge only for overhang past the support polygon. Measuring from the
+                // centroid made single support pay the max penalty just for lifting a foot.
+                offset = Mathf.Max(0f, offset - YBotLocomotionRig.FootWidth * 0.5f);
+                // postureScale applies here too: this is a posture term, and unscaled it was the
+                // WEAKEST signal during the phase whose whole purpose is balance.
+                AddR(ref _accBalance, -balanceWeight * postureScale
+                                      * Mathf.Clamp01(offset / Mathf.Max(0.01f, supportOffsetTolerance)));
+            }
+        }
+
         // Foot-slip penalty: a grounded foot should plant, not skate (moonwalk). Penalize the
         // horizontal speed of each foot while it's in contact — clamped so a transient spike can't
         // dominate. Keeps the stance natural without forcing any stepping rhythm.
-        float slip = 0f;
-        if (leftGrounded && _leftFoot != null) slip += Mathf.Min(_leftFoot.HorizontalSpeed, 3f);
-        if (rightGrounded && _rightFoot != null) slip += Mathf.Min(_rightFoot.HorizontalSpeed, 3f);
-        if (slip > 0f) AddR(ref _accSlip, -footSlipWeight * slip);
+        //
+        // SKIPPED during the Stand phase. This is a LOOKS-NATURAL polish term, and it taxes the exact
+        // behaviour the agent has to discover first: a protective step lands with real horizontal foot
+        // speed, so every recovery attempt was being charged for scuffing. Competence before elegance —
+        // it auto-restores when stabilityOnlyTraining flips to false for the Walk phase, where
+        // moonwalking is a genuine risk worth pricing.
+        if (!stabilityOnlyTraining)
+        {
+            float slip = 0f;
+            if (leftGrounded && _leftFoot != null) slip += Mathf.Min(_leftFoot.HorizontalSpeed, 3f);
+            if (rightGrounded && _rightFoot != null) slip += Mathf.Min(_rightFoot.HorizontalSpeed, 3f);
+            if (slip > 0f) AddR(ref _accSlip, -footSlipWeight * slip);
+        }
 
         // Obstacle avoidance (Avoid phase only): penalize nearing / colliding with any non-target
         // physical object. Perception comes from the RayPerceptionSensor; this is the incentive.
@@ -614,6 +764,7 @@ public class YBotWalkerAgent : Agent
                 // strictly profitable — this is what ML-Agents' own Walker/Crawler examples do.
                 AddR(ref _accFallReach, reachReward);
                 _reachCount++;
+                FlashReachSuccess();
                 RandomizeTarget();
                 _prevTargetDistance = PlanarDistanceToTarget(); // no phantom progress spike
             }
@@ -633,6 +784,9 @@ public class YBotWalkerAgent : Agent
     /// </summary>
     void FixedUpdate()
     {
+        TickReachFlash();
+        _lastStepCount = StepCount; // MaxStep zeroes StepCount before OnEpisodeBegin sees it
+
         if (_rig == null || !_rig.IsBuilt) return;
 
         ArticulationBody root = _rig.Root;
@@ -662,8 +816,10 @@ public class YBotWalkerAgent : Agent
                       $"stepThisEpisode={StepCount}, episodeReward={GetCumulativeReward():F2}, " +
                       $"upright={up:F2}, hipHeight={(root.transform.position.y - gY):F2}\n" +
                       $"    reward/step (last {_accSteps} steps) — POSTURE: upright={perStep(_accUpright):F3} " +
-                      $"height={perStep(_accHeight):F3} foot={perStep(_accFoot):F3} heading={perStep(_accHeading):F3} | " +
-                      $"LOCOMOTION: progress={perStep(_accProgress):F3} velocity={perStep(_accVelocity):F3} | " +
+                      $"height={perStep(_accHeight):F3} foot={perStep(_accFoot):F3} heading={perStep(_accHeading):F3} "
+                      + $"balance={perStep(_accBalance):F3}(offset={_lastSupportOffset:F2}m) | " +
+                      $"LOCOMOTION: progress={perStep(_accProgress):F3} velocity={perStep(_accVelocity):F3} " +
+                      $"clearance={perStep(_accClearance):F3} alternation={perStep(_accAlternation):F3} | " +
                       $"COSTS: obstacle={perStep(_accObstacle):F3} slip={perStep(_accSlip):F3} " +
                       $"existential={perStep(_accExistential):F3} energy={perStep(_accEnergy):F3} smooth={perStep(_accSmooth):F3} " +
                       $"fall/reach={perStep(_accFallReach):F3}\n" +
@@ -671,7 +827,8 @@ public class YBotWalkerAgent : Agent
                       $"facing={_lastFacing:F2} progressΔ/step={_lastProgress:F4}m " +
                       $"stance={perStep(_accStance):F2} facingGate={perStep(_accFacingGate):F2} " +
                       $"(stance 1.0 = earning ON ITS FEET; facingGate 1.0 = walking FORWARDS, " +
-                      $"{facingBackpedalCredit:F2} = back-pedalling and earning only that fraction)");
+                      $"{facingBackpedalCredit:F2} = back-pedalling and earning only that fraction)\n" +
+                      GaitReport());
 
             // SEPARATE Debug.Log on purpose: Unity's Console list view clips each entry to its first
             // few lines (the rest is only visible in the detail pane), so appending these as lines
@@ -679,7 +836,8 @@ public class YBotWalkerAgent : Agent
             Debug.Log($"[YBotWalker] WHY EPISODES END (last {_epCount} episodes) — " +
                       $"sank(hips<{fallHeight:F2}m)={_termSink} " +
                       $"tipped(upright<{minUprightToSurvive:F2})={_termTip} " +
-                      $"nonFinite={_termNonFinite} obstacleHit={_termObstacleHit} | " +
+                      $"nonFinite={_termNonFinite} obstacleHit={_termObstacleHit} " +
+                      $"truncated(MaxStep, no fall)={_termTruncated} | " +
                       $"TARGETS REACHED (on feet, chained)={_reachCount} " +
                       $"reachRejected(dive/not-standing)={_reachRejected}\n" +
                       $"    at failure: avgSinkHeight={(_termSink > 0 ? _sinkHeightSum / _termSink : 0):F2}m " +
@@ -693,9 +851,13 @@ public class YBotWalkerAgent : Agent
             // Reset the diagnostics window.
             _accUpright = _accHeight = _accFoot = _accProgress = _accHeading = _accVelocity = 0;
             _accExistential = _accObstacle = _accSlip = _accEnergy = _accSmooth = _accFallReach = 0;
+            _accBalance = 0;
             _accStance = _accFacingGate = 0;
+            _accClearance = _accAlternation = 0;
+            _stepsSingle = _stepsDouble = _stepsAirborne = _alternations = 0;
+            _gaitWindowStart = Time.time;
             _accSteps = 0;
-            _termSink = _termTip = _termNonFinite = _termObstacleHit = 0;
+            _termSink = _termTip = _termNonFinite = _termObstacleHit = _termTruncated = 0;
             _reachCount = _reachRejected = 0;
             _sinkHeightSum = _tipUprightSum = 0;
             _epCount = 0; _epStepsSum = 0; _epStepsMin = int.MaxValue; _epStepsMax = 0;
@@ -751,6 +913,110 @@ public class YBotWalkerAgent : Agent
         return d;
     }
 
+    /// <summary>Height of a foot's SOLE above the ground, m. ~0 while planted, whatever the ankle angle.</summary>
+    float SoleLift(YBotFootContact foot)
+    {
+        if (foot == null) return 0f;
+        Collider c = foot.GetComponent<Collider>();
+        Vector3 p = foot.transform.position;
+        float soleY = c != null ? c.bounds.min.y : p.y;
+        return Mathf.Max(0f, soleY - SampleGroundY(p));
+    }
+
+    /// <summary>Pays for lifting the swing foot and alternating support — a stride, not a shuffle.</summary>
+    void ApplyGaitReward(bool leftGrounded, bool rightGrounded)
+    {
+        // Contact census for the gait log (all phases, reward-neutral).
+        if (leftGrounded && rightGrounded) _stepsDouble++;
+        else if (leftGrounded || rightGrounded) _stepsSingle++;
+        else _stepsAirborne++;
+
+        // Measured at the SOLE (collider bounds.min.y), not the ankle bone and not IsGrounded.
+        // IsGrounded stays true until a foot clears probeDistance (0.08 m), hiding the whole range where
+        // a step begins. The ankle bone is worse: ankle PITCH raises it while the sole stays planted, so
+        // it read a permanent 0.05-0.08 m "lift", the ratchet never reset, and clearance paid 0.000 for
+        // 400k steps. A sole never reads above ground while any part of it is touching.
+        float liftL = SoleLift(_leftFoot), liftR = SoleLift(_rightFoot);
+        float dy = liftL - liftR;
+        _lastFootLift = Mathf.Max(liftL, liftR);
+        // Reset ahead of the credit gate below, or a slow patch would leave the peak latched high.
+        if (_lastFootLift < GaitLiftDeadband) _swingPeak = 0f;
+        int swingSide = dy > GaitLiftDeadband ? -1 : (dy < -GaitLiftDeadband ? 1 : 0); // -1 = left is swinging
+        bool alternated = swingSide != 0 && _lastSwingSide != 0 && swingSide != _lastSwingSide;
+        if (alternated) _alternations++;
+        if (swingSide != 0) _lastSwingSide = swingSide;
+
+        if (stabilityOnlyTraining) return;
+
+        // Gated on actually travelling, or both terms pay for marching on the spot.
+        float credit = Mathf.Clamp01(_lastVelToward / Mathf.Max(0.01f, gaitMinSpeedForCredit));
+        if (credit <= 0f) return;
+
+        if (alternated)
+            AddR(ref _accAlternation, gaitAlternationReward * credit);
+
+        // Ratchet on the PEAK lift of each swing, reset on touchdown. Paying for the held height instead
+        // let it raise one foot and keep it there forever, collecting full clearance without ever
+        // stepping — which is exactly what it learned. Paying only for new peaks makes holding worth
+        // nothing and small oscillations worth nothing, so the only way to collect again is to set the
+        // foot down and lift the other one.
+        if (gaitClearanceWeight > 0f && _lastFootLift > _swingPeak)
+        {
+            float cap = Mathf.Max(0.01f, gaitClearanceTarget);
+            float gain = Mathf.Min(_lastFootLift, cap) - Mathf.Min(_swingPeak, cap);
+            _swingPeak = _lastFootLift;
+            if (gain > 0f) AddR(ref _accClearance, gaitClearanceWeight * credit * (gain / cap));
+        }
+    }
+
+    // Visual-only success cue: flash the body white on a valid (on-its-feet) arrival.
+    [Tooltip("Seconds the body stays white after reaching a target. 0 disables the flash.")]
+    public float reachFlashSeconds = 0.4f;
+    Renderer[] _bodyRenderers;
+    Color[] _bodyBaseColors;
+    float _reachFlashUntil;
+
+    /// <summary>Turns the body white for reachFlashSeconds. Reward-neutral.</summary>
+    void FlashReachSuccess()
+    {
+        if (reachFlashSeconds <= 0f) return;
+
+        if (_bodyRenderers == null)
+        {
+            // Cached once: .material instantiates a copy, so doing this per arrival would leak materials.
+            _bodyRenderers = GetComponentsInChildren<Renderer>(true);
+            _bodyBaseColors = new Color[_bodyRenderers.Length];
+            for (int i = 0; i < _bodyRenderers.Length; i++)
+                if (_bodyRenderers[i] != null) _bodyBaseColors[i] = _bodyRenderers[i].material.color;
+        }
+
+        for (int i = 0; i < _bodyRenderers.Length; i++)
+            if (_bodyRenderers[i] != null) _bodyRenderers[i].material.color = Color.white;
+
+        _reachFlashUntil = Time.time + reachFlashSeconds;
+    }
+
+    /// <summary>Restores the cached colours once the flash expires. Called from FixedUpdate.</summary>
+    void TickReachFlash()
+    {
+        if (_reachFlashUntil <= 0f || Time.time < _reachFlashUntil || _bodyRenderers == null) return;
+        for (int i = 0; i < _bodyRenderers.Length; i++)
+            if (_bodyRenderers[i] != null) _bodyRenderers[i].material.color = _bodyBaseColors[i];
+        _reachFlashUntil = 0f;
+    }
+
+    /// <summary>Distinguishes walking from shuffling — LEG CHAIN logs joint range but never phase.</summary>
+    string GaitReport()
+    {
+        int n = _stepsSingle + _stepsDouble + _stepsAirborne;
+        if (n <= 0) return "    gait — no contact samples";
+        float secs = Mathf.Max(0.001f, Time.time - _gaitWindowStart);
+        return $"    gait — single={100f * _stepsSingle / n:F0}% double={100f * _stepsDouble / n:F0}% " +
+               $"airborne={100f * _stepsAirborne / n:F0}% | alternations={_alternations} " +
+               $"({_alternations / secs:F2}/s) footLift={_lastFootLift:F3}m — walking = alternations >0.5/s " +
+               $"with footLift approaching {gaitClearanceTarget:F2}m; ~0/s is a SHUFFLE.";
+    }
+
     float PlanarDistanceToTarget() => PlanarToTarget().magnitude;
 
     void EnsureTarget()
@@ -776,7 +1042,32 @@ public class YBotWalkerAgent : Agent
         ScenePhysicsLayers.SafeSetTag(marker, ScenePhysicsLayers.TagFurniture);
         var rend = marker.GetComponent<Renderer>();
         if (rend != null) rend.material.color = new Color(0.2f, 0.8f, 1f); // cyan desk = the goal
+
+        // Created INACTIVE. CreatePrimitive returns an ACTIVE object with a solid Wall-layer collider,
+        marker.SetActive(false);
         _targetMarker = marker;
+    }
+
+    // The goal carries Reserved1 WHILE it is the goal, then reverts. Without this the goal desk is
+    // perceived as plain Furniture — identical to the furniture the agent is being penalized for
+    // approaching — so the ray channel says "avoid" while the target vector says "approach".
+    // Role-by-runtime-tag; the penalty exemption still keys off IsCurrentTarget, not this.
+    readonly List<(GameObject go, string tag)> _goalTagRestore = new List<(GameObject, string)>();
+
+    void ApplyGoalTag()
+    {
+        for (int i = 0; i < _goalTagRestore.Count; i++)
+            if (_goalTagRestore[i].go != null)
+                ScenePhysicsLayers.SafeSetTag(_goalTagRestore[i].go, _goalTagRestore[i].tag);
+        _goalTagRestore.Clear();
+
+        if (target == null) return;
+        foreach (Collider c in target.GetComponentsInChildren<Collider>(true))
+        {
+            if (c == null || c.isTrigger) continue; // triggers are invisible to rays and the penalty
+            _goalTagRestore.Add((c.gameObject, c.tag));
+            ScenePhysicsLayers.SafeSetTag(c.gameObject, ScenePhysicsLayers.TagReserved1);
+        }
     }
 
     void RandomizeTarget()
@@ -798,6 +1089,7 @@ public class YBotWalkerAgent : Agent
 
         // Walk/avoid phase: the desk is a real destination away from the agent — show it.
         if (_targetMarker != null && !_targetMarker.activeSelf) _targetMarker.SetActive(true);
+        ApplyGoalTag();
 
         Vector3 origin = _rig.Root.transform.position;
 
@@ -907,7 +1199,10 @@ public class YBotWalkerAgent : Agent
             case ScenePhysicsLayers.TagStation:   return stationPenaltyScale;
             case ScenePhysicsLayers.TagFurniture: return furniturePenaltyScale;
             case ScenePhysicsLayers.TagProp:      return propPenaltyScale;
-            default:                              return wallPenaltyScale; // Wall + Untagged scenery
+            case ScenePhysicsLayers.TagWall:      return wallPenaltyScale;
+            // Untagged / Reserved* — priced as scenery. Reaching here for a real obstacle means it was
+            // never tagged, which also makes it invisible to the ray sensor's tag channels.
+            default:                              return wallPenaltyScale;
         }
     }
 

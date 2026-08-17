@@ -1,0 +1,42 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1786945684",
+        "python_version": "3.9.6 (v3.9.6:db3ff76da1, Jun 28 2021, 11:49:53) \n[Clang 6.0 (clang-600.0.57)]",
+        "command_line_arguments": "/Users/mac/UnityProjects/BSG/ml-agents-env/bin/mlagents-learn Assets/BSGIntegration/config/ybot_loco_avoid.yaml --run-id=ybot_loco_avoid_v2 --resume",
+        "mlagents_version": "0.30.0",
+        "mlagents_envs_version": "0.30.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "1.11.0",
+        "numpy_version": "1.21.2",
+        "end_time_seconds": "1786945685"
+    },
+    "total": 0.883647958,
+    "count": 1,
+    "self": 0.007122708000000033,
+    "children": {
+        "run_training.setup": {
+            "total": 0.03729499999999997,
+            "count": 1,
+            "self": 0.03729499999999997
+        },
+        "TrainerController.start_learning": {
+            "total": 0.83923025,
+            "count": 1,
+            "self": 5.354200000007303e-05,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 0.8391538329999999,
+                    "count": 1,
+                    "self": 0.8391538329999999
+                },
+                "TrainerController._save_models": {
+                    "total": 2.2874999999977774e-05,
+                    "count": 1,
+                    "self": 2.2874999999977774e-05
+                }
+            }
+        }
+    }
+}

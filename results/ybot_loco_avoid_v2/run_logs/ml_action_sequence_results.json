@@ -1,0 +1,1276 @@
+﻿{
+    "timestamp": "2026-08-17 10:50:22",
+    "sceneId": "scene_warehouse_replica_001",
+    "mlAgentsRunId": "ybot_loco_avoid_v2",
+    "type": "ML_Action_Sequence_Results",
+    "description": "Machine Learning action sequence execution results for each agent",
+    "totalAgents": 2,
+    "agents": [
+        {
+            "agentId": "P1",
+            "behaviorName": "PhysicalAgentZone0",
+            "role": "Physical",
+            "mlPerformance": {
+                "totalEpisodes": 0,
+                "totalReward": 0.00,
+                "averageRewardPerEpisode": 0.00,
+                "completedSteps": 0,
+                "totalSteps": 12,
+                "completionPercentage": 0.00,
+                "sequenceCompleted": false,
+                "currentStepIndex": 0
+            },
+            "skillsSummary": {
+                "skillLevel": 5.0,
+                "desireLevel": 100.0,
+                "skillPercentage": 5.00,
+                "learnedSkillsCount": 0,
+                "learnedSkills": []
+            },
+            "actionSequence": [
+                {
+                    "stepOrder": 1001,
+                    "stepId": "t01_phy_s01",
+                    "actionType": "act",
+                    "description": "RESTING desktop_surface",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1002,
+                    "stepId": "t01_phy_s02",
+                    "actionType": "act",
+                    "description": "PRESSING left_mouse_button",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 3.00,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1003,
+                    "stepId": "t01_phy_s03",
+                    "actionType": "act",
+                    "description": "DEPRESSING enter_key",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 3.00,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1004,
+                    "stepId": "t01_phy_s04",
+                    "actionType": "act",
+                    "description": "DEPRESSING enter_key",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 3.00,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1005,
+                    "stepId": "t01_phy_s05",
+                    "actionType": "act",
+                    "description": "DEPRESSING p_key",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.08,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1006,
+                    "stepId": "t01_phy_s06",
+                    "actionType": "act",
+                    "description": "DEPRESSING p_key",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.08,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1007,
+                    "stepId": "t01_phy_s07",
+                    "actionType": "act",
+                    "description": "DEPRESSING p_key",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.08,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1008,
+                    "stepId": "t01_phy_s08",
+                    "actionType": "act",
+                    "description": "PRESSING scroll_wheel",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.14,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1009,
+                    "stepId": "t01_phy_s09",
+                    "actionType": "act",
+                    "description": "PRESSING left_mouse_button",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.10,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1010,
+                    "stepId": "t01_phy_s10",
+                    "actionType": "act",
+                    "description": "DEPRESSING enter_key",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.09,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1011,
+                    "stepId": "t01_phy_s11",
+                    "actionType": "act",
+                    "description": "DEPRESSING enter_key",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.09,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 1012,
+                    "stepId": "t01_phy_s12",
+                    "actionType": "act",
+                    "description": "DEPRESSING enter_key",
+                    "target": {
+                        "id": "cognitive_005",
+                        "name": "ManualModule",
+                        "preposition": "on"
+                    },
+                    "expectedDuration": 0.09,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                }
+            ]
+        },
+        {
+            "agentId": "M1",
+            "behaviorName": "PhysicalAgentZone0",
+            "role": "Mental",
+            "mlPerformance": {
+                "totalEpisodes": 0,
+                "totalReward": 0.00,
+                "averageRewardPerEpisode": 0.00,
+                "completedSteps": 5,
+                "totalSteps": 46,
+                "completionPercentage": 10.87,
+                "sequenceCompleted": false,
+                "currentStepIndex": 0
+            },
+            "skillsSummary": {
+                "skillLevel": 0.0,
+                "desireLevel": 100.0,
+                "skillPercentage": 0.00,
+                "learnedSkillsCount": 0,
+                "learnedSkills": []
+            },
+            "actionSequence": [
+                {
+                    "stepOrder": 1,
+                    "stepId": "t01_cog_s01",
+                    "actionType": "move",
+                    "description": "",
+                    "target": {
+                        "id": "cognitive_001",
+                        "name": "Intentional Module",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 2,
+                    "stepId": "t01_cog_s02",
+                    "actionType": "move",
+                    "description": "",
+                    "target": {
+                        "id": "cognitive_008",
+                        "name": "Goal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 3,
+                    "stepId": "t01_cog_s03",
+                    "actionType": "move",
+                    "description": "",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "Retrieval Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 4,
+                    "stepId": "t01_cog_s04",
+                    "actionType": "move",
+                    "description": "",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "Imaginal Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 3.00,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 3.00,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 5,
+                    "stepId": "t01_cog_s05",
+                    "actionType": "move",
+                    "description": "",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "Manual Buffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 2.00,
+                    "executionStatus": {
+                        "isCompleted": true,
+                        "completionTime": 2.00,
+                        "timeEfficiency": 100.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 6,
+                    "stepId": "t01_cog_s06",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives customer_record_table as unread_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 7,
+                    "stepId": "t01_cog_s07",
+                    "actionType": "move",
+                    "description": "retrieval_buffer decodes customer_record_table signal using production_memory crm-table-read-schema.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "RetrievalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 8,
+                    "stepId": "t01_cog_s08",
+                    "actionType": "compare",
+                    "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for customer_record_table.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 9,
+                    "stepId": "t01_cog_s09",
+                    "actionType": "move",
+                    "description": "imaginal_module commits KF-1-3 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 1.80,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 10,
+                    "stepId": "t01_cog_s10",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives SAP software as idle_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 11,
+                    "stepId": "t01_cog_s11",
+                    "actionType": "move",
+                    "description": "retrieval_buffer decodes SAP software signal using production_memory sap-computation-schema.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "RetrievalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 12,
+                    "stepId": "t01_cog_s12",
+                    "actionType": "compare",
+                    "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for SAP software.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 13,
+                    "stepId": "t01_cog_s13",
+                    "actionType": "move",
+                    "description": "imaginal_module commits KF-1-5 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 120.00,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 14,
+                    "stepId": "t01_cog_s14",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives left_mouse_button as unpressed_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 15,
+                    "stepId": "t01_cog_s15",
+                    "actionType": "move",
+                    "description": "retrieval_buffer decodes left_mouse_button signal using production_memory mouse-click-focus-schema.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "RetrievalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 16,
+                    "stepId": "t01_cog_s16",
+                    "actionType": "compare",
+                    "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for left_mouse_button.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 17,
+                    "stepId": "t01_cog_s17",
+                    "actionType": "move",
+                    "description": "manual_buffer issues PRESSING command to right_index_fingertip_pad for Klein frame KF-1-6.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "ManualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 19,
+                    "stepId": "t01_cog_s19",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives enter_key as unpressed_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 20,
+                    "stepId": "t01_cog_s20",
+                    "actionType": "move",
+                    "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "RetrievalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 21,
+                    "stepId": "t01_cog_s21",
+                    "actionType": "compare",
+                    "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 22,
+                    "stepId": "t01_cog_s22",
+                    "actionType": "move",
+                    "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-1-7.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "ManualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 24,
+                    "stepId": "t01_cog_s24",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives enter_key as unpressed_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 25,
+                    "stepId": "t01_cog_s25",
+                    "actionType": "move",
+                    "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "RetrievalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 26,
+                    "stepId": "t01_cog_s26",
+                    "actionType": "compare",
+                    "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 27,
+                    "stepId": "t01_cog_s27",
+                    "actionType": "move",
+                    "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-1-8.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "ManualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 29,
+                    "stepId": "t01_cog_s29",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives p_key as unpressed_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 30,
+                    "stepId": "t01_cog_s30",
+                    "actionType": "move",
+                    "description": "retrieval_buffer decodes p_key signal using production_memory typing-parameter-schema.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "RetrievalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 31,
+                    "stepId": "t01_cog_s31",
+                    "actionType": "compare",
+                    "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for p_key.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 32,
+                    "stepId": "t01_cog_s32",
+                    "actionType": "move",
+                    "description": "intentional_module directs frontal_lobe of Marketing Manager to balance customer satisfaction evidence with pricing judgment through PROCESS",
+                    "target": {
+                        "id": "cognitive_001",
+                        "name": "IntentionalModule",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 33,
+                    "stepId": "t01_cog_s33",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives resource_planning_table as unread_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 34,
+                    "stepId": "t01_cog_s34",
+                    "actionType": "move",
+                    "description": "retrieval_buffer decodes resource_planning_table signal using production_memory erp-table-read-schema.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "RetrievalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 35,
+                    "stepId": "t01_cog_s35",
+                    "actionType": "compare",
+                    "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for resource_planning_table.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 36,
+                    "stepId": "t01_cog_s36",
+                    "actionType": "move",
+                    "description": "imaginal_module commits KF-4-13 (Data) — appends the validated unread to read transition into declarative_module.stored_frames[].",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 1.70,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 37,
+                    "stepId": "t01_cog_s37",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives Oracle PeopleSoft as idle_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 38,
+                    "stepId": "t01_cog_s38",
+                    "actionType": "move",
+                    "description": "retrieval_buffer decodes Oracle PeopleSoft signal using production_memory peoplesoft-computation-schema.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "RetrievalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 39,
+                    "stepId": "t01_cog_s39",
+                    "actionType": "compare",
+                    "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for Oracle PeopleSoft.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 40,
+                    "stepId": "t01_cog_s40",
+                    "actionType": "move",
+                    "description": "imaginal_module commits KF-4-15 (Data) — appends the validated idle to processing transition into declarative_module.stored_frames[].",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 120.00,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 41,
+                    "stepId": "t01_cog_s41",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives enter_key as unpressed_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 42,
+                    "stepId": "t01_cog_s42",
+                    "actionType": "move",
+                    "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "RetrievalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 43,
+                    "stepId": "t01_cog_s43",
+                    "actionType": "compare",
+                    "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 44,
+                    "stepId": "t01_cog_s44",
+                    "actionType": "move",
+                    "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-4-18.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "ManualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 46,
+                    "stepId": "t01_cog_s46",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives enter_key as unpressed_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 47,
+                    "stepId": "t01_cog_s47",
+                    "actionType": "move",
+                    "description": "retrieval_buffer decodes enter_key signal using production_memory enter-submit-schema.",
+                    "target": {
+                        "id": "cognitive_010",
+                        "name": "RetrievalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 48,
+                    "stepId": "t01_cog_s48",
+                    "actionType": "compare",
+                    "description": "imaginal_buffer compares perceived object_thread against expected declarative memory thread for enter_key.",
+                    "target": {
+                        "id": "cognitive_009",
+                        "name": "ImaginalBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 49,
+                    "stepId": "t01_cog_s49",
+                    "actionType": "move",
+                    "description": "manual_buffer issues DEPRESSING command to right_index_fingertip_pad for Klein frame KF-4-19.",
+                    "target": {
+                        "id": "cognitive_013",
+                        "name": "ManualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                },
+                {
+                    "stepOrder": 51,
+                    "stepId": "t01_cog_s51",
+                    "actionType": "move",
+                    "description": "visual_buffer perceives analytics_panel as unread_0.",
+                    "target": {
+                        "id": "cognitive_011",
+                        "name": "VisualBuffer",
+                        "preposition": "to"
+                    },
+                    "expectedDuration": 0.05,
+                    "executionStatus": {
+                        "isCompleted": false,
+                        "completionTime": 0.00,
+                        "timeEfficiency": 0.00
+                    },
+                    "skills": {
+                        "required": [],
+                        "learned": []
+                    }
+                }
+            ]
+        }
+    ]
+}

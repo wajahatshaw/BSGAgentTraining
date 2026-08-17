@@ -1,0 +1,245 @@
+{
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.11.0"
+    },
+    "PhysicalAgentZone0": {
+        "checkpoints": [
+            {
+                "steps": 2599843,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2599843.onnx",
+                "reward": 170.35335395449684,
+                "creation_time": 1786353678.031861,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2599843.pt"
+                ]
+            },
+            {
+                "steps": 2603773,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2603773.onnx",
+                "reward": 162.17651742383055,
+                "creation_time": 1786353827.0520809,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2603773.pt"
+                ]
+            },
+            {
+                "steps": 2604023,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2604023.onnx",
+                "reward": 149.49754333496094,
+                "creation_time": 1786353872.469293,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2604023.pt"
+                ]
+            },
+            {
+                "steps": 2605303,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2605303.onnx",
+                "reward": 100.6233041882515,
+                "creation_time": 1786354564.73959,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2605303.pt"
+                ]
+            },
+            {
+                "steps": 2624862,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2624862.onnx",
+                "reward": 168.16664123535156,
+                "creation_time": 1786355322.5818381,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2624862.pt"
+                ]
+            },
+            {
+                "steps": 2649797,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2649797.onnx",
+                "reward": 209.96866989135742,
+                "creation_time": 1786356142.604013,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2649797.pt"
+                ]
+            },
+            {
+                "steps": 2674757,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2674757.onnx",
+                "reward": 164.91651263833046,
+                "creation_time": 1786356889.255701,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2674757.pt"
+                ]
+            },
+            {
+                "steps": 2699777,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2699777.onnx",
+                "reward": 161.3112991333008,
+                "creation_time": 1786357716.2764218,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2699777.pt"
+                ]
+            },
+            {
+                "steps": 2724818,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2724818.onnx",
+                "reward": 159.3377995300293,
+                "creation_time": 1786358269.306505,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2724818.pt"
+                ]
+            },
+            {
+                "steps": 2740526,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2740526.onnx",
+                "reward": 159.31686401367188,
+                "creation_time": 1786358692.2921002,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2740526.pt"
+                ]
+            },
+            {
+                "steps": 2746882,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2746882.onnx",
+                "reward": 115.57142935858832,
+                "creation_time": 1786358954.729586,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2746882.pt"
+                ]
+            },
+            {
+                "steps": 2749682,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2749682.onnx",
+                "reward": 292.4497081211635,
+                "creation_time": 1786359156.95593,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2749682.pt"
+                ]
+            },
+            {
+                "steps": 2774872,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2774872.onnx",
+                "reward": 205.43483211596808,
+                "creation_time": 1786359981.104701,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2774872.pt"
+                ]
+            },
+            {
+                "steps": 2776610,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2776610.onnx",
+                "reward": 199.36145194499724,
+                "creation_time": 1786360108.638989,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2776610.pt"
+                ]
+            },
+            {
+                "steps": 2792806,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2792806.onnx",
+                "reward": -2.5903977307166843,
+                "creation_time": 1786360678.562248,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2792806.pt"
+                ]
+            },
+            {
+                "steps": 2793475,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2793475.onnx",
+                "reward": 0.641074173980289,
+                "creation_time": 1786360833.08818,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2793475.pt"
+                ]
+            },
+            {
+                "steps": 2794471,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2794471.onnx",
+                "reward": 2.655074923202909,
+                "creation_time": 1786360926.481571,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2794471.pt"
+                ]
+            },
+            {
+                "steps": 2795977,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2795977.onnx",
+                "reward": -2.5544191702552466,
+                "creation_time": 1786363504.539017,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2795977.pt"
+                ]
+            },
+            {
+                "steps": 2798482,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2798482.onnx",
+                "reward": -4.239264166936642,
+                "creation_time": 1786945300.041457,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2798482.pt"
+                ]
+            },
+            {
+                "steps": 2799679,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2799679.onnx",
+                "reward": 9.59701506072475,
+                "creation_time": 1786945908.039379,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2799679.pt"
+                ]
+            },
+            {
+                "steps": 2799967,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2799967.onnx",
+                "reward": -10.698166221380234,
+                "creation_time": 1786945954.659432,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2799967.pt"
+                ]
+            },
+            {
+                "steps": 2801504,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2801504.onnx",
+                "reward": 2.0340386833463397,
+                "creation_time": 1786945994.1192288,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2801504.pt"
+                ]
+            },
+            {
+                "steps": 2824990,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2824990.onnx",
+                "reward": 23.763003720177544,
+                "creation_time": 1786946699.312995,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2824990.pt"
+                ]
+            },
+            {
+                "steps": 2849977,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2849977.onnx",
+                "reward": 27.48851599316848,
+                "creation_time": 1786947377.735303,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2849977.pt"
+                ]
+            },
+            {
+                "steps": 2850897,
+                "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2850897.onnx",
+                "reward": 25.543004958757333,
+                "creation_time": 1786947407.596564,
+                "auxillary_file_paths": [
+                    "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2850897.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 2850897,
+            "file_path": "results/ybot_loco_avoid_v5/PhysicalAgentZone0.onnx",
+            "reward": 25.543004958757333,
+            "creation_time": 1786947407.596564,
+            "auxillary_file_paths": [
+                "results/ybot_loco_avoid_v5/PhysicalAgentZone0/PhysicalAgentZone0-2850897.pt"
+            ]
+        }
+    }
+}
